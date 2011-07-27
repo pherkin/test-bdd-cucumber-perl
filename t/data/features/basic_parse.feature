@@ -5,7 +5,7 @@ Feature: Basic Parser
 
   Scenario: Really Simple Parse
     Given the following feature block is parsed:
-       """
-         Feature: My Ünicode Feature
-       """
+      """
+        Feature: My Ünicode Feature
+      """
     Then the document object should have a title of "My Ünicode Feature"

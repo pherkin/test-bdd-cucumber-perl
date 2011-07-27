@@ -14,6 +14,11 @@ sub new {
     }, $class;
 }
 
+sub add_steps {
+	my ( $self, @steps ) = @_;
+	push( @{ $self->{'steps'} }, @steps );
+}
+
 sub execute {
     my ( $self, $data ) = @_;
 
@@ -23,7 +28,7 @@ sub execute {
 
         for my $cmd ( @{$section->{'lines'}} ) {
             my ( $verb, $text ) = @$cmd;
-            $self->dispatch( $verb, $text, $dataset );
+            $self->dispatch( $verb, $text, {} );
         }
 
     }
