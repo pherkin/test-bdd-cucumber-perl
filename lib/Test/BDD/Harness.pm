@@ -23,21 +23,16 @@ my $last_step;
 sub step {
     my ( $self, $context ) = @_;
     print '    ' . ucfirst($context->verb) . ' ' . $context->text;
-    $last_step = bless {}, 'Test::BDD::Harness::Step';
-    return $last_step;
 }
+
 sub step_done {
-    my $self = shift;
-    if ( $last_step->{'failed'} ) {
-        print "   [FAILED] ";
+    my ($self, $tb_hash) = @_;
+    my $output = ${ $tb_hash->{'output'} };
+    if ( $tb_hash->{'builder'}->is_passing ) {
+        print "\t\t[OK]\n";
+    } else {
+        print "\t\t[FAIL]\n----------\n$output----------\n";
     }
-    print "\n";
 }
-
-package Test::BDD::Harness::Step;
-
-sub pass {}
-sub fail { $_[0]->{'failed'}++ }
-sub diag { my ($self, $msg) = @_; print "      ** $msg\n"; }
 
 1;

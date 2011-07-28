@@ -3,6 +3,7 @@ package Test::BDD::Executor;
 use Moose;
 use FindBin::libs;
 use Storable qw(dclone);
+use Test::Builder;
 
 use Test::BDD::StepContext;
 use Test::BDD::Util;
@@ -102,14 +103,37 @@ sub dispatch {
             # Add the matches to the context
             $context->matches( \@matches );
 
-            # Add a way for the step to tell us if it passed or failed
-            $context->status( $context->harness->step( $context ) );
+            # Setup what we'll pass to step_done, with out localized
+            # Test::Builder stuff.
+            my $tb_return;
+            {
+                my $output = '';
+                $tb_return = {
+                    output => \$output,
+                    builder => Test::Builder->create()
+                };
+                # Set its outputs to be self-referential
+                $tb_return->{'builder'}->output( \$output );
+                $tb_return->{'builder'}->failure_output( \$output );
+                $tb_return->{'builder'}->todo_output( \$output );
+                $tb_return->{'builder'}->ok(1, "Starting to execute step");
+            }
 
-            # Execute!
-            $coderef->( $context );
+            # Say we're about to start it up
+            $context->harness->step( $context );
+
+            # New scope for the localization
+            {
+                # Localize test builder
+                local $Test::Builder::Test = $tb_return->{'builder'};
+                # Execute!
+                $coderef->( $context );
+            }
+            # Close up the Test::Builder object
+            $tb_return->{'builder'}->done_testing();
 
             # Close up the harness
-            $context->harness->step_done();
+            $context->harness->step_done( $tb_return );
             return;
         }
     }

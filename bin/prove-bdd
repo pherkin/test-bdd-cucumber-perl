@@ -9,6 +9,7 @@ use Method::Signatures;
 use Test::BDD::Parser;
 use Test::BDD::Executor;
 use Test::BDD::Harness;
+use Test::More;
 
 my $feature = eval { Test::BDD::Parser->parse_file(
 	't/fsets/parser/feature_parser.feature' ) };
@@ -32,10 +33,9 @@ $executor->add_steps(
 
         # Handle-able error
         if ( ref($@) ) {
-            warn "FAILED: $@";
-            $c->stash->{'error'} = $@;
-        } else {
-            warn $@;
+            $c->stash->{'scenario'}->{'error'} = $@;
+        } elsif ( $@ ) {
+            die $@;
         }
 
         # Save the output
@@ -43,31 +43,15 @@ $executor->add_steps(
 
     } ],
     [ then => 'there should be no parse errors' => func ($c) {
-        if ( $c->stash->{'scenario'}->{'errors'} ) {
-            $c->status->fail();
-            $c->status->diag( $@->debug_summary );
-        } else {
-            $c->status->pass();
-        }
+        ok( !$c->stash->{'scenario'}->{'errors'}, "No errors" ) ||
+            diag( $@->debug_summary );
     } ],
     [ then => qr/there should be parse errors on .+? (\d+)/ => func ($c) {
-        my $error = $c->stash->{'scenario'}->{'errors'};
-        if ( $error ) {
-            if ( $error->code eq 'parse_error' ) {
-                if ( $error->data->number == $c->matches->[0] ) {
-                    $c->status->pass();
-                } else {
-                    $c->status->fail();
-                    $c->status->diag("Wrong line: " . $error->data->number . '!=' . $c->matches->[0]);
-                }
-            } else {
-                $c->status->fail();
-                $c->status->diag("Unexpected error of " . $error->code);
-            }
-        } else {
-            $c->status->fail();
-            $c->status->diag("No parse errors found");
-        }
+        my $error = $c->stash->{'scenario'}->{'error'};
+        ok( $error, "Error is present" ) || return;
+        is( $error->code, 'parse_error', "Correct error code" ) || return;
+        is( $error->data->number, $c->matches->[0],
+            "Error is on the right line" );
     } ],
 );
 
