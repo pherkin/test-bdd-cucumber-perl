@@ -7,10 +7,15 @@ TODO:
 	- A nice build tool!
 
 	DUNNO:
-	- How does step file loading work?
 	- Funny indenting? https://github.com/cucumber/cucumber/wiki/Given-When-Then
 	- Unicode support is probably ropey
 
 	API:
-	- Output harness
-	- Work out what the context really needs
+	- Senisble loading of step files
+
+	Nice to have:
+	- Coloured output harness
+	- TAP harness
+	- pherkin
+	- Sample prove test
+	- Fully feature calculator example
