@@ -121,7 +121,7 @@ sub extract_scenarios {
 		ouch 'parse_error', "Inconsistent indentation (not 2)", $line
 			unless $line->indent == 2;
 
-		if ( $line->content =~ m/^(Background|Scenario)(?: Outline)?: (.+)/ ) {
+		if ( $line->content =~ m/^(Background|Scenario)(?: Outline)?: ?(.+)?/ ) {
 			my ( $type, $name ) = ( $1, $2 );
 
 			# Only one background section, and it must be the first
@@ -132,7 +132,7 @@ sub extract_scenarios {
 
 			# Create the scenario
 			my $scenario = Test::BDD::Model::Scenario->new({
-				name       => $name,
+				( $name ? ( name => $name ) : () ),
 				background => $type eq 'Background' ? 1 : 0,
 				line       => $line
 			});
@@ -230,7 +230,7 @@ sub extract_multiline_string {
 	# Check we still have the minimum indentation
 	while ( my $line = shift( @lines ) ) {
 		ouch 'parse_error', "Unterminated multi-line string", $line
-			unless $line->indent >= 6;
+			unless $line->indent >= 6 or $line->is_blank or $line->is_comment;
 
 		if ( $line->content eq '"""' ) {
 			ouch 'parse_error', "Inconsistent indentation (not 6)", $line

@@ -3,7 +3,7 @@ package Test::BDD::Model::Line;
 use Moose;
 
 has 'number'      => ( is => 'rw', isa => 'Int' );
-has 'document'    => ( is => 'rw', isa => 'Test::BDD::Model::Document', weak_ref => 1 );
+has 'document'    => ( is => 'rw', isa => 'Test::BDD::Model::Document' );
 has 'raw_content' => ( is => 'rw', isa => 'Str' );
 has 'related'     => ( is => 'rw', weak_ref => 1, isa => 'HashRef' );
 
@@ -21,6 +21,12 @@ sub content_remove_indentation {
 	my $content = $self->raw_content;
 	$content =~ s/^$indent//;
 	return $content;
+}
+
+sub debug_summary {
+	my $self = shift;
+	my $filename = $self->document->filename || '[String]';
+	return "Input: $filename line " . $self->number . ": [" . $self->raw_content . "]";
 }
 
 sub is_blank   { return ! ( $_[0]->content =~ m/\S/ ) }
