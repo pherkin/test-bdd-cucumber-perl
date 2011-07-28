@@ -4,7 +4,7 @@ Feature: Basic Parser
   We want to be able to parse simple Gherkin files
 
   Scenario: Really Simple Parse
-    Given the following feature block is parsed:
+    Given the following feature block is parsed
       """
         Feature: My Ünicode Feature
       """

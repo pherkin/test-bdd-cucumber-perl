@@ -23,7 +23,7 @@ sub content_remove_indentation {
 	return $content;
 }
 
-sub is_blank   { return ! ( $_[0]->content =~ m/\w/ ) }
+sub is_blank   { return ! ( $_[0]->content =~ m/\S/ ) }
 sub is_comment { return scalar $_[0]->content =~ m/^#/ }
 
 sub _strip {

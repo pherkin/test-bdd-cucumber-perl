@@ -1,3 +1,16 @@
 TODO:
-	- Finish basic parsing of all features
-	- Get exceptions working well
+	Missing features:
+	- Tags
+	- Transforms
+	- Localization
+	- Quoting in tables is broken
+	- A nice build tool!
+
+	DUNNO:
+	- How does step file loading work?
+	- Funny indenting? https://github.com/cucumber/cucumber/wiki/Given-When-Then
+	- Unicode support is probably ropey
+
+	API:
+	- Output harness
+	- Work out what the context really needs

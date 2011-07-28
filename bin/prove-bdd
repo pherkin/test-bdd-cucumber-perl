@@ -3,9 +3,6 @@
 use strict;
 use warnings;
 
-use File::Slurp;
-
-use Test::More;
 use Test::BDD::Parser;
 use Test::BDD::Executor;
 
