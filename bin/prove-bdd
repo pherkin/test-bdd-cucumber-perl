@@ -8,6 +8,7 @@ use Ouch;
 use Method::Signatures;
 use Test::BDD::Parser;
 use Test::BDD::Executor;
+use Test::BDD::Harness;
 
 my $feature = eval { Test::BDD::Parser->parse_file(
 	't/fsets/parser/feature_parser.feature' ) };
@@ -21,19 +22,55 @@ if ( hug ) {
 my $executor = Test::BDD::Executor->new();
 
 $executor->add_steps(
-    [ given => 'a feature parser' => method ($c) {} ],
-    [ given => 'the following text is parsed', method ($c) {
+    [ given => 'a feature parser' => func ($c) {} ],
+    [ given => 'the following text is parsed', func ($c) {
         die "Only accepts a string" if ref $c->data;
 
         # Attempt to parse
         my $test_feature = eval { Test::BDD::Parser->parse_string(
             $c->data ) };
 
-        # Save the output and any errors
+        # Handle-able error
+        if ( ref($@) ) {
+            warn "FAILED: $@";
+            $c->stash->{'error'} = $@;
+        } else {
+            warn $@;
+        }
+
+        # Save the output
         $c->stash->{'scenario'}->{'feature'} = $test_feature;
-        $c->stash->{'scenario'}->{'errors'}  = $@;
 
     } ],
+    [ then => 'there should be no parse errors' => func ($c) {
+        if ( $c->stash->{'scenario'}->{'errors'} ) {
+            $c->status->fail();
+            $c->status->diag( $@->debug_summary );
+        } else {
+            $c->status->pass();
+        }
+    } ],
+    [ then => qr/there should be parse errors on .+? (\d+)/ => func ($c) {
+        my $error = $c->stash->{'scenario'}->{'errors'};
+        if ( $error ) {
+            if ( $error->code eq 'parse_error' ) {
+                if ( $error->data->number == $c->matches->[0] ) {
+                    $c->status->pass();
+                } else {
+                    $c->status->fail();
+                    $c->status->diag("Wrong line: " . $error->data->number . '!=' . $c->matches->[0]);
+                }
+            } else {
+                $c->status->fail();
+                $c->status->diag("Unexpected error of " . $error->code);
+            }
+        } else {
+            $c->status->fail();
+            $c->status->diag("No parse errors found");
+        }
+    } ],
 );
-$executor->execute( $feature );
+
+my $harness = Test::BDD::Harness->new();
+$executor->execute( $feature, $harness );
 

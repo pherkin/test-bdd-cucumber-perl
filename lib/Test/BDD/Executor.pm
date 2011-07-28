@@ -1,19 +1,14 @@
 package Test::BDD::Executor;
 
-use strict;
-use warnings;
+use Moose;
 use FindBin::libs;
 use Storable qw(dclone);
 
+use Test::BDD::StepContext;
 use Test::BDD::Util;
 
-sub new {
-    my $class = shift();
-    bless {
-        executor_stash => {},
-        steps          => {}
-    }, $class;
-}
+has 'steps'          => ( is => 'rw', isa => 'HashRef', default => sub {{}} );
+has 'executor_stash' => ( is => 'rw', isa => 'HashRef', default => sub {{}} );
 
 sub add_steps {
     my ( $self, @steps ) = @_;
@@ -34,10 +29,9 @@ sub add_steps {
 
 sub execute {
     my ( $self, $feature, $harness ) = @_;
-    my $stash = {};
+    my $feature_stash = {};
 
-    # Display feature attributes
-    print 'Feature: ' . $feature->name . "\n";
+    $harness->feature( $feature );
 
     # Execute scenarios
     for my $outline ( @{ $feature->scenarios } ) {
@@ -47,15 +41,43 @@ sub execute {
         @datasets = ({}) unless @datasets;
 
         foreach my $dataset ( @datasets ) {
-            print '  Scenario: ' . ($outline->name||'') . "\n";
+            my $scenario_stash = {};
+            $harness->scenario( $outline, $dataset );
+
             foreach my $step (@{ $outline->steps }) {
                 # Multiply out any placeholders
                 my $text = $self->add_placeholders( $step->text, $dataset );
-                print '    ' . $step->verb . ' ' . $text . "\n";
-                $self->dispatch( $text, $step, $stash );
+
+                # Set up a context
+                my $context = Test::BDD::StepContext->new({
+
+                    # Data portion
+                    data    => ref($step->data) ? dclone($step->data) : $step->data || '',
+                    stash   => {
+                        feature  => $feature_stash,
+                        scenario => $scenario_stash,
+                        step     => {},
+                    },
+
+                    # Step-specific info
+                    feature  => $feature,
+                    scenario => $outline,
+                    step     => $step,
+                    verb     => lc($step->verb),
+                    text     => $text,
+
+                    # Communicators
+                    harness  => $harness
+
+                });
+                $self->dispatch( $context );
             }
+
+            $harness->scenario_done();
         }
     }
+
+    $harness->feature_done();
 }
 
 sub add_placeholders {
@@ -69,45 +91,30 @@ sub add_placeholders {
 }
 
 sub dispatch {
-    my ( $self, $text, $step, $stash ) = @_;
-    my $matched;
+    my ( $self, $context ) = @_;
 
-    for my $cmd ( @{ $self->{'steps'}->{lc($step->verb)} || [] } ) {
+    for my $cmd ( @{ $self->{'steps'}->{$context->verb} || [] } ) {
         my ( $regular_expression, $coderef ) = @$cmd;
 
         # Doing this twice is no fun
-        my @matches = $text =~ $regular_expression;
-        if ( $text =~ $regular_expression ) {
-            $matched++;
+        my @matches = $context->text =~ $regular_expression;
+        if ( $context->text =~ $regular_expression ) {
+            # Add the matches to the context
+            $context->matches( \@matches );
 
-            # Build a context
-            die "THIS SHOULD BE BUILT FURTHER UP AND PASSED IN TO DISPATCH";
-            my $context = Test::BDD::StepContext->new({
-                # Data portion
-                matches => \@matches,
-                data    => dclone($step->data),
-                stash   => {
-                    feature  => {},
-                    scenario => {}
-                    step     => {},
-                },
+            # Add a way for the step to tell us if it passed or failed
+            $context->status( $context->harness->step( $context ) );
 
-                # Step-specific info
-                feature  => $feature,
-                scenario => $scenario,
-                step     => $step,
-                text     => $text,
-
-                # Communicator
-                harness  => $harness,
-            });
-            $context->harness->execute_step( $context );
-
+            # Execute!
             $coderef->( $context );
+
+            # Close up the harness
+            $context->harness->step_done();
+            return;
         }
     }
 
-    warn "Can't find a match for [" . $step->verb . "]: $text" unless $matched;
+    warn "Can't find a match for [" . $context->verb . "]: " . $context->text;
 }
 
 sub setup {
