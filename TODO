@@ -1,21 +1,20 @@
 TODO:
 	Missing features:
-	- Tags
+	*- Tags
 	- Transforms
 	- Localization
-	- Quoting in tables is broken
-	- A nice build tool!
+	*- Quoting in tables is broken
 
 	DUNNO:
 	- Funny indenting? https://github.com/cucumber/cucumber/wiki/Given-When-Then
 	- Unicode support is probably ropey
 
 	API:
-	- Senisble loading of step files
+	*- Senisble loading of step files
 
 	Nice to have:
-	- Coloured output harness
-	- TAP harness
-	- pherkin
-	- Sample prove test
-	- Fully feature calculator example
+	*- Coloured output harness
+	*- TAP harness
+	*- pherkin
+	!*- Sample prove test
+	*- Fully feature calculator example

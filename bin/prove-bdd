@@ -32,7 +32,7 @@ $executor->add_steps(
             $c->data ) };
 
         # Handle-able error
-        if ( ref($@) ) {
+        if ( ref($@) && $@->isa('Ouch') ) {
             $c->stash->{'scenario'}->{'error'} = $@;
         } elsif ( $@ ) {
             die $@;

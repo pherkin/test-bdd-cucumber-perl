@@ -168,13 +168,13 @@ sub extract_steps {
 		if ( $line->content =~ m/^(Given|And|When|Then|But) (.+)/ ) {
 			my ( $verb, $text ) = ( $1, $2 );
 			my $original_verb = $verb;
-			$verb = $last_verb if $verb eq 'and' or $verb eq 'but';
+			$verb = $last_verb if lc($verb) eq 'and' or $verb eq 'but';
 
 			my $step = Test::BDD::Model::Step->new({
 				text => $text,
 				verb => $verb,
 				line => $line,
-				original_verb => $verb,
+				verb_original => $original_verb,
 			});
 
 			@lines = $self->extract_step_data(
@@ -184,7 +184,6 @@ sub extract_steps {
 
 		# Outline data block...
 		} elsif ( $line->content =~ m/^Examples:$/ ) {
-			my ( $self, $indent, $target, @lines ) = @_;
 			return $self->extract_table( 6, $scenario, @lines );
 		} else {
 			ouch 'parse_error', "Malformed step line", $line;
@@ -211,7 +210,7 @@ sub extract_step_data {
 		if ( $line->content eq '"""' ) {
 			return $self->extract_multiline_string(
 				$feature, $scenario, $step, @lines );
-		} elsif ( $line->content =~ m/^\|/ ) {
+		} elsif ( $line->content =~ m/^\s*\|/ ) {
 			return $self->extract_table(
 				6, $feature, $step, @lines );
 		} else {
@@ -251,8 +250,10 @@ sub extract_multiline_string {
 
 sub extract_table {
 	my ( $self, $indent, $target, @lines ) = @_;
-
 	my @columns;
+
+    my $data = [];
+    $target->data($data);
 
 	while ( my $line = shift( @lines ) ) {
 		next if $line->is_comment || $line->is_blank;
@@ -267,7 +268,7 @@ sub extract_table {
 
 		# Not a | starting the line? That's bad...
 		ouch 'parse_error', "Malformed table row", $line
-			if index( '|', $line->content );
+			unless $line->content =~ m/^\s*\|/;
 
 		my @rows = $self->_pipe_array( $line->content );
 
@@ -276,7 +277,7 @@ sub extract_table {
 				unless @rows == @columns;
 			my $i = 0;
 			my %data_hash = map { $columns[$i++] => $_ } @rows;
-			push( @{ $target->data }, \%data_hash );
+			push( @$data, \%data_hash );
 		} else {
 			@columns = @rows;
 		}

@@ -88,7 +88,7 @@ sub add_placeholders {
         exists $dataset->{$2} ? $dataset->{$2} :
             die "No mapping to placeholder $1 in: $text"
     /eg;
-    return Test::BDD::Util::bs_unquote( $text );
+    return Test::BDD::Util::bs_unquote( $quoted_text );
 }
 
 sub dispatch {
@@ -97,12 +97,7 @@ sub dispatch {
     for my $cmd ( @{ $self->{'steps'}->{$context->verb} || [] } ) {
         my ( $regular_expression, $coderef ) = @$cmd;
 
-        # Doing this twice is no fun
-        my @matches = $context->text =~ $regular_expression;
         if ( $context->text =~ $regular_expression ) {
-            # Add the matches to the context
-            $context->matches( \@matches );
-
             # Setup what we'll pass to step_done, with out localized
             # Test::Builder stuff.
             my $tb_return;
@@ -126,6 +121,8 @@ sub dispatch {
             {
                 # Localize test builder
                 local $Test::Builder::Test = $tb_return->{'builder'};
+                # Guarantee the $<digits> :-/
+                $context->matches([ $context->text =~ $regular_expression ]);
                 # Execute!
                 $coderef->( $context );
             }

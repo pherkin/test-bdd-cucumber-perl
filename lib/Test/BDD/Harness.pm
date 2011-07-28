@@ -22,7 +22,7 @@ my $last_step;
 
 sub step {
     my ( $self, $context ) = @_;
-    print '    ' . ucfirst($context->verb) . ' ' . $context->text;
+    print '    ' . ucfirst($context->step->verb_original) . ' ' . $context->text;
 }
 
 sub step_done {
