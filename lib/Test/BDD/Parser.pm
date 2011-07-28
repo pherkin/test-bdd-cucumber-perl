@@ -1,5 +1,30 @@
 package Test::BDD::Parser;
 
+=head1 NAME
+
+Test::BDD::Parser - Parse Gherkin feature files
+
+=head1 DESCRIPTION
+
+Parse Gherking feature files in to a set of data classes
+
+=head1 SYNOPSIS
+
+ # Returns a Test::BDD::Model::Feature object
+ my $feature = Test::BDD::Parser->parse_file(
+    't/data/features/basic_parse.feature' );
+
+=head1 METHODS
+
+=head2 parse_string
+
+=head2 parse_file
+
+Both methods accept a single string as their argument, and return a
+L<Test::BDD::Model::Feature> object on success.
+
+=cut
+
 use strict;
 use warnings;
 use Ouch;
@@ -33,24 +58,11 @@ sub construct {
 
 	my $feature = Test::BDD::Model::Feature->new({ document => $document });
 
-	eval {
-		$self->extract_scenarios(
-		$self->extract_conditions_of_satisfaction(
-		$self->extract_feature_name(
-			$feature, @{ $document->lines }
-		)));
-	};
-
-	if ( kiss 'parse_error' ) {
-		my $ouch = $@;
-		warn $ouch->message;
-		warn '::' . $ouch->data->content;
-		warn '::' . $ouch->data->raw_content;
-		warn $ouch->trace;
-		die  $ouch->code;
-	} elsif ( $@ ) {
-		die $@;
-	}
+	$self->extract_scenarios(
+	$self->extract_conditions_of_satisfaction(
+	$self->extract_feature_name(
+		$feature, @{ $document->lines }
+	)));
 
 	return $feature;
 }
@@ -282,192 +294,10 @@ sub _pipe_array {
 
 1;
 
-__DATA__
+=head1 ERROR HANDLING
 
-	# Extract the feature name
-	while ( my $line = shift( @lines ) ) {
-		next if $line->is_comment || $line->is_blank;
-
-		# We shouldn't have any indented lines
-		ouch 'parse_error', "Inconsistent indentation (not 0)", $line
-			unless $line->indent == 0;
-
-		if ( $line->content =~ m/^Feature: (.+)/ ) {
-			$feature->name( $1 );
-			$feature->name_line( $line );
-			last;
-		} else {
-			ouch 'parse_error', "Malformed feature line", $line;
-		}
-	}
-
-	# Extract conditions of satisfaction
-	while ( my $line = shift( @lines ) ) {
-
-	my $state_machine = {
-		feature_defined  => 0,
-		background_seen  => 0,
-		scenarios_seen   => 0,
-		parsing_scenario => 0,
-		current_indent   => 0,
-		in_cdata         => 0,
-		cdata_text       => ''
-	};
-
-	for my $line (@{ $document->lines }) {
-
-		# Keep sucking down a data section if we're in one
-		if ( $state_machine->{'in_cdata'} ) {
-			# Check we still have the minimum indentation
-			die "Unterminated data section" . $line->raw_content
-				if !$line->is_blank && $line->indent < 3;
-
-			# Wrap it up if appropriate
-			if ( $line->content eq '"""' ) {
-				die "Inconsistent indentation: " . $line->raw_content
-					unless $line->indent == 3;
-				$state_machine->{'in_cdata'} = 0;
-				warn "Throwing away cdata state";
-
-			# Content line (potentially)
-			} else {
-				my $content = $line->content_remove_indentation( 3 );
-				# Unescape it
-				$content =~ s/\\(.)/$1/g;
-				$content .= "\n";
-				$state_machine->{'cdata_text'} .= $content;
-			}
-
-			next;
-		}
-
-		next if $line->is_comment;
-
-		# Still looking for the feature definition?
-		if (! $state_machine->{'feature_defined'} ) {
-			next if $line->is_blank;
-			if ( $line->content =~ m/^Feature: (.+)/ ) {
-				$feature->name( $1 );
-				$feature->name_line( $line );
-				$state_machine->{'feature_defined'} = 1;
-			} else {
-				die "Malformed feature line: " . $line->content;
-			}
-			next;
-		}
-
-		# What to do if we're in the middle of parsing a scenario
-		if ( $state_machine->{'parsing_scenario'} ) {
-			next if $line->is_blank;
-
-		}
-
-		next if $line->is_blank;
-
-		die "Inconsistent indentation (" . $line->indent . "): " . $line->raw_content
-			unless $line->indent == 1;
-
-		if ( $line->content =~ m/^(Scenario|Background):/ ) {
-			 warn "Deal with scenarios here";
-			 next;
-		}
-
-		if ( $state_machine->{'scenarios_seen'} ) {
-			die "Line isn't scenario, background, or cond of sat"
-				. $line->content;
-		}
-
-		push( @{ $feature->satisfaction }, $line );
-
-	}
-
-	return $feature;
-
-}
-
-sub _pipe_array {
-	my ( $self, $string ) = @_;
-	my @atoms = split(/\|/, $string);
-	shift( @atoms );
-	return map { $_ =~ s/^\s+//; $_ =~ s/\s+$//; $_ } @atoms;
-}
-
-1;
-
-__DATA__
+L<Test::BDD> uses L<Ouch> for exception handling. Error originating in this
+class tend to have a code of C<parse_error> and a L<Test::BDD::Model::Line>
+object for data.
 
 
-	my $data;
-	my @lines;
-	# Find the feature
-	while ( my $line = shift( @lines ) ) {
-		next unless $line =~ m/\w/;
-		if ( $line =~ m/^Feature: (.+)/ ) {
-			$data->{'title'} = $1;
-			last;
-		} else {
-			die "Malformed feature line: $line";
-		}
-	}
-
-	$data->{'satisfaction'} = {lines => []};
-	$data->{'background'}   = {lines => [], name => 'Background Section'};
-	$data->{'scenarios'}    = [];
-
-	my $cursor = $data->{'satisfaction'}->{'lines'};
-
-	for my $line (@lines) {
-		if ( $line =~ m/^(?: ){2}Background:/ ) {
-			$cursor = $data->{'background'}->{'lines'};
-		} elsif ( $line =~ m/^(?: ){2}Scenario Outline: (.+)/ ) {
-			my $scenario = $self->_create_scenario();
-			$scenario->{'name'} = $1;
-			push( @{$data->{'scenarios'}}, $scenario );
-			$cursor = $scenario->{'lines'};
-		} elsif ( $line =~ m/^(?: ){4}Examples:/ ) {
-			$cursor = $data->{'scenarios'}->[-1]->{'examples'};
-		} else {
-			$line =~ s/^\s+//;
-			$line =~ s/\s+$//;
-			next unless $line =~ m/\w/;
-			push( @$cursor, $line );
-		}
-	}
-
-	for my $ref (
-		$data->{'background'},
-		@{ $data->{'scenarios'} }
-	) {
-		my $last_verb = '';
-		my @actions;
-
-		for my $line ( @{$ref->{'lines'}} ) {
-			unless ( $line =~ s/^(given|and|when|then|but)\s+//i ) {
-				warn "$line doesn't start with a recognizable action - skipping";
-				next;
-			}
-			my $verb = lc($1);
-			$verb = $last_verb if $verb eq 'and' or $verb eq 'but';
-			$last_verb = $verb;
-
-			push( @actions, [ $verb, $line ] );
-		}
-
-		$ref->{'lines'} = \@actions;
-	}
-
-	for my $ref ( @{ $data->{'scenarios'} } ) {
-		next unless eval { @{ $ref->{'examples'} } };
-		my @lines = @{ $ref->{'examples'} };
-		my @keys = $self->_pipe_array( shift( @lines ) );
-		my @data_array;
-		for my $line ( @lines ) {
-			my @values = $self->_pipe_array( $line );
-			my $i = 0;
-			my %data_hash = map { $keys[$i++] => $_ } @values;
-			push( @data_array, \%data_hash );
-		}
-		$ref->{'examples'} = \@data_array;
-	}
-
-	$data;
