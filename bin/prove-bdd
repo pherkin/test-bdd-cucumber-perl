@@ -2,8 +2,10 @@
 
 use strict;
 use warnings;
+use FindBin::libs;
 
 use Ouch;
+use Method::Signatures;
 use Test::BDD::Parser;
 use Test::BDD::Executor;
 
@@ -18,6 +20,20 @@ if ( hug ) {
 
 my $executor = Test::BDD::Executor->new();
 
-$executor->add_steps();
+$executor->add_steps(
+    [ given => 'a feature parser' => method ($c) {} ],
+    [ given => 'the following text is parsed', method ($c) {
+        die "Only accepts a string" if ref $c->data;
+
+        # Attempt to parse
+        my $test_feature = eval { Test::BDD::Parser->parse_string(
+            $c->data ) };
+
+        # Save the output and any errors
+        $c->stash->{'scenario'}->{'feature'} = $test_feature;
+        $c->stash->{'scenario'}->{'errors'}  = $@;
+
+    } ],
+);
 $executor->execute( $feature );
 

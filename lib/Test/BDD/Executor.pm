@@ -3,6 +3,7 @@ package Test::BDD::Executor;
 use strict;
 use warnings;
 use FindBin::libs;
+use Storable qw(dclone);
 
 use Test::BDD::Util;
 
@@ -16,7 +17,19 @@ sub new {
 
 sub add_steps {
     my ( $self, @steps ) = @_;
-#    push( @{ $self->{'steps'} }, @steps );
+
+    # Map the steps to be lower case...
+    for ( @steps ) {
+        my ( $verb, $match, $code ) = @$_;
+        $verb = lc $verb;
+        unless (ref( $match )) {
+            $match =~ s/:\s*$//;
+            $match = quotemeta( $match );
+            $match = qr/^$match:?/i;
+        }
+
+        push( @{ $self->{'steps'}->{$verb} }, [ $match, $code ] );
+    }
 }
 
 sub execute {
@@ -34,7 +47,7 @@ sub execute {
         @datasets = ({}) unless @datasets;
 
         foreach my $dataset ( @datasets ) {
-            print '  Scenario: ' . $outline->name . "\n";
+            print '  Scenario: ' . ($outline->name||'') . "\n";
             foreach my $step (@{ $outline->steps }) {
                 # Multiply out any placeholders
                 my $text = $self->add_placeholders( $step->text, $dataset );
@@ -59,16 +72,38 @@ sub dispatch {
     my ( $self, $text, $step, $stash ) = @_;
     my $matched;
 
-    for my $cmd ( @{ $self->{'steps'}->{$step->verb} || [] } ) {
+    for my $cmd ( @{ $self->{'steps'}->{lc($step->verb)} || [] } ) {
         my ( $regular_expression, $coderef ) = @$cmd;
 
-        if ( my @matches = $text =~ $regular_expression ) {
+        # Doing this twice is no fun
+        my @matches = $text =~ $regular_expression;
+        if ( $text =~ $regular_expression ) {
             $matched++;
-            $coderef->({
-                stash => $stash,
-                text  => $text,
-                step  => $step
+
+            # Build a context
+            die "THIS SHOULD BE BUILT FURTHER UP AND PASSED IN TO DISPATCH";
+            my $context = Test::BDD::StepContext->new({
+                # Data portion
+                matches => \@matches,
+                data    => dclone($step->data),
+                stash   => {
+                    feature  => {},
+                    scenario => {}
+                    step     => {},
+                },
+
+                # Step-specific info
+                feature  => $feature,
+                scenario => $scenario,
+                step     => $step,
+                text     => $text,
+
+                # Communicator
+                harness  => $harness,
             });
+            $context->harness->execute_step( $context );
+
+            $coderef->( $context );
         }
     }
 
