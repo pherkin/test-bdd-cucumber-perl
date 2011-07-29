@@ -74,11 +74,11 @@ sub execute {
                 $self->dispatch( $context );
             }
 
-            $harness->scenario_done();
+            $harness->scenario_done( $outline, $dataset );
         }
     }
 
-    $harness->feature_done();
+    $harness->feature_done( $feature );
 }
 
 sub add_placeholders {
@@ -130,7 +130,7 @@ sub dispatch {
             $tb_return->{'builder'}->done_testing();
 
             # Close up the harness
-            $context->harness->step_done( $tb_return );
+            $context->harness->step_done( $context, $tb_return );
             return;
         }
     }

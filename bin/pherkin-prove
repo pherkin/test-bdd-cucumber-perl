@@ -2,12 +2,14 @@
 
 use strict;
 use warnings;
+
 use FindBin::libs;
 use Ouch;
+use Test::More;
 
 use Test::BDD::Parser;
 use Test::BDD::Executor;
-use Test::BDD::Harness::SimpleText;
+use Test::BDD::Harness::TestBuilder;
 use Test::BDD::StepFile(); # Don't load Given and Then
 
 my $base_dir = $ARGV[0];
@@ -26,5 +28,7 @@ if ( hug ) {
 	die;
 }
 
-my $harness = Test::BDD::Harness::SimpleText->new();
+my $harness = Test::BDD::Harness::TestBuilder->new();
 $executor->execute( $feature, $harness );
+
+done_testing;
