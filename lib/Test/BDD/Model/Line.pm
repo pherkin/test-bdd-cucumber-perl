@@ -25,8 +25,13 @@ sub content_remove_indentation {
 
 sub debug_summary {
 	my $self = shift;
-	my $filename = $self->document->filename || '[String]';
+	my $filename = $self->filename;
 	return "Input: $filename line " . $self->number . ": [" . $self->raw_content . "]";
+}
+
+sub filename {
+    my $self = shift;
+    $self->document->filename || '[String]';
 }
 
 sub is_blank   { return ! ( $_[0]->content =~ m/\S/ ) }

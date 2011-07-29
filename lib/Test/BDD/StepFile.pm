@@ -3,6 +3,7 @@ package Test::BDD::StepFile;
 use strict;
 use warnings;
 use File::Find;
+use Ouch;
 
 require Exporter;
 our @ISA = qw(Exporter);
@@ -11,29 +12,22 @@ our @EXPORT = qw(Given Then);
 our @definitions;
 
 sub Given { push( @definitions, [ Given => @_ ] ) }
+sub When  { push( @definitions, [ When  => @_ ] ) }
 sub Then  { push( @definitions, [ Then  => @_ ] ) }
 
-sub all {
-    my $class = shift;
-    my @copy = @definitions;
-    @definitions = ();
-    return @copy;
-}
+#sub Step  { push( @definitions, [ Step  => @_ ] ) }
 
-sub read_file {
+sub load {
     my ( $class, $filename ) = @_;
-    do $filename;
-    die $@ if $@;
-}
 
-sub read_dir {
-    my ( $class, $path ) = @_;
-    my @files;
-    find(sub {
-        m/_steps\.pl$/ && push(@files, $File::Find::name )
-    }, $path);
-    die "No files found in $path" unless @files;
-    $class->read_file( $_ ) for @files;
+    {
+        local @definitions;
+        do $filename;
+        ouch 'step_compilation', "Step file [$filename] failed to load: $@"
+            if $@;
+        return @definitions;
+    }
+
 }
 
 1;

@@ -1,16 +1,34 @@
-TODO:
-	Missing features:
-	*- Tags
+Alpha Release Path:
+    - Build a Gherkin corpus
+    - Make parser work on newlines not indentation
+    - Document Calculator example code
+    - Name changes
+    - Add a viable test script
+    - Add dist stuff
+
+    - Document
+        - Document Test::Pherkin as an introduction
+        - Add a Tutorial around the core
+        - Document Writing Test Steps
+        - Document all the sub modules
+
+    + Add an example based on a Perl core module
+    + Add a pretty-print pherkin
+    + Add 'When' as a command
+    + Skip tests with no matcher
+    + Proper eval of steps
+
+
+
+Future:
+	- Tags
 	- Transforms
 	- Localization
-	*- Quoting in tables is broken
+	- Quoting in tables is broken
 
 	DUNNO:
 	- Funny indenting? https://github.com/cucumber/cucumber/wiki/Given-When-Then
 	- Unicode support is probably ropey
-
-	API:
-	*- Senisble loading of step files
 
 	Nice to have:
 	*- Coloured output harness

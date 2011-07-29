@@ -43,7 +43,10 @@ sub execute {
 
         foreach my $dataset ( @datasets ) {
             my $scenario_stash = {};
-            $harness->scenario( $outline, $dataset );
+
+            # OK, back to the normal execution
+            $harness->scenario( $outline, $dataset,
+                $scenario_stash->{'longest_step_line'} );
 
             foreach my $step (@{ $outline->steps }) {
                 # Multiply out any placeholders
@@ -94,7 +97,14 @@ sub add_placeholders {
 sub dispatch {
     my ( $self, $context ) = @_;
 
-    for my $cmd ( @{ $self->{'steps'}->{$context->verb} || [] } ) {
+    for my $cmd (
+        # Look in the right verb place
+        @{ $self->{'steps'}->{$context->verb} || [] },
+        # Look in the catch-all verb place
+        @{ $self->{'steps'}->{'steps'} || [] },
+        # This matches everything and it's our skip step
+        [ qr/.?/, sub { $_[0]->stash->{'step'}->{'notfound'} = 1 } ]
+    ) {
         my ( $regular_expression, $coderef ) = @$cmd;
 
         if ( $context->text =~ $regular_expression ) {
@@ -124,7 +134,11 @@ sub dispatch {
                 # Guarantee the $<digits> :-/
                 $context->matches([ $context->text =~ $regular_expression ]);
                 # Execute!
-                $coderef->( $context );
+                eval { $coderef->( $context ) };
+                if ( $@ ) {
+                    $Test::Builder::Test->ok( 0, "Test compiled" );
+                    $Test::Builder::Test->diag( $@ );
+                }
             }
             # Close up the Test::Builder object
             $tb_return->{'builder'}->done_testing();
@@ -134,8 +148,6 @@ sub dispatch {
             return;
         }
     }
-
-    warn "Can't find a match for [" . $context->verb . "]: " . $context->text;
 }
 
 sub setup {

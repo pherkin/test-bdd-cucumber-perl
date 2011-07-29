@@ -3,28 +3,11 @@
 use strict;
 use warnings;
 use FindBin::libs;
-use Ouch;
 
-use Test::BDD::Parser;
-use Test::BDD::Executor;
-use Test::BDD::Harness::SimpleText;
-use Test::BDD::StepFile(); # Don't load Given and Then
+use Test::BDD::Loader;
+use Test::BDD::Harness::TermColor;
 
-my $base_dir = $ARGV[0];
+my ( $executor, @features ) = Test::BDD::Loader->load( $ARGV[0] );
+my $harness  = Test::BDD::Harness::TermColor->new();
 
-my $executor = Test::BDD::Executor->new();
-
-Test::BDD::StepFile->read_dir( $ARGV[0] . '/features/step_definitions/' );
-$executor->add_steps( Test::BDD::StepFile->all );
-
-my $feature = eval { Test::BDD::Parser->parse_file(
-	$ARGV[0] . '/features/basic.feature' ) };
-
-if ( hug ) {
-	warn $@->scalar;
-	warn $@->data->debug_summary;
-	die;
-}
-
-my $harness = Test::BDD::Harness::SimpleText->new();
-$executor->execute( $feature, $harness );
+$executor->execute( $_, $harness ) for @features;

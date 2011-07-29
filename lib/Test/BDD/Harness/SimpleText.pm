@@ -28,10 +28,12 @@ sub step {
 sub step_done {
     my ($self, $context, $tb_hash) = @_;
     my $output = ${ $tb_hash->{'output'} };
-    if ( $tb_hash->{'builder'}->is_passing ) {
-        print "\t\t[OK]\n";
+    if ( $context->stash->{'step'}->{'notfound'} ) {
+        print ".. [TODO]\n";
+    } elsif ( $tb_hash->{'builder'}->is_passing ) {
+        print " .. [OK]\n";
     } else {
-        print "\t\t[FAIL]\n----------\n$output----------\n";
+        print " .. [FAIL]\n----------\n$output----------\n";
     }
 }
 

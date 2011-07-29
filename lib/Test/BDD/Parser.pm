@@ -48,7 +48,7 @@ sub parse_string {
 sub parse_file   {
 	my ( $self, $string ) = @_;
 	return $self->construct( Test::BDD::Model::Document->new({
-		content  => scalar read_file $string,
+		content  => scalar( read_file $string ),
 		filename => $string
 	}) );
 }
@@ -169,6 +169,7 @@ sub extract_steps {
 			my ( $verb, $text ) = ( $1, $2 );
 			my $original_verb = $verb;
 			$verb = $last_verb if lc($verb) eq 'and' or $verb eq 'but';
+            $last_verb = $verb;
 
 			my $step = Test::BDD::Model::Step->new({
 				text => $text,
