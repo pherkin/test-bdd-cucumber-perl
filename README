@@ -1,10 +1,6 @@
-Test::BDD - an unusably unfinished BDD implementation
+Test::BDD - an almost-finish Cucumber/Gherkin doohickey
 
-Although actually, it's not that bad. The idea is to get it self-
-hosting pretty soon - that is, have it running Cucumber tests against
-itself.
+perl -Iexamples/calculator/lib/ bin/pherkin examples/calculator/
 
-The Parser is pretty solid (although see the TODO), but some API
-decisions need to be taken and then tested (by using it!), and then
-docs etc etc etc...
+to see it in action
 

@@ -11,6 +11,12 @@ has 'operator'     => ( is => 'rw', isa => 'Str', default => '+' );
 has 'display'      => ( is => 'rw', isa => 'Str', default => '0' );
 has 'equals'       => ( is => 'rw', isa => 'Str', default => ''  );
 
+sub key_in {
+    my ( $self, $seq ) = @_;
+    my @possible = grep {/\S/} split(//, $seq);
+    $self->press($_) for @possible;
+}
+
 sub press {
     my ( $self, $key ) = @_;
 

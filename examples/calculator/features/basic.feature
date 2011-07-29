@@ -27,7 +27,6 @@ Feature: Basic Calculator Functions
     And having pressed 1 and 2 and 3 and + and 4 and 5 and 6 and +
     Then the display should show 579
 
-
   Scenario: Basic arithmetic
     Given a new Calculator object
     And having keyed <first>
@@ -41,3 +40,23 @@ Feature: Basic Calculator Functions
       | 6     | /        | 3      | 2      |
       | 10    | *        | 7.550  | 75.5   |
       | 3     | -        | 10     | -7     |
+
+  Scenario: Separation of calculations
+    Given a new Calculator object
+    And having successfully performed the following calculations
+      | first | operator | second | result |
+      | 0.5   | +        | 0.1    | 0.6    |
+      | 0.01  | /        | 0.01   | 1      |
+      | 10    | *        | 1      | 10     |
+    And having pressed 3
+    Then the display should show 3
+
+  Scenario: Ticker Tape
+    Given a new Calculator object
+    And having entered the following sequence
+      """
+      1 + 2 + 3 + 4 + 5 + 6 -
+      100
+      * 13 \=\=\= + 2 =
+      """
+    Then the display should show -1025

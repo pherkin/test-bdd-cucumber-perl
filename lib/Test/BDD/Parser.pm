@@ -211,8 +211,7 @@ sub extract_step_data {
 			return $self->extract_multiline_string(
 				$feature, $scenario, $step, @lines );
 		} elsif ( $line->content =~ m/^\s*\|/ ) {
-			return $self->extract_table(
-				6, $feature, $step, @lines );
+			return $self->extract_table( 6, $step, $line, @lines );
 		} else {
 			ouch 'parse_error', "Malformed step argument", $line;
 		}
