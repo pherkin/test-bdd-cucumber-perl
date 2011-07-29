@@ -15,11 +15,12 @@ Given 'a new Calculator object', func ($c) {
     $c->stash->{'scenario'}->{'Calculator'} = Calculator->new() };
 
 Given qr/^having pressed (.+)/, func($c) {
-    $c->stash->{'scenario'}->{'Calculator'}->press( $_ ) for split(/ and /, $1);
+    $c->stash->{'scenario'}->{'Calculator'}->press( $_ ) for split(/(,| and) /, $1);
 };
 
 Given qr/^having keyed (.+)/, func($c) {
-    $c->stash->{'scenario'}->{'Calculator'}->press( $_ ) for split(//, $1);
+    # Make this call the having pressed
+    $c->stash->{'scenario'}->{'Calculator'}->press( $_ ) for grep {defined} split(//, $1);
 };
 
 

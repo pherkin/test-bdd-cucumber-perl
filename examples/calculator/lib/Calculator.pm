@@ -4,71 +4,74 @@ use strict;
 use warnings;
 use Moose;
 
-has 'operator'      => ( is => 'rw', isa => 'Str'   );
-has 'display'       => ( is => 'rw', isa => 'Str', default => '0' );
-has 'buffer'        => ( is => 'rw', isa => 'Num', default => '0' );
-has 'post_operator' => ( is => 'rw', isa => 'Bool'  );
+has 'left'         => ( is => 'rw', isa => 'Num', default => 0 );
+has 'right'        => ( is => 'rw', isa => 'Str', default => '' );
+has 'operator'     => ( is => 'rw', isa => 'Str', default => '+' );
+
+has 'display'      => ( is => 'rw', isa => 'Str', default => '0' );
+has 'equals'       => ( is => 'rw', isa => 'Str', default => ''  );
 
 sub press {
     my ( $self, $key ) = @_;
-    if ( $key =~ m/([\d\.])/ ) {
-        $self->digit( $1 );
-    } elsif ( $key =~ m/([\+\-\/\*])/ ) {
-        $self->calculate();
-        $self->operator( $1 );
-        $self->post_operator(1);
-    } elsif ( $key eq '=' ) {
-        $self->calculate;
-    } elsif ( $key eq 'C' ) {
-        $self->clear;
-    } else {
-        die "Unknown key [$key]";
-    }
-}
 
-sub calculate {
-    my ( $self ) = @_;
-    return unless $self->operator;
-    $self->post_operator(0);
-    my $calc = $self->buffer . $self->operator . $self->display;
-    warn $calc;
-    $self->buffer( eval $calc );
-    $self->display( $self->buffer . '' );
-    $self->operator('');
+    # Numbers
+    $self->digit( $1 ) if $key =~ m/^([\d\.])$/;
+
+    # Operators
+    $self->key_operator( $1 ) if $key =~ m/^([\+\-\/\*])$/;
+
+    # Equals
+    $self->equalsign if $key eq '=';
+
+    # Clear
+    $self->clear if $key eq 'C';
 }
 
 sub clear {
-    my ( $self ) = @_;
-    $self->operator('');
+    my $self = shift;
+    $self->left(0);
+    $self->right('');
+    $self->operator('+');
     $self->display('0');
-    $self->buffer(0);
-    $self->post_operator(0);
+    $self->equals('');
+}
+
+sub equalsign {
+    my $self = shift;
+    $self->key_operator('+');
+    my $result = $self->left;
+    $self->clear();
+    $self->equals( $result );
+    $self->display( $result );
 }
 
 sub digit {
     my ( $self, $digit ) = @_;
 
-    # The next press after an operator should clear the display
-    if ( $self->post_operator ) {
-        $self->post_operator(0);
-        $self->display('0');
-    }
-
+    # Deal with decimal weirdness
     if ( $digit eq '.' ) {
-        # Only one period per number
-        return if $self->display =~ m/\./;
-        # If . is first, display 0.
-        if ( $self->display eq '0' ) {
-            $self->display('0.');
-            return;
-        }
+        return if $self->right =~ m/\./;
+        $digit = '0.' unless length( $self->right );
     }
 
-    # Over-write if display is currently 0
-    $self->display('') if $self->display eq '0';
+    $self->right( $self->right . $digit );
+    $self->display( $self->right );
+}
 
-    # Add digit
-    $self->display( $self->display . $digit );
+sub key_operator {
+    my ( $self, $operator ) = @_;
+
+    my $cmd = $self->left . $self->operator .
+        ( length($self->right) ? $self->right :
+            ( length( $self->equals ) ? $self->equals : '0'));
+
+    $self->right('');
+    $self->equals('');
+
+    $self->left( (eval $cmd) + 0 );
+    $self->display( $self->left );
+
+    $self->operator( $operator );
 }
 
 1;

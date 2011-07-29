@@ -22,6 +22,12 @@ Feature: Basic Calculator Functions
     And having pressed C
     Then the display should show 0
 
+  Scenario: Add as you go
+    Given a new Calculator object
+    And having pressed 1 and 2 and 3 and + and 4 and 5 and 6 and +
+    Then the display should show 579
+
+
   Scenario: Basic arithmetic
     Given a new Calculator object
     And having keyed <first>
@@ -32,7 +38,6 @@ Feature: Basic Calculator Functions
     Examples:
       | first | operator | second | result |
       | 5.0   | +        | 5.0    | 10     |
-#      | 6     | /        | 3      | 2      |
-#      | 10    | *        | 7.550  | 75.5   |
-#      | 3     | -        | 10     | -3     |
-#      | 0     | 5        | +      | 10     |
+      | 6     | /        | 3      | 2      |
+      | 10    | *        | 7.550  | 75.5   |
+      | 3     | -        | 10     | -7     |
