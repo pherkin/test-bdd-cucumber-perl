@@ -15,7 +15,7 @@ sub Given { push( @definitions, [ Given => @_ ] ) }
 sub When  { push( @definitions, [ When  => @_ ] ) }
 sub Then  { push( @definitions, [ Then  => @_ ] ) }
 
-#sub Step  { push( @definitions, [ Step  => @_ ] ) }
+sub Step  { push( @definitions, [ Step  => @_ ] ) }
 
 sub load {
     my ( $class, $filename ) = @_;

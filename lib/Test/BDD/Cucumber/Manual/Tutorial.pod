@@ -1,0 +1,179 @@
+package Test::BDD::Cucumber::Manual::Tutorial
+
+=head1 NAME
+
+Test::BDD::Cucumber::Manual::Tutorial - Quick Start Guide
+
+=head1 Introduction
+
+In this article we're going to jump straight in to using L<Test::BDD::Cucumber>
+to build some simple tests for L<Digest>, a core Perl module which provides
+message digests.
+
+We'll create a C<features/> directory, and put our first test case in it,
+C<features/basic.feature> in it. The contents of it are, in their entirity:
+
+ # Somehow I don't see this replacing the other tests this module has...
+ Feature: Simple tests of Digest.pm
+  As a developer planning to use Digest.pm
+  I want to test the basic functionality of Digest.pm
+  In order to have confidence in it
+
+  Background:
+    Given a usable Digest class
+
+  Scenario: Check MD5
+    Given a Digest MD5 object
+    When I've added "foo bar baz" to the object
+    And I've added "bat ban shan" to the object
+    Then the hex output is "bcb56b3dd4674d5d7459c95e4c8a41d5"
+    Then the base64 output is "1B2M2Y8AsgTpgAmY7PhCfg"
+
+  Scenario: Check SHA-1
+    Given a Digest SHA-1 object
+    When I've added "<data>" to the object
+    Then the hex output is "<output>"
+    Examples:
+      | data | output   |
+      | foo  | 0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33 |
+      | bar  | 62cdb7020ff920e5aa642c3d4066950dd1f01f4d |
+      | baz  | bbe960a25ea311d21d40669e93df2003ba9b90a2 |
+
+  Scenario: MD5 longer data
+    Given a Digest MD5 object
+    When I've added the following to the object
+      """
+      Here is a chunk of text that works a bit like a HereDoc. We'll split
+      off indenting space from the lines in it up to the indentation of the
+      first \"\"\"
+      """
+    Then the hex output is "75ad9f578e43b863590fae52d5d19ce6"
+
+This is a complete test, and if you run L<pherkin|App::Pherkin> against it, you
+will get sane output! It just doesn't do anything ... yet.
+
+In the C<features/> we'll add a C<step_definitions/> directory, and add our
+first (and again, only) step definitions
+C<features/step_definitions/basic_steps.pl> file in it:
+
+ #!perl
+
+ use strict;
+ use warnings;
+
+ use Test::More;
+ use Test::BDD::Cucumber::StepFile;
+ use Method::Signatures;
+
+ Given qr/a usable (\S+) class/, func ($c) { use_ok( $1 ); };
+ Given qr/a Digest (\S+) object/, func ($c) {
+    my $object = Digest->new($1);
+    ok( $object, "Object created" );
+    $c->stash->{'scenario'}->{'object'} = $object;
+ };
+
+ When qr/I've added "(.+)" to the object/, func ($c) {
+    $c->stash->{'scenario'}->{'object'}->add( $1 );
+ };
+
+ When "I've added the following to the object", func ($c) {
+    $c->stash->{'scenario'}->{'object'}->add( $c->data );
+ };
+
+ Then qr/the (.+) output is "(.+)"/, func ($c) {
+    my $method = {base64 => 'b64digest', 'hex' => 'hexdigest' }->{ $1 } ||
+        do { fail("Unknown output type $1"); return };
+    is( $c->stash->{'scenario'}->{'object'}->$method, $2 );
+ };
+
+When you run L<pherkin|App::Pherkin> or the Test::Builder-based test which does
+the same thing (L<t/900_run_features.thttps://github.com/sheriff/test-bdd-cucumber-perl/blob/master/t/900_run_features.t>),
+we look for a C<features/> directory, and search for step definitions files
+(matched by C<*_steps.pl>) and feature files (matched by C<*.feature>).
+
+The step matchers (the code that starts with C<Given>, C<When> and C<Then>) are
+all loaded, and then we execture the feature files one by one. Let's step
+through the feature file, and look at how it matches up to the step definitions
+file.
+
+=head1 Name and conditions of satisfaction
+
+ Feature: Simple tests of Digest.pm
+  As a developer planning to use Digest.pm
+  I want to test the basic functionality of Digest.pm
+  In order to have confidence in it
+
+The first non-comment line of your feature file is a description of what you
+intend to do. You need to start the name itself with the string C<Feature:>, and
+that should be the first line of your file, save comments (denoted by #).
+
+Anything after that before the next new-line are your conditions of
+satisfaction. These aren't parsed, they're treated as human-readable text, and
+by convention, they're a L<user story|http://en.wikipedia.org/wiki/User_story>.
+
+=head1 Background
+
+  Background:
+    Given a usable Digest class
+
+Next up, we have the Background section. The Background is a special kind of
+Scenario that doesn't have an explicit name, and should occur only once in your
+feature file. As with all scenarios, it's a collection of steps. The only step
+in this Scenario is C<Given a usable Digest class">.
+
+This is matched by:
+
+ Given qr/a usable (\S+) class/, func ($c) { use_ok( $1 ); };
+
+C<Given()> is a function exported by L<Test::BDD::Cucumber::StepFile> that
+accepts two arguments: a regular expression (or a string when you don't need
+to do any smart matching) and a coderef. We use L<Method::Signatures> to save
+some typing here, so note that written longer hand, the above might be written:
+
+ Given(
+     qr/a usable (\S+) class/,
+     sub {
+        my $c = shift;
+        use_ok( $1 );
+     };
+ );
+
+If you're paying attention, you might notice that C<use_ok> comes from
+L<Test::More>. B<Each step is run, from a> L<Test::Builder> B<perspective, as
+its own distinct test file>. This happens seamlessly, so you can use any
+L<Test::Builder>-based testing tools in your step definitions without really
+worrying about it. There's some more detail in
+L<Test::BDD::Cucumber::Manual::Steps>.
+
+=head1 The First Scenario...
+
+  Scenario: Check MD5
+    Given a Digest MD5 object
+    When I've added "foo bar baz" to the object
+    And I've added "bat ban shan" to the object
+    Then the hex output is "bcb56b3dd4674d5d7459c95e4c8a41d5"
+    Then the base64 output is "1B2M2Y8AsgTpgAmY7PhCfg"
+
+The first scenario is delimited from the previous steps by a blank line, and
+it's called I<Check MD5>. Scenarios are marked out using the C<Scenario:>
+keyword, and just like the Background section before, it's a series of steps.
+These steps rely on the step before, which means we can examine the
+L<Test::Builder::StepContext|context> object C<$c> a little more closely.
+
+ Given qr/a Digest (\S+) object/, func ($c) {
+    my $object = Digest->new($1);
+    ok( $object, "Object created" );
+    $c->stash->{'scenario'}->{'object'} = $object;
+ };
+
+Creates a step definition. We create a new L<Digest> object, and then use
+L<Test::More>'s C<ok()> function to check that worked. We then put it in the
+I<stash> for other steps to use. There are three stashes documented in
+L<Test::Builder::StepContext>, C<feature>, C<scenario> and C<step>. As you might
+expect, C<feature> is available to all step definitions that are being executed
+as part of a feature, and C<scenario> is available to all steps that are being
+executed as part of a feature.
+
+=cut
+
+1;

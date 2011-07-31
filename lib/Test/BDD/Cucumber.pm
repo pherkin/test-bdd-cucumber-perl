@@ -40,6 +40,10 @@ in the very near future:
 
 =back
 
+=head1 CODE
+
+On Github, of course: L<https://github.com/sheriff/test-bdd-cucumber-perl>.
+
 =head1 AUTHOR
 
 Peter Sergeant - L<pete@clueball.com>
