@@ -1,7 +1,0 @@
-Test::BDD::Cucumber - Cucumber for Perl 
-
-perl -Iexamples/calculator/lib/ bin/pherkin examples/calculator/
-
-It works, it's just missing lots of documentation and tests, which
-are coming real soon now...
-

@@ -1,7 +1,6 @@
 Alpha Release Path:
 
     - Add dist stuff                                    (0.5h)
-    - Name changes                                      (0.5h)
 
     - Document Calculator example code                  (1h)
     - Add a viable test script                          (0.5h)
@@ -13,6 +12,7 @@ Alpha Release Path:
         - Document Writing Test Steps                   (1h)
         - Document all the sub modules                  (1h)
 
+    + Name changes                                      (0.5h)
     + Add an example based on a Perl core module
     + Add a pretty-print pherkin
     + Add 'When' as a command
