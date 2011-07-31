@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test::More;
-use Test::BDD::StepFile;
+use Test::BDD::Cucumber::StepFile;
 use Method::Signatures;
 
 use Calculator;

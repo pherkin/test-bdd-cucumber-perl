@@ -1,4 +1,4 @@
-package Test::BDD::Model::Display;
+package Test::BDD::Cucumber::Model::Display;
 
 use Moose;
 

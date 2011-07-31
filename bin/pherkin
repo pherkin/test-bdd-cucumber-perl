@@ -4,10 +4,10 @@ use strict;
 use warnings;
 use FindBin::libs;
 
-use Test::BDD::Loader;
-use Test::BDD::Harness::TermColor;
+use Test::BDD::Cucumber::Loader;
+use Test::BDD::Cucumber::Harness::TermColor;
 
-my ( $executor, @features ) = Test::BDD::Loader->load( $ARGV[0] );
-my $harness  = Test::BDD::Harness::TermColor->new();
+my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load( $ARGV[0] );
+my $harness  = Test::BDD::Cucumber::Harness::TermColor->new();
 
 $executor->execute( $_, $harness ) for @features;

@@ -1,4 +1,4 @@
-package Test::BDD::Harness;
+package Test::BDD::Cucumber::Harness;
 
 use strict;
 use warnings;

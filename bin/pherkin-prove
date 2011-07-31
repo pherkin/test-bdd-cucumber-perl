@@ -7,19 +7,19 @@ use FindBin::libs;
 use Ouch;
 use Test::More;
 
-use Test::BDD::Parser;
-use Test::BDD::Executor;
-use Test::BDD::Harness::TestBuilder;
-use Test::BDD::StepFile(); # Don't load Given and Then
+use Test::BDD::Cucumber::Parser;
+use Test::BDD::Cucumber::Executor;
+use Test::BDD::Cucumber::Harness::TestBuilder;
+use Test::BDD::Cucumber::StepFile(); # Don't load Given and Then
 
 my $base_dir = $ARGV[0];
 
-my $executor = Test::BDD::Executor->new();
+my $executor = Test::BDD::Cucumber::Executor->new();
 
-Test::BDD::StepFile->read_dir( $ARGV[0] . '/features/step_definitions/' );
-$executor->add_steps( Test::BDD::StepFile->all );
+Test::BDD::Cucumber::StepFile->read_dir( $ARGV[0] . '/features/step_definitions/' );
+$executor->add_steps( Test::BDD::Cucumber::StepFile->all );
 
-my $feature = eval { Test::BDD::Parser->parse_file(
+my $feature = eval { Test::BDD::Cucumber::Parser->parse_file(
 	$ARGV[0] . '/features/basic.feature' ) };
 
 if ( hug ) {
@@ -28,7 +28,7 @@ if ( hug ) {
 	die;
 }
 
-my $harness = Test::BDD::Harness::TestBuilder->new();
+my $harness = Test::BDD::Cucumber::Harness::TestBuilder->new();
 $executor->execute( $feature, $harness );
 
 done_testing;

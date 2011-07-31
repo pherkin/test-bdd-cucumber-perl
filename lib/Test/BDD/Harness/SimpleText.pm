@@ -1,10 +1,10 @@
-package Test::BDD::Harness::SimpleText;
+package Test::BDD::Cucumber::Harness::SimpleText;
 
 use strict;
 use warnings;
 use Moose;
 
-extends 'Test::BDD::Harness';
+extends 'Test::BDD::Cucumber::Harness';
 
 sub feature {
     my ( $self, $feature ) = @_;

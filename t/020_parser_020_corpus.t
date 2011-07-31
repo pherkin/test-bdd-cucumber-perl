@@ -7,7 +7,7 @@ use FindBin::libs;
 use Test::More;
 use Test::Differences;
 use Test::DumpFeature;
-use Test::BDD::Parser;
+use Test::BDD::Cucumber::Parser;
 use YAML::Syck;
 use File::Slurp;
 use File::Find::Rule;
@@ -22,7 +22,7 @@ for my $file ( @files ) {
     my ( $feature, $yaml ) = split(/----------DIVIDER----------/, $file_data);
     my $expected = Load( $yaml );
     my $actual   = Test::DumpFeature::dump_feature(
-        Test::BDD::Parser->parse_string( $feature ) );
+        Test::BDD::Cucumber::Parser->parse_string( $feature ) );
 
     is_deeply( $actual, $expected, "$file matches" ) || eq_or_diff(
          $actual, $expected );

@@ -1,9 +1,9 @@
-package Test::BDD::Model::Line;
+package Test::BDD::Cucumber::Model::Line;
 
 use Moose;
 
 has 'number'      => ( is => 'rw', isa => 'Int' );
-has 'document'    => ( is => 'rw', isa => 'Test::BDD::Model::Document' );
+has 'document'    => ( is => 'rw', isa => 'Test::BDD::Cucumber::Model::Document' );
 has 'raw_content' => ( is => 'rw', isa => 'Str' );
 has 'related'     => ( is => 'rw', weak_ref => 1, isa => 'HashRef' );
 

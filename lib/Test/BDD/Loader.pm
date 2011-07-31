@@ -1,4 +1,4 @@
-package Test::BDD::Loader;
+package Test::BDD::Cucumber::Loader;
 
 use strict;
 use warnings;
@@ -7,13 +7,13 @@ use Ouch;
 use Path::Class;
 use File::Find::Rule;
 
-use Test::BDD::Executor;
-use Test::BDD::Parser;
-use Test::BDD::StepFile();
+use Test::BDD::Cucumber::Executor;
+use Test::BDD::Cucumber::Parser;
+use Test::BDD::Cucumber::StepFile();
 
 sub load {
     my ( $class, $path ) = @_;
-    my $executor = Test::BDD::Executor->new();
+    my $executor = Test::BDD::Cucumber::Executor->new();
 
     # Either load a feature or a directory...
     my ( $dir, $file );
@@ -26,7 +26,7 @@ sub load {
 
     # Load up the steps
     $executor->add_steps(
-        Test::BDD::StepFile->load( $_ )
+        Test::BDD::Cucumber::StepFile->load( $_ )
     ) for File::Find::Rule
         ->file()
         ->name( '*_steps.pl' )
@@ -35,7 +35,7 @@ sub load {
     # Grab the feature files
     my @features = map {
         my $file = $_;
-        my $feature = eval { Test::BDD::Parser->parse_file( $file ) };
+        my $feature = eval { Test::BDD::Cucumber::Parser->parse_file( $file ) };
         unless ( $feature ) {
             my $failure = (
                 # Was there an error?

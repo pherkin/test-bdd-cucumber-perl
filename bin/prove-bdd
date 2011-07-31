@@ -6,12 +6,12 @@ use FindBin::libs;
 
 use Ouch;
 use Method::Signatures;
-use Test::BDD::Parser;
-use Test::BDD::Executor;
-use Test::BDD::Harness;
+use Test::BDD::Cucumber::Parser;
+use Test::BDD::Cucumber::Executor;
+use Test::BDD::Cucumber::Harness;
 use Test::More;
 
-my $feature = eval { Test::BDD::Parser->parse_file(
+my $feature = eval { Test::BDD::Cucumber::Parser->parse_file(
 	't/fsets/parser/feature_parser.feature' ) };
 
 if ( hug ) {
@@ -20,7 +20,7 @@ if ( hug ) {
 	die;
 }
 
-my $executor = Test::BDD::Executor->new();
+my $executor = Test::BDD::Cucumber::Executor->new();
 
 $executor->add_steps(
     [ given => 'a feature parser' => func ($c) {} ],
@@ -28,7 +28,7 @@ $executor->add_steps(
         die "Only accepts a string" if ref $c->data;
 
         # Attempt to parse
-        my $test_feature = eval { Test::BDD::Parser->parse_string(
+        my $test_feature = eval { Test::BDD::Cucumber::Parser->parse_string(
             $c->data ) };
 
         # Handle-able error
@@ -55,6 +55,6 @@ $executor->add_steps(
     } ],
 );
 
-my $harness = Test::BDD::Harness->new();
+my $harness = Test::BDD::Cucumber::Harness->new();
 $executor->execute( $feature, $harness );
 

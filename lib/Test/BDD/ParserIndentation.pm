@@ -1,8 +1,8 @@
-package Test::BDD::Parser;
+package Test::BDD::Cucumber::Parser;
 
 =head1 NAME
 
-Test::BDD::Parser - Parse Gherkin feature files
+Test::BDD::Cucumber::Parser - Parse Gherkin feature files
 
 =head1 DESCRIPTION
 
@@ -10,8 +10,8 @@ Parse Gherking feature files in to a set of data classes
 
 =head1 SYNOPSIS
 
- # Returns a Test::BDD::Model::Feature object
- my $feature = Test::BDD::Parser->parse_file(
+ # Returns a Test::BDD::Cucumber::Model::Feature object
+ my $feature = Test::BDD::Cucumber::Parser->parse_file(
     't/data/features/basic_parse.feature' );
 
 =head1 METHODS
@@ -21,7 +21,7 @@ Parse Gherking feature files in to a set of data classes
 =head2 parse_file
 
 Both methods accept a single string as their argument, and return a
-L<Test::BDD::Model::Feature> object on success.
+L<Test::BDD::Cucumber::Model::Feature> object on success.
 
 =cut
 
@@ -30,24 +30,24 @@ use warnings;
 use Ouch;
 
 use File::Slurp;
-use Test::BDD::Model::Document;
-use Test::BDD::Model::Feature;
-use Test::BDD::Model::Scenario;
-use Test::BDD::Model::Step;
+use Test::BDD::Cucumber::Model::Document;
+use Test::BDD::Cucumber::Model::Feature;
+use Test::BDD::Cucumber::Model::Scenario;
+use Test::BDD::Cucumber::Model::Step;
 
 # https://github.com/cucumber/cucumber/wiki/Multiline-Step-Arguments
 # https://github.com/cucumber/cucumber/wiki/Scenario-outlines
 
 sub parse_string {
 	my ( $self, $string ) = @_;
-	return $self->construct( Test::BDD::Model::Document->new({
+	return $self->construct( Test::BDD::Cucumber::Model::Document->new({
 		content => $string
 	}) );
 }
 
 sub parse_file   {
 	my ( $self, $string ) = @_;
-	return $self->construct( Test::BDD::Model::Document->new({
+	return $self->construct( Test::BDD::Cucumber::Model::Document->new({
 		content  => scalar( read_file $string ),
 		filename => $string
 	}) );
@@ -56,7 +56,7 @@ sub parse_file   {
 sub construct {
 	my ( $self, $document ) = @_;
 
-	my $feature = Test::BDD::Model::Feature->new({ document => $document });
+	my $feature = Test::BDD::Cucumber::Model::Feature->new({ document => $document });
 
 	$self->extract_scenarios(
 	$self->extract_conditions_of_satisfaction(
@@ -131,7 +131,7 @@ sub extract_scenarios {
 			}
 
 			# Create the scenario
-			my $scenario = Test::BDD::Model::Scenario->new({
+			my $scenario = Test::BDD::Cucumber::Model::Scenario->new({
 				( $name ? ( name => $name ) : () ),
 				background => $type eq 'Background' ? 1 : 0,
 				line       => $line
@@ -171,7 +171,7 @@ sub extract_steps {
 			$verb = $last_verb if lc($verb) eq 'and' or $verb eq 'but';
             $last_verb = $verb;
 
-			my $step = Test::BDD::Model::Step->new({
+			my $step = Test::BDD::Cucumber::Model::Step->new({
 				text => $text,
 				verb => $verb,
 				line => $line,
@@ -297,8 +297,8 @@ sub _pipe_array {
 
 =head1 ERROR HANDLING
 
-L<Test::BDD> uses L<Ouch> for exception handling. Error originating in this
-class tend to have a code of C<parse_error> and a L<Test::BDD::Model::Line>
+L<Test::BDD::Cucumber> uses L<Ouch> for exception handling. Error originating in this
+class tend to have a code of C<parse_error> and a L<Test::BDD::Cucumber::Model::Line>
 object for data.
 
 

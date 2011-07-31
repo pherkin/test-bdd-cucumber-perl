@@ -1,12 +1,12 @@
-package Test::BDD::Harness::TermColor;
+package Test::BDD::Cucumber::Harness::TermColor;
 
 use strict;
 use warnings;
 use Moose;
 use Term::ANSIColor;
-use Test::BDD::Util;
+use Test::BDD::Cucumber::Util;
 
-extends 'Test::BDD::Harness';
+extends 'Test::BDD::Cucumber::Harness';
 
 my $margin = 2;
 if ( $margin > 1 ) {
@@ -90,9 +90,9 @@ sub display {
         my $base  = color $options->{'color'};
         my $hl    = color $options->{'highlight'};
 
-        my $text = $base . Test::BDD::Util::bs_quote( $options->{'text'} );
+        my $text = $base . Test::BDD::Cucumber::Util::bs_quote( $options->{'text'} );
         $text =~ s/("(.+?)"|[ ^](\d[-?\d\.]*))/$reset$hl$1$reset$base/g;
-        print Test::BDD::Util::bs_unquote( $text );
+        print Test::BDD::Cucumber::Util::bs_unquote( $text );
 
     # Normal output
     } else {

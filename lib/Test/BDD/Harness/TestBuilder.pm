@@ -1,11 +1,11 @@
-package Test::BDD::Harness::TestBuilder;
+package Test::BDD::Cucumber::Harness::TestBuilder;
 
 use strict;
 use warnings;
 use Moose;
 use Test::More;
 
-extends 'Test::BDD::Harness';
+extends 'Test::BDD::Cucumber::Harness';
 
 my $li = ' ' x 7;
 my $ni = ' ' x 4;

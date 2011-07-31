@@ -76,7 +76,7 @@ our Step Definition file, C<features/step_definitions/basic_steps.pl>.
  use warnings;
 
  use Test::More;
- use Test::BDD::StepFile;
+ use Test::BDD::Cucumber::StepFile;
  use Method::Signatures;
 
 

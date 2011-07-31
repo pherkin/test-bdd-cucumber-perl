@@ -1,12 +1,12 @@
-package Test::BDD::Executor;
+package Test::BDD::Cucumber::Executor;
 
 use Moose;
 use FindBin::libs;
 use Storable qw(dclone);
 use Test::Builder;
 
-use Test::BDD::StepContext;
-use Test::BDD::Util;
+use Test::BDD::Cucumber::StepContext;
+use Test::BDD::Cucumber::Util;
 
 has 'steps'          => ( is => 'rw', isa => 'HashRef', default => sub {{}} );
 has 'executor_stash' => ( is => 'rw', isa => 'HashRef', default => sub {{}} );
@@ -53,7 +53,7 @@ sub execute {
                 my $text = $self->add_placeholders( $step->text, $dataset );
 
                 # Set up a context
-                my $context = Test::BDD::StepContext->new({
+                my $context = Test::BDD::Cucumber::StepContext->new({
 
                     # Data portion
                     data    => ref($step->data) ? dclone($step->data) : $step->data || '',
@@ -86,12 +86,12 @@ sub execute {
 
 sub add_placeholders {
     my ( $self, $text, $dataset ) = @_;
-    my $quoted_text = Test::BDD::Util::bs_quote( $text );
+    my $quoted_text = Test::BDD::Cucumber::Util::bs_quote( $text );
     $quoted_text =~ s/(<([^>]+)>)/
         exists $dataset->{$2} ? $dataset->{$2} :
             die "No mapping to placeholder $1 in: $text"
     /eg;
-    return Test::BDD::Util::bs_unquote( $quoted_text );
+    return Test::BDD::Cucumber::Util::bs_unquote( $quoted_text );
 }
 
 sub dispatch {

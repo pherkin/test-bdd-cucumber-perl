@@ -1,4 +1,4 @@
-package Test::BDD::Util;
+package Test::BDD::Cucumber::Util;
 
 use strict;
 use warnings;

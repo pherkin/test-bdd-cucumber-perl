@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test::More;
-use Test::BDD::StepFile;
+use Test::BDD::Cucumber::StepFile;
 use Method::Signatures;
 
 Given qr/a usable (\S+) class/, func ($c) { use_ok( $1 ); };

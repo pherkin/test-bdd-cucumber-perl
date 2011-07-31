@@ -1,4 +1,4 @@
-package Test::BDD::StepFile;
+package Test::BDD::Cucumber::StepFile;
 
 use strict;
 use warnings;
