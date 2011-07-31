@@ -1,6 +1,7 @@
-Test::BDD::Cucumber - an almost-finish Cucumber/Gherkin doohickey
+Test::BDD::Cucumber - Cucumber for Perl 
 
 perl -Iexamples/calculator/lib/ bin/pherkin examples/calculator/
 
-to see it in action
+It works, it's just missing lots of documentation and tests, which
+are coming real soon now...
 
