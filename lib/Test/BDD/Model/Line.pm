@@ -17,7 +17,7 @@ sub content { return _strip( $_[0]->raw_content ) }
 
 sub content_remove_indentation {
 	my ( $self, $indent ) = @_;
-	$indent = ' ' x ( 2 * $indent );
+	$indent = ' ' x $indent;
 	my $content = $self->raw_content;
 	$content =~ s/^$indent//;
 	return $content;

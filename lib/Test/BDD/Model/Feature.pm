@@ -8,7 +8,6 @@ has 'satisfaction' => ( is => 'rw', isa => 'ArrayRef[Test::BDD::Model::Line]',
 	default => sub {[]});
 
 has 'document'   => ( is => 'rw', isa => 'Test::BDD::Model::Document' );
-has 'background' => ( is => 'rw', isa => 'Test::BDD::Model::Scenario' );
 has 'scenarios'  => ( is => 'rw', isa => 'ArrayRef[Test::BDD::Model::Scenario]',
 	default => sub {[]} );
 

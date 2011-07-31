@@ -1,23 +1,25 @@
 Alpha Release Path:
-    - Build a Gherkin corpus
-    - Make parser work on newlines not indentation
-    - Document Calculator example code
-    - Name changes
-    - Add a viable test script
-    - Add dist stuff
+
+    - Add dist stuff                                    (0.5h)
+    - Name changes                                      (0.5h)
+
+    - Document Calculator example code                  (1h)
+    - Add a viable test script                          (0.5h)
+    - Add some reasonable internal tests                (3h)
 
     - Document
-        - Document Test::Pherkin as an introduction
-        - Add a Tutorial around the core
-        - Document Writing Test Steps
-        - Document all the sub modules
+        - Document Test::Pherkin as an introduction     (1h)
+        - Add a Tutorial around the core                (1h)
+        - Document Writing Test Steps                   (1h)
+        - Document all the sub modules                  (1h)
 
     + Add an example based on a Perl core module
     + Add a pretty-print pherkin
     + Add 'When' as a command
     + Skip tests with no matcher
     + Proper eval of steps
-
+    + Build a Gherkin corpus
+    + Make parser work on newlines not indentation      (1h)
 
 
 Future:
@@ -27,12 +29,6 @@ Future:
 	- Quoting in tables is broken
 
 	DUNNO:
-	- Funny indenting? https://github.com/cucumber/cucumber/wiki/Given-When-Then
 	- Unicode support is probably ropey
 
-	Nice to have:
-	*- Coloured output harness
-	*- TAP harness
-	*- pherkin
-	!*- Sample prove test
-	*- Fully feature calculator example
+    The parser is over-complicated because of how it started life - simplify

@@ -57,31 +57,25 @@ sub construct {
 	my ( $self, $document ) = @_;
 
 	my $feature = Test::BDD::Model::Feature->new({ document => $document });
-    my @lines = $self->remove_next_blanks( @{ $document->lines } );
 
 	$self->extract_scenarios(
 	$self->extract_conditions_of_satisfaction(
 	$self->extract_feature_name(
-        $feature, @lines
+		$feature, @{ $document->lines }
 	)));
 
 	return $feature;
-}
-
-sub remove_next_blanks {
-    my ( $self, @lines ) = @_;
-    while ($lines[0] && $lines[0]->is_blank) {
-        shift( @lines );
-    }
-    return @lines;
 }
 
 sub extract_feature_name {
 	my ( $self, $feature, @lines ) = @_;
 
 	while ( my $line = shift( @lines ) ) {
-		next if $line->is_comment;
-		last if $line->is_blank;
+		next if $line->is_comment || $line->is_blank;
+
+		# We shouldn't have any indented lines
+		ouch 'parse_error', "Inconsistent indentation (not 0)", $line
+			unless $line->indent == 0;
 
 		if ( $line->content =~ m/^Feature: (.+)/ ) {
 			$feature->name( $1 );
@@ -92,15 +86,18 @@ sub extract_feature_name {
 		}
 	}
 
-	return $feature, $self->remove_next_blanks( @lines );
+	return $feature, @lines;
 }
 
 sub extract_conditions_of_satisfaction {
 	my ( $self, $feature, @lines ) = @_;
 
 	while ( my $line = shift( @lines ) ) {
-		next if $line->is_comment;
-		last if $line->is_blank;
+		next if $line->is_comment || $line->is_blank;
+
+		# We shouldn't have any lines that aren't indented 2 spaces
+		ouch 'parse_error', "Inconsistent indentation (not 2)", $line
+			unless $line->indent == 2;
 
 		if ( $line->content =~ m/^(Background|Scenario):/ ) {
 			unshift( @lines, $line );
@@ -110,7 +107,7 @@ sub extract_conditions_of_satisfaction {
 		}
 	}
 
-	return $feature, $self->remove_next_blanks( @lines );
+	return $feature, @lines;
 }
 
 sub extract_scenarios {
@@ -118,8 +115,11 @@ sub extract_scenarios {
 	my $scenarios = 0;
 
 	while ( my $line = shift( @lines ) ) {
-		next if $line->is_comment;
-		last if $line->is_blank;
+		next if $line->is_comment || $line->is_blank;
+
+		# We shouldn't have any lines that aren't indented 2 spaces
+		ouch 'parse_error', "Inconsistent indentation (not 2)", $line
+			unless $line->indent == 2;
 
 		if ( $line->content =~ m/^(Background|Scenario)(?: Outline)?: ?(.+)?/ ) {
 			my ( $type, $name ) = ( $1, $2 );
@@ -146,7 +146,7 @@ sub extract_scenarios {
 		}
 	}
 
-	return $feature, $self->remove_next_blanks( @lines );
+	return $feature, @lines;
 }
 
 sub extract_steps {
@@ -155,8 +155,14 @@ sub extract_steps {
 	my $last_verb = 'Given';
 
 	while ( my $line = shift( @lines ) ) {
-		next if $line->is_comment;
-		last if $line->is_blank;
+		next if $line->is_comment || $line->is_blank;
+
+		# Step back to parsing scenarios if needed
+		return( $line, @lines ) if $line->indent == 2;
+
+		# We shouldn't have any lines that aren't indented 4 spaces
+		ouch 'parse_error', "Inconsistent indentation (not 4)", $line
+			unless $line->indent == 4;
 
 		# Conventional step?
 		if ( $line->content =~ m/^(Given|And|When|Then|But) (.+)/ ) {
@@ -179,48 +185,60 @@ sub extract_steps {
 
 		# Outline data block...
 		} elsif ( $line->content =~ m/^Examples:$/ ) {
-			return $self->extract_table( 6, $scenario,
-			    $self->remove_next_blanks( @lines ));
+			return $self->extract_table( 6, $scenario, @lines );
 		} else {
-		    warn $line->content;
 			ouch 'parse_error', "Malformed step line", $line;
 		}
 	}
 
-	return $self->remove_next_blanks( @lines );
+	return @lines;
 }
 
 sub extract_step_data {
 	my ( $self, $feature, $scenario, $step, @lines ) = @_;
-    return unless @lines;
 
-    if ( $lines[0]->content eq '"""' ) {
-		return $self->extract_multiline_string(
-		    $feature, $scenario, $step, @lines );
-    } elsif ( $lines[0]->content =~ m/^\s*\|/ ) {
-        return $self->extract_table( 6, $step, @lines );
-    } else {
-        return @lines;
-    }
+	while ( my $line = shift( @lines ) ) {
+		next if $line->is_comment;
+		return @lines if $line->is_blank;
 
+		# Step back as required
+		return ($line, @lines) if $line->indent == 4 or $line->indent == 2;
+
+		# We shouldn't have any lines that aren't indented 6 spaces
+		ouch 'parse_error', "Inconsistent indentation (not 6)", $line
+			unless $line->indent == 6;
+
+		if ( $line->content eq '"""' ) {
+			return $self->extract_multiline_string(
+				$feature, $scenario, $step, @lines );
+		} elsif ( $line->content =~ m/^\s*\|/ ) {
+			return $self->extract_table( 6, $step, $line, @lines );
+		} else {
+			ouch 'parse_error', "Malformed step argument", $line;
+		}
+	}
+
+	return;
 }
 
 sub extract_multiline_string {
 	my ( $self, $feature, $scenario, $step, @lines ) = @_;
 
 	my $data = '';
-    my $start = shift( @lines );
-    my $indent = $start->indent;
 
 	# Check we still have the minimum indentation
 	while ( my $line = shift( @lines ) ) {
+		ouch 'parse_error', "Unterminated multi-line string", $line
+			unless $line->indent >= 6 or $line->is_blank or $line->is_comment;
 
 		if ( $line->content eq '"""' ) {
+			ouch 'parse_error', "Inconsistent indentation (not 6)", $line
+				unless $line->indent == 6;
 			$step->data( $data );
-			return $self->remove_next_blanks( @lines );
+			return @lines;
 		}
 
-		my $content = $line->content_remove_indentation( $indent );
+		my $content = $line->content_remove_indentation( 3 );
 		# Unescape it
 		$content =~ s/\\(.)/$1/g;
 		$content .= "\n";
@@ -238,9 +256,19 @@ sub extract_table {
     $target->data($data);
 
 	while ( my $line = shift( @lines ) ) {
-		next if $line->is_comment;
-		return $self->remove_next_blanks( @lines ) if $line->is_blank;
-		return ($line, @lines) if index( $line->content, '|' );
+		next if $line->is_comment || $line->is_blank;
+		return @lines if $line->is_blank;
+
+		# Anything smaller than our table, get rid of
+		return( $line, @lines ) if $line->indent < $indent;
+
+		# Anything bigger than our table, complain about
+		ouch 'parse_error', "Inconsistent indentation (not 6)", $line
+			unless $line->indent == 6;
+
+		# Not a | starting the line? That's bad...
+		ouch 'parse_error', "Malformed table row", $line
+			unless $line->content =~ m/^\s*\|/;
 
 		my @rows = $self->_pipe_array( $line->content );
 
