@@ -30,12 +30,18 @@ sub scenario_done { note ""; }
 
 sub step_done {
     my ($self, $context, $tb_hash) = @_;
-    my $step_name = "$si" . ucfirst($context->step->verb_original) .
-        ' ' . $context->text;
 
-    my $output = ${ $tb_hash->{'output'} };
-    ok( $tb_hash->{'builder'}->is_passing, $step_name ) ||
-        diag( $output );
+    my $step_name = $si . ucfirst($context->step->verb_original) . ' ' .
+        $context->text;
+
+    if ( $context->stash->{'step'}->{'notfound'} ) {
+        TODO: { todo_skip $step_name, 1 };
+    } elsif ( $tb_hash->{'builder'}->is_passing ) {
+        pass( $step_name );
+    } else {
+        fail( $step_name );
+        diag( ${$tb_hash->{'output'}} );
+    }
 }
 
 1;

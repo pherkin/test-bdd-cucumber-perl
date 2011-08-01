@@ -8,6 +8,13 @@ Test::BDD::Cucumber - Feature-complete Cucumber-style testing in Perl
 
 A sane and complete Cucumber implementation in Perl
 
+=head1 WARNING
+
+This is beta software, at best. The interface is unlikely to undergo major
+incompatible changes, but it's certainly possible. Do have a read of the
+B<Bugs and Missing> section below so you're not surprised when these things
+don't work.
+
 =head1 NEXT STEPS
 
 If you are B<completely new to Cucumber>, you'd get a pretty overview from
@@ -34,7 +41,7 @@ in the very near future:
 
 =item * Localization
 
-=item * Transforms
+=item * Step Argument Transforms
 
 =item * Quoting in tables is broken
 
@@ -45,14 +52,6 @@ in the very near future:
 =head1 CODE
 
 On Github, of course: L<https://github.com/sheriff/test-bdd-cucumber-perl>.
-
-=head1 AUTHOR
-
-Peter Sergeant - L<pete@clueball.com>
-
-=head1 LICENSE ETC
-
-Copyright 2011 Peter Sergeant. Released under the same terms as Perl itself.
 
 =cut
 

@@ -3,17 +3,15 @@
 use strict;
 use warnings;
 
-use File::Slurp;
-
 use Test::More;
-use Test::BDD::Cucumber::Parser;
-use Test::BDD::Cucumber::Executor;
+use Test::BDD::Cucumber::Loader;
+use Test::BDD::Cucumber::Harness::TestBuilder;
 
-my $feature = Test::BDD::Cucumber::Parser->parse_file(
-	't/data/features/basic_parse.feature' );
+my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load(
+    $ARGV[0] || './features/' );
+my $harness = Test::BDD::Cucumber::Harness::TestBuilder->new();
 
-my $executor = Test::BDD::Cucumber::Executor->new();
+Test::More->builder->skip_all("No feature files found") unless @features;
+$executor->execute( $_, $harness ) for @features;
 
-$executor->add_steps();
-$executor->execute( $feature );
-
+done_testing;

@@ -1,13 +1,9 @@
 #!/usr/bin/env perl
 
+# See App::pherkin for documentation
 use strict;
 use warnings;
 use FindBin::libs;
 
-use Test::BDD::Cucumber::Loader;
-use Test::BDD::Cucumber::Harness::TermColor;
-
-my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load( $ARGV[0] );
-my $harness  = Test::BDD::Cucumber::Harness::TermColor->new();
-
-$executor->execute( $_, $harness ) for @features;
+use App::pherkin;
+App::pherkin->run( @ARGV );
