@@ -6,17 +6,32 @@ Alpha Release Path:
         - Add Copyright
 
     - Document both pieces of example code
-    - Add an example POD test script
     - Add some reasonable internal tests                (3h)
 
     - Test::BDD::Cucumber::Manual::Steps
     - Test::BDD::Cucumber::Manual::Integration
     - Test::BDD::Cucumber::Manual::Architecture
-    - App::pherkin
-    - Make sure all the internal links work
 
-    - Pass against https://github.com/cucumber/cucumber-features
+    - lib/Test/BDD/Cucumber/Executor.pm
+    - lib/Test/BDD/Cucumber/Harness/TermColor.pm
+    - lib/Test/BDD/Cucumber/Harness/TestBuilder.pm
+    - lib/Test/BDD/Cucumber/Harness.pm
+    - lib/Test/BDD/Cucumber/Loader.pm
 
+    - lib/Test/BDD/Cucumber/Model/Document.pm
+    - lib/Test/BDD/Cucumber/Model/Feature.pm
+    - lib/Test/BDD/Cucumber/Model/Line.pm
+    - lib/Test/BDD/Cucumber/Model/Scenario.pm
+    - lib/Test/BDD/Cucumber/Model/Step.pm
+
+
+    + Make sure all the internal links work
+    + lib/Test/BDD/Cucumber/Parser.pm
+    + lib/Test/BDD/Cucumber/StepContext.pm
+    + lib/Test/BDD/Cucumber/StepFile.pm
+    + lib/Test/BDD/Cucumber/Util.pm
+    + Add an example test script
+    + App::pherkin
     + Test::BDD::Cucumber::Manual::Tutorial
     + Add dist stuff                                    (0.5h)
     + Name changes                                      (0.5h)
@@ -36,5 +51,6 @@ Future:
 	- Quoting in tables is broken
 	- Placeholders in Pystrings
 	- Unicode support is probably ropey
+    - Pass against https://github.com/cucumber/cucumber-features
 
     The parser is over-complicated because of how it started life - simplify

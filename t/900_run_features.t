@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use FindBin::libs;
 
 use Test::More;
 use Test::BDD::Cucumber::Loader;

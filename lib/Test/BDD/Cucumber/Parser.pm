@@ -2,11 +2,11 @@ package Test::BDD::Cucumber::Parser;
 
 =head1 NAME
 
-Test::BDD::Cucumber::Parser - Parse Gherkin feature files
+Test::BDD::Cucumber::Parser - Parse Feature files
 
 =head1 DESCRIPTION
 
-Parse Gherking feature files in to a set of data classes
+Parse Feature files in to a set of data classes
 
 =head1 SYNOPSIS
 

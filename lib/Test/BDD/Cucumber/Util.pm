@@ -3,6 +3,31 @@ package Test::BDD::Cucumber::Util;
 use strict;
 use warnings;
 
+=head1 NAME
+
+Test::BDD::Cucumber::Util - Some functions used throughout the code
+
+=head1 DESCRIPTION
+
+Some functions used throughout the code
+
+=head1 FUNCTIONS
+
+=head2 bs_quote
+
+=head2 bs_unquote
+
+C<bs_quote()> "makes safe" strings with backslashed characters in it, so other
+operations can be done on them. C<bs_unquote> goes the other way.
+
+ $string = "foo \<bar\> <baz>";
+ $string = bs_quote( $string );
+ $string =~ s/<([^>]+)>/"$1"/g;
+ $string = bs_unquote( $string );
+ $string eq 'foo <bar> "baz"';
+
+=cut
+
 my $marker_start = ';;;TEST_BDD_TEMP_MARKER_OPEN;;;';
 my $marker_end   = ';;;TEST_BDD_TEMP_MARKER_END;;;';
 
