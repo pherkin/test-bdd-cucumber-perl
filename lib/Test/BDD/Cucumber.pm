@@ -13,7 +13,7 @@ A sane and complete Cucumber implementation in Perl
 If you are B<completely new to Cucumber>, you'd get a pretty overview from
 reading our short and crunchy L<Tutorial|Test::BDD::Cucumber::Manual::Tutorial>.
 
-If you B<already understand Cucumber>, and just want to get started> then you
+If you B<already understand Cucumber>, and just want to get started then you
 should read the L<Step-writing quick-start
 guide|Test::BDD::Cucumber::Manual::Steps>, the documentation for our
 command-line tool L<App::Pherkin>, and L<How to integrate with
@@ -37,6 +37,8 @@ in the very near future:
 =item * Transforms
 
 =item * Quoting in tables is broken
+
+=item * Placeholders in pystrings is broken
 
 =back
 

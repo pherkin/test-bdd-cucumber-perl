@@ -174,6 +174,87 @@ expect, C<feature> is available to all step definitions that are being executed
 as part of a feature, and C<scenario> is available to all steps that are being
 executed as part of a feature.
 
+The context is the single argument that gets passed to each step, and it
+contains evertything that step should need to execute. We'll be looking at some
+of the methods you can call against it as we look at other steps, and you can
+find complete documentation for it here: L<Test::Builder::StepContext>.
+
+This scenario also introduce several ways of starting a step, I<Given>, I<When>,
+and I<Then>, as well as I<And>. These are used to organize steps by type, with
+I<Given> tending to describe setup steps, I<When> describing the key actions
+that you're testing, and I<Then> describing the outputs you're looking for. You
+can find more on this here:
+L<https://github.com/cucumber/cucumber/wiki/Given-When-Then>.
+
+A step definition you've declared with I<Given> B<will not> match a step
+starting with B<Then>. You can use the keyword I<Step> to declare general
+matching steps in your step definition files, although it's considered bad
+practice.
+
+Finally, the keywords I<And> and I<But> are simply replaced with the verb on
+the line before them.
+
+=head1 Scenario Outlines
+
+  Scenario: Check SHA-1
+    Given a Digest SHA-1 object
+    When I've added "<data>" to the object
+    Then the hex output is "<output>"
+    Examples:
+      | data | output   |
+      | foo  | 0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33 |
+      | bar  | 62cdb7020ff920e5aa642c3d4066950dd1f01f4d |
+      | baz  | bbe960a25ea311d21d40669e93df2003ba9b90a2 |
+
+The next scenario adds one of the three ways you can provide structured data to
+your steps, using placeholders and a table. This scenario is run three times,
+one for each table row, and with the C< <placeholders> > being replaced by the
+appropriate row's column. These are called L<Scenario
+Outlines|https://github.com/cucumber/cucumber/wiki/Scenario-outlines>.
+
+=head1 Multiline Step Arguments
+
+  Scenario: MD5 longer data
+    Given a Digest MD5 object
+    When I've added the following to the object
+      """
+      Here is a chunk of text that works a bit like a HereDoc. We'll split
+      off indenting space from the lines in it up to the indentation of the
+      first \"\"\"
+      """
+    Then the hex output is "75ad9f578e43b863590fae52d5d19ce6"
+
+While before we were looking at structured data on a Scenario level, we can also
+provide it on a Step level, in two ways. Firstly, we can provide multi-line
+strings, as above, using a feature that is syntactically similar to
+C<pystring>s, and conceptually similar to HEREDOCs. The contents of the string
+will be available to the step definition via the C<data()> method of the
+I<context>:
+
+ When "I've added the following to the object", func ($c) {
+    $c->stash->{'scenario'}->{'object'}->add( $c->data );
+ };
+
+While we don't have an example of it here, you can also provide tables to your
+steps, which will also be available via C<data()>:
+
+ Scenario: Sort Employees
+   Given a set of employees
+     | name  | wage   | hair color |
+     | Peter | 10,000 | brown      |
+     | John  | 20,000 | blond      |
+     | Joan  | 30,000 | green      |
+
+You can find out more about these features in the Cucumber documentation here:
+L<https://github.com/cucumber/cucumber/wiki/Multiline-Step-Arguments>.
+
+=head1 Next Steps...
+
+That's the tutorial done! You can find out more about writing steps in
+L<Test::BDD::Cucumber::Manual::Steps>, the documentation for our simple
+command-line tool in L<App::pherkin>, and how to integrate with L<Test::Builder>
+in L<Test::BDD::Cucumber::Manual::Integration>.
+
 =cut
 
 1;
