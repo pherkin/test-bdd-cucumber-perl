@@ -1,5 +1,16 @@
 package Test::BDD::Cucumber::Executor;
 
+=head1 NAME
+
+Test::BDD::Cucumber::Executor - Run through Feature and Harness objects
+
+=head1 DESCRIPTION
+
+The Executor runs through Features, matching up the Step Lines with Step
+Definitions, and reporting on progress through the passed-in harness.
+
+=cut
+
 use Moose;
 use FindBin::libs;
 use Storable qw(dclone);
@@ -8,8 +19,24 @@ use Test::Builder;
 use Test::BDD::Cucumber::StepContext;
 use Test::BDD::Cucumber::Util;
 
+=head1 METHODS
+
+=head2 steps
+
+=head2 add_steps
+
+The attributes C<steps> is a hashref of arrayrefs, storing steps by their Verb.
+C<add_steps()> takes step definitions of the item list form:
+
+ (
+  [ Given => qr//, sub {} ],
+ ),
+
+and populates C<steps> with them.
+
+=cut
+
 has 'steps'          => ( is => 'rw', isa => 'HashRef', default => sub {{}} );
-has 'executor_stash' => ( is => 'rw', isa => 'HashRef', default => sub {{}} );
 
 sub add_steps {
     my ( $self, @steps ) = @_;
@@ -27,6 +54,14 @@ sub add_steps {
         push( @{ $self->{'steps'}->{$verb} }, [ $match, $code ] );
     }
 }
+
+=head2 execute
+
+Execute accepts a feature and a harness object, and creates
+L<Test::BDD::Cucumber::StepContext> for each step in each scenario, passing them on to
+C<dispatch()>
+
+=cut
 
 sub execute {
     my ( $self, $feature, $harness ) = @_;
@@ -84,6 +119,13 @@ sub execute {
     $harness->feature_done( $feature );
 }
 
+=head2 add_place_holders
+
+Accepts a text string and a hashref, and replaces C< <placeholders> > with the
+values in the hashref, returning a string.
+
+=cut
+
 sub add_placeholders {
     my ( $self, $text, $dataset ) = @_;
     my $quoted_text = Test::BDD::Cucumber::Util::bs_quote( $text );
@@ -93,6 +135,14 @@ sub add_placeholders {
     /eg;
     return Test::BDD::Cucumber::Util::bs_unquote( $quoted_text );
 }
+
+=head2 dispatch
+
+Accepts a L<Test::BDD::Cucumber::StepContext> object, and searches through
+the steps that have been added to the executor object, executing against the
+first matching one.
+
+=cut
 
 sub dispatch {
     my ( $self, $context ) = @_;
@@ -148,11 +198,6 @@ sub dispatch {
             return;
         }
     }
-}
-
-sub setup {
-    my $self = shift;
-    return;
 }
 
 1;

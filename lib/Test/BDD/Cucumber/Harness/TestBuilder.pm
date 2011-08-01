@@ -1,5 +1,16 @@
 package Test::BDD::Cucumber::Harness::TestBuilder;
 
+=head1 NAME
+
+Test::BDD::Cucumber::Harness::TestBuilder - Pipes step output via Test::Builder
+
+=head1 DESCRIPTION
+
+A L<Test::BDD::Cucumber::Harness> subclass whose output is sent to
+L<Test::Builder>.
+
+=cut
+
 use strict;
 use warnings;
 use Moose;

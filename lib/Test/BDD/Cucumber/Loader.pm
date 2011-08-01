@@ -1,5 +1,23 @@
 package Test::BDD::Cucumber::Loader;
 
+=head1 NAME
+
+Test::BDD::Cucumber::Loader - Simplify loading of Step Definition and feature
+files
+
+=head1 DESCRIPTION
+
+Makes loading Step Definition files and Feature files a breeze...
+
+=head1 METHODS
+
+=head2 load
+
+Accepts a path, and returns a L<Test::BDD::Executor> object with the Step
+Definition files loaded, and a list of L<Test::BDD::Model::Feature> objects.
+
+=cut
+
 use strict;
 use warnings;
 

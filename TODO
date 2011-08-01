@@ -12,19 +12,17 @@ Alpha Release Path:
     - Test::BDD::Cucumber::Manual::Integration
     - Test::BDD::Cucumber::Manual::Architecture
 
-    - lib/Test/BDD/Cucumber/Executor.pm
-    - lib/Test/BDD/Cucumber/Harness/TermColor.pm
-    - lib/Test/BDD/Cucumber/Harness/TestBuilder.pm
-    - lib/Test/BDD/Cucumber/Harness.pm
-    - lib/Test/BDD/Cucumber/Loader.pm
-
-    - lib/Test/BDD/Cucumber/Model/Document.pm
-    - lib/Test/BDD/Cucumber/Model/Feature.pm
-    - lib/Test/BDD/Cucumber/Model/Line.pm
     - lib/Test/BDD/Cucumber/Model/Scenario.pm
     - lib/Test/BDD/Cucumber/Model/Step.pm
 
-
+    + lib/Test/BDD/Cucumber/Model/Document.pm
+    + lib/Test/BDD/Cucumber/Model/Feature.pm
+    + lib/Test/BDD/Cucumber/Model/Line.pm
+    + lib/Test/BDD/Cucumber/Loader.pm
+    + lib/Test/BDD/Cucumber/Harness/TermColor.pm
+    + lib/Test/BDD/Cucumber/Harness/TestBuilder.pm
+    + lib/Test/BDD/Cucumber/Harness.pm
+    + lib/Test/BDD/Cucumber/Executor.pm
     + Make sure all the internal links work
     + lib/Test/BDD/Cucumber/Parser.pm
     + lib/Test/BDD/Cucumber/StepContext.pm

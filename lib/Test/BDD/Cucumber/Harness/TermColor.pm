@@ -1,5 +1,16 @@
 package Test::BDD::Cucumber::Harness::TermColor;
 
+=head1 NAME
+
+Test::BDD::Cucumber::Harness::TermColor - Prints colorized text to the screen
+
+=head1 DESCRIPTION
+
+A L<Test::BDD::Cucumber::Harness> subclass that prints test output, colorized,
+to the terminal.
+
+=cut
+
 use strict;
 use warnings;
 use Moose;
