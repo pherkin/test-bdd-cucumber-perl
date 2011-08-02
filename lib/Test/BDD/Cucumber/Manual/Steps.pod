@@ -1,0 +1,83 @@
+package Test::BDD::Cucumber::Manual::Steps;
+
+=head1 NAME
+
+Test::BDD::Cucumber::Manual::Steps - How to write Step Definitions
+
+=head1 INTRODUCTION
+
+The 'code' part of a Cucumber test-suite are the Step Definition files which
+match steps, and execute code based on them. This document aims to give you a
+quick overview of those.
+
+=head1 STARTING OFF
+
+Most of your step files will want to start something like:
+
+ #!perl
+
+ use strict;
+ use warnings;
+
+ use Test::More;
+ use Test::BDD::Cucumber::StepFile;
+ use Method::Signatures;
+
+The fake shebang line gives some hints to syntax highlighters, and
+C<use strict;> and C<use warnings;> are hopefully fairly standard at this point.
+
+Most of I<my> Step Definition files make use of L<Test::More>, but you can use
+any L<Test::Builder> based testing module. Your step will pass its pass or fail
+status back to its harness via L<Test::Builder> - B<each step is run as if it
+were its own tiny test file, with its own localized L<Test::Builder> object.
+
+L<Test::BDD::Cucumber::StepFile> gives us the functions C<Given()>, C<When()>,
+C<Then()> and C<Step()>. These pass the step definitions to the class loading
+the step definitions, and specify which Step Verb should be used - C<Step()>
+matches any.
+
+L<Method::Signatures> allows us to use a small amount of syntactic sugar for the
+step definitions, and gives us the C<func()> keyword you'll see in a minute.
+
+=head1 STEP DEFINITIONS
+
+ Given qr/I have (\d+)/, func ($c) {
+    $c->stash->{'scenario'}->{'count'} += $1;
+ }
+
+ When "The count is an integer", func ($c) {
+    $c->stash->{'scenario'}->{'count'} =
+        int( $c->stash->{'scenario'}->{'count'} );
+ }
+
+ Then qr/The count should be (\d+)/, func ($c) {
+    is( $c->stash->{'scenario'}->{'count'}, $c->matches->[0], "Count matches" );
+ }
+
+Each of the exported verb functions accept a regular expression (or a string
+that's used as one), and a coderef. The coderef is passed a single argument,
+the L<Test::BDD::Cucumber::StepContext> object. To make this a little prettier,
+we use L<Method::Signatures>'s C<func()> keyword so we're not continually
+typing: C<sub { my $c = shift; ... >.
+
+We will evaluate the regex immediately before we execute the coderef, so you
+can use $1, $2, $etc, although these are also available via the StepContext.
+
+=head1 NEXT STEPS
+
+How step files are loaded is discussed in
+L<Test::BDD::Cucumber::Manual::Architecture>, but isn't of much interest. Of
+far more interest should be seeing what you have available in
+L<Test::BDD::Cucumber::StepContext>...
+
+=head1 AUTHOR
+
+Peter Sergeant C<pete@clueball.com>
+
+=head1 LICENSE
+
+Copyright 2011, Peter Sergeant; Licensed under the same terms as Perl
+
+=cut
+
+1;
