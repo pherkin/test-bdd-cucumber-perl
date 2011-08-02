@@ -29,7 +29,7 @@ C<use strict;> and C<use warnings;> are hopefully fairly standard at this point.
 Most of I<my> Step Definition files make use of L<Test::More>, but you can use
 any L<Test::Builder> based testing module. Your step will pass its pass or fail
 status back to its harness via L<Test::Builder> - B<each step is run as if it
-were its own tiny test file, with its own localized L<Test::Builder> object.
+were its own tiny test file>, with its own localized L<Test::Builder> object.
 
 L<Test::BDD::Cucumber::StepFile> gives us the functions C<Given()>, C<When()>,
 C<Then()> and C<Step()>. These pass the step definitions to the class loading

@@ -119,7 +119,7 @@ sub execute {
     $harness->feature_done( $feature );
 }
 
-=head2 add_place_holders
+=head2 add_placeholders
 
 Accepts a text string and a hashref, and replaces C< <placeholders> > with the
 values in the hashref, returning a string.

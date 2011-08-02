@@ -32,6 +32,16 @@ instead.
 use Test::BDD::Cucumber::Loader;
 use Test::BDD::Cucumber::Harness::TermColor;
 
+=head1 METHODS
+
+=head2 run
+
+The C<App::pherkin> class, which is what the C<pherkin> command uses, makes
+use of the C<run()> method, which accepts currently a single path as a string,
+or nothing.
+
+=cut
+
 sub run {
     my ( $class, @arguments ) = @_;
     my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load(

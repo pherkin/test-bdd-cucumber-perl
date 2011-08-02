@@ -40,35 +40,35 @@ use Test::BDD::Cucumber::Model::Step;
 
 sub parse_string {
 	my ( $self, $string ) = @_;
-	return $self->construct( Test::BDD::Cucumber::Model::Document->new({
+	return $self->_construct( Test::BDD::Cucumber::Model::Document->new({
 		content => $string
 	}) );
 }
 
 sub parse_file   {
 	my ( $self, $string ) = @_;
-	return $self->construct( Test::BDD::Cucumber::Model::Document->new({
+	return $self->_construct( Test::BDD::Cucumber::Model::Document->new({
 		content  => scalar( read_file $string ),
 		filename => $string
 	}) );
 }
 
-sub construct {
+sub _construct {
 	my ( $self, $document ) = @_;
 
 	my $feature = Test::BDD::Cucumber::Model::Feature->new({ document => $document });
-    my @lines = $self->remove_next_blanks( @{ $document->lines } );
+    my @lines = $self->_remove_next_blanks( @{ $document->lines } );
 
-	$self->extract_scenarios(
-	$self->extract_conditions_of_satisfaction(
-	$self->extract_feature_name(
+	$self->_extract_scenarios(
+	$self->_extract_conditions_of_satisfaction(
+	$self->_extract_feature_name(
         $feature, @lines
 	)));
 
 	return $feature;
 }
 
-sub remove_next_blanks {
+sub _remove_next_blanks {
     my ( $self, @lines ) = @_;
     while ($lines[0] && $lines[0]->is_blank) {
         shift( @lines );
@@ -76,7 +76,7 @@ sub remove_next_blanks {
     return @lines;
 }
 
-sub extract_feature_name {
+sub _extract_feature_name {
 	my ( $self, $feature, @lines ) = @_;
 
 	while ( my $line = shift( @lines ) ) {
@@ -92,10 +92,10 @@ sub extract_feature_name {
 		}
 	}
 
-	return $feature, $self->remove_next_blanks( @lines );
+	return $feature, $self->_remove_next_blanks( @lines );
 }
 
-sub extract_conditions_of_satisfaction {
+sub _extract_conditions_of_satisfaction {
 	my ( $self, $feature, @lines ) = @_;
 
 	while ( my $line = shift( @lines ) ) {
@@ -110,10 +110,10 @@ sub extract_conditions_of_satisfaction {
 		}
 	}
 
-	return $feature, $self->remove_next_blanks( @lines );
+	return $feature, $self->_remove_next_blanks( @lines );
 }
 
-sub extract_scenarios {
+sub _extract_scenarios {
 	my ( $self, $feature, @lines ) = @_;
 	my $scenarios = 0;
 
@@ -138,7 +138,7 @@ sub extract_scenarios {
 			});
 
 			# Attempt to populate it
-			@lines = $self->extract_steps( $feature, $scenario, @lines );
+			@lines = $self->_extract_steps( $feature, $scenario, @lines );
 
 			push( @{ $feature->scenarios }, $scenario );
 		} else {
@@ -146,10 +146,10 @@ sub extract_scenarios {
 		}
 	}
 
-	return $feature, $self->remove_next_blanks( @lines );
+	return $feature, $self->_remove_next_blanks( @lines );
 }
 
-sub extract_steps {
+sub _extract_steps {
 	my ( $self, $feature, $scenario, @lines ) = @_;
 
 	my $last_verb = 'Given';
@@ -172,40 +172,40 @@ sub extract_steps {
 				verb_original => $original_verb,
 			});
 
-			@lines = $self->extract_step_data(
+			@lines = $self->_extract_step_data(
 				$feature, $scenario, $step, @lines );
 
 			push( @{ $scenario->steps }, $step );
 
 		# Outline data block...
 		} elsif ( $line->content =~ m/^Examples:$/ ) {
-			return $self->extract_table( 6, $scenario,
-			    $self->remove_next_blanks( @lines ));
+			return $self->_extract_table( 6, $scenario,
+			    $self->_remove_next_blanks( @lines ));
 		} else {
 		    warn $line->content;
 			ouch 'parse_error', "Malformed step line", $line;
 		}
 	}
 
-	return $self->remove_next_blanks( @lines );
+	return $self->_remove_next_blanks( @lines );
 }
 
-sub extract_step_data {
+sub _extract_step_data {
 	my ( $self, $feature, $scenario, $step, @lines ) = @_;
     return unless @lines;
 
     if ( $lines[0]->content eq '"""' ) {
-		return $self->extract_multiline_string(
+		return $self->_extract_multiline_string(
 		    $feature, $scenario, $step, @lines );
     } elsif ( $lines[0]->content =~ m/^\s*\|/ ) {
-        return $self->extract_table( 6, $step, @lines );
+        return $self->_extract_table( 6, $step, @lines );
     } else {
         return @lines;
     }
 
 }
 
-sub extract_multiline_string {
+sub _extract_multiline_string {
 	my ( $self, $feature, $scenario, $step, @lines ) = @_;
 
 	my $data = '';
@@ -217,7 +217,7 @@ sub extract_multiline_string {
 
 		if ( $line->content eq '"""' ) {
 			$step->data( $data );
-			return $self->remove_next_blanks( @lines );
+			return $self->_remove_next_blanks( @lines );
 		}
 
 		my $content = $line->content_remove_indentation( $indent );
@@ -230,7 +230,7 @@ sub extract_multiline_string {
 	return;
 }
 
-sub extract_table {
+sub _extract_table {
 	my ( $self, $indent, $target, @lines ) = @_;
 	my @columns;
 
@@ -239,7 +239,7 @@ sub extract_table {
 
 	while ( my $line = shift( @lines ) ) {
 		next if $line->is_comment;
-		return $self->remove_next_blanks( @lines ) if $line->is_blank;
+		return $self->_remove_next_blanks( @lines ) if $line->is_blank;
 		return ($line, @lines) if index( $line->content, '|' );
 
 		my @rows = $self->_pipe_array( $line->content );

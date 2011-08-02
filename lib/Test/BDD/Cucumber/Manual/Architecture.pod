@@ -1,0 +1,7 @@
+package Test::BDD::Cucumber::Manual::Architecture;
+
+=head1 Test::BDD::Cucumber::Manual::Architecture - Coming Soon
+
+=cut
+
+1;

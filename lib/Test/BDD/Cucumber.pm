@@ -47,6 +47,8 @@ in the very near future:
 
 =item * Placeholders in pystrings is broken
 
+=item * Documentation is barely sufficient, rather than excellent :-/
+
 =back
 
 =head1 CODE

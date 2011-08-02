@@ -26,7 +26,7 @@ if ( $margin > 1 ) {
 
 sub feature {
     my ( $self, $feature ) = @_;
-    $self->display({
+    $self->_display({
         indent    => 0,
         color     => 'bright_white',
         text      => $feature->name,
@@ -43,7 +43,7 @@ sub scenario {
         "Background:" :
         "Scenario: " . color('bright_blue') . ($scenario->name || '' );
 
-    $self->display({
+    $self->_display({
         indent    => 2,
         color     => 'bright_white',
         text      => $text,
@@ -73,7 +73,7 @@ sub step_done {
 
     }
 
-    $self->display({
+    $self->_display({
         indent    => 4,
         color     => $color,
         text      => $context->step->verb . ' ' . $context->text,
@@ -84,7 +84,7 @@ sub step_done {
     });
 }
 
-sub display {
+sub _display {
     my ( $class, $options ) = @_;
     $options->{'indent'} += $margin;
 

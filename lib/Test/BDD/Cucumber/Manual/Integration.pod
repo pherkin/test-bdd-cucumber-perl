@@ -1,0 +1,7 @@
+package Test::BDD::Cucumber::Manual::Integration;
+
+=head1 Test::BDD::Cucumber::Manual::Integration - Coming Soon
+
+=cut
+
+1;
