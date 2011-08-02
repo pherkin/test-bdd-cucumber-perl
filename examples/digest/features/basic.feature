@@ -33,3 +33,4 @@ Feature: Simple tests of Digest.pm
       first \"\"\"
       """
     Then the hex output is "75ad9f578e43b863590fae52d5d19ce6"
+

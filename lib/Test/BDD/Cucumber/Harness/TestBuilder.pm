@@ -17,6 +17,7 @@ use Moose;
 use Test::More;
 
 extends 'Test::BDD::Cucumber::Harness';
+has 'fail_skip' => ( is => 'rw', isa => 'Bool', default => 0 );
 
 my $li = ' ' x 7;
 my $ni = ' ' x 4;
@@ -46,7 +47,11 @@ sub step_done {
         $context->text;
 
     if ( $context->stash->{'step'}->{'notfound'} ) {
-        TODO: { todo_skip $step_name, 1 };
+        if ( $self->fail_skip ) {
+            fail( "No matcher for: $step_name" );
+        } else {
+            TODO: { todo_skip $step_name, 1 };
+        }
     } elsif ( $tb_hash->{'builder'}->is_passing ) {
         pass( $step_name );
     } else {

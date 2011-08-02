@@ -5,16 +5,15 @@ Alpha Release Path:
         - Add Author
         - Add Copyright
 
-    - Document both pieces of example code
     - Add some reasonable internal tests                (3h)
 
     - Test::BDD::Cucumber::Manual::Steps
     - Test::BDD::Cucumber::Manual::Integration
     - Test::BDD::Cucumber::Manual::Architecture
 
-    - lib/Test/BDD/Cucumber/Model/Scenario.pm
-    - lib/Test/BDD/Cucumber/Model/Step.pm
-
+    + Document both pieces of example code
+    + lib/Test/BDD/Cucumber/Model/Scenario.pm
+    + lib/Test/BDD/Cucumber/Model/Step.pm
     + lib/Test/BDD/Cucumber/Model/Document.pm
     + lib/Test/BDD/Cucumber/Model/Feature.pm
     + lib/Test/BDD/Cucumber/Model/Line.pm
