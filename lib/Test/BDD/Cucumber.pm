@@ -53,6 +53,14 @@ in the very near future:
 
 On Github, of course: L<https://github.com/sheriff/test-bdd-cucumber-perl>.
 
+=head1 AUTHOR
+
+Peter Sergeant C<pete@clueball.com>
+
+=head1 LICENSE
+
+Copyright 2011, Peter Sergeant; Licensed under the same terms as Perl
+
 =cut
 
 1;

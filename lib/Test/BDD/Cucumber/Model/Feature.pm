@@ -56,4 +56,14 @@ constitute the test.
 has 'scenarios'  => ( is => 'rw', isa => 'ArrayRef[Test::BDD::Cucumber::Model::Scenario]',
 	default => sub {[]} );
 
+=head1 AUTHOR
+
+Peter Sergeant C<pete@clueball.com>
+
+=head1 LICENSE
+
+Copyright 2011, Peter Sergeant; Licensed under the same terms as Perl
+
+=cut
+
 1;

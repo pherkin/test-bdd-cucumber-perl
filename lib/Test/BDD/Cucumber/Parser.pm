@@ -273,4 +273,12 @@ L<Test::BDD::Cucumber> uses L<Ouch> for exception handling. Error originating in
 class tend to have a code of C<parse_error> and a L<Test::BDD::Cucumber::Model::Line>
 object for data.
 
+=head1 AUTHOR
 
+Peter Sergeant C<pete@clueball.com>
+
+=head1 LICENSE
+
+Copyright 2011, Peter Sergeant; Licensed under the same terms as Perl
+
+=cut

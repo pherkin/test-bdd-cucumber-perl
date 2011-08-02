@@ -83,4 +83,14 @@ C<$1>, C<$2> etc as appropriate.
 
 has 'matches'  => ( is => 'rw', isa => 'ArrayRef' );
 
+=head1 AUTHOR
+
+Peter Sergeant C<pete@clueball.com>
+
+=head1 LICENSE
+
+Copyright 2011, Peter Sergeant; Licensed under the same terms as Perl
+
+=cut
+
 1;
