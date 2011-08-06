@@ -5,7 +5,7 @@ Feature: Simple tests of Digest.pm
   In order to have confidence in it
 
   Background:
-    Given a usable Digest class
+    Given a usable "Digest" class
 
   Scenario: Check MD5
     Given a Digest MD5 object

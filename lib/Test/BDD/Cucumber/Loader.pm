@@ -2,8 +2,7 @@ package Test::BDD::Cucumber::Loader;
 
 =head1 NAME
 
-Test::BDD::Cucumber::Loader - Simplify loading of Step Definition and feature
-files
+Test::BDD::Cucumber::Loader - Simplify loading of Step Definition and feature files
 
 =head1 DESCRIPTION
 

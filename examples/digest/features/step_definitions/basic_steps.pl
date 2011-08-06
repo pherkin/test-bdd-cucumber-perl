@@ -7,7 +7,7 @@ use Test::More;
 use Test::BDD::Cucumber::StepFile;
 use Method::Signatures;
 
-Given qr/a usable (\S+) class/, func ($c) { use_ok( $1 ); };
+Given qr/a usable "(\w+)" class/, func ($c) { use_ok( $1 ); };
 Given qr/a Digest (\S+) object/, func ($c) {
     my $object = Digest->new($1);
     ok( $object, "Object created" );

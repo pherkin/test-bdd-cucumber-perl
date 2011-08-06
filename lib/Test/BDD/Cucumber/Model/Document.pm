@@ -5,8 +5,7 @@ use Test::BDD::Cucumber::Model::Line;
 
 =head1 NAME
 
-Test::BDD::Cucumber::Model::Document - Model to represent a feature file on disk
-or in memory
+Test::BDD::Cucumber::Model::Document - Model to represent a feature file on disk or in memory
 
 =head1 DESCRIPTION
 

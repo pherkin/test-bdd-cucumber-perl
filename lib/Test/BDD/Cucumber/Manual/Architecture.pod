@@ -1,6 +1,50 @@
 package Test::BDD::Cucumber::Manual::Architecture;
 
-=head1 Test::BDD::Cucumber::Manual::Architecture - Coming Soon
+=head1 NAME
+
+Test::BDD::Cucumber::Manual::Architecture - Structural Overview
+
+=head1 INTRODUCTION
+
+This short document exists to give you an idea how the different components of
+this distribution fit together.
+
+=head1 MODELS
+
+The core of a Cucumber-based test suite are the feature files and the step
+definitions files. By convention, these are saved under C</features/> and
+C</features/step_definitions/> respectively.
+
+The feature files are encapsulated by the classes in
+C<Test::BDD::Cucumber::Model>.
+
+                  one to one
+ TBCM::Feature<----------------->TBCM::Document
+      |                               |
+      +-------------------+           |
+      | has many          | has a     | has many
+      V                   |           V
+ TBCM::Scenario           +----->TBCM::Line
+      |                            ^  ^
+      +----------------------------+  |
+      | has many                      |
+      V                               |
+ TBCM::Step---------------------------+
+
+=head1 EXECUTOR
+
+We build up a L<Test::BDD::Executor> object, in to which we load the step
+definitions. We then pass this in a L<Test::BDD::Model::Feature> object, along
+with a L<Test::BDD::Model::Harness> object, which controls interaction with
+the outside world.
+
+=head1 AUTHOR
+
+Peter Sergeant C<pete@clueball.com>
+
+=head1 LICENSE
+
+Copyright 2011, Peter Sergeant; Licensed under the same terms as Perl
 
 =cut
 
