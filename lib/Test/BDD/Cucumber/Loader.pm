@@ -69,7 +69,7 @@ sub load {
             );
             ouch 'failed_feature_load', "Unable to load $file: $failure";
         }
-    } ( $file ? ($file) : File::Find::Rule
+    } ( $file ? ($file.'') : File::Find::Rule
         ->file()
         ->name( '*.feature' )
         ->in( $dir ) );
