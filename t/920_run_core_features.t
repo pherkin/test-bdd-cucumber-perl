@@ -5,6 +5,7 @@ use warnings;
 use FindBin::libs;
 
 use Test::More;
+use Test::More skip_all => "Not quite ready yet";
 use Test::BDD::Cucumber::Loader;
 use Test::BDD::Cucumber::Harness::TestBuilder;
 
@@ -12,7 +13,12 @@ use Test::BDD::Cucumber::Harness::TestBuilder;
 Test::More->builder->skip_all('cucumber-features has not been checked out')
 	unless -e 't/cucumber_core_features/cucumber-features/';
 
-my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load( 't/cucumber_core_features/' );
+my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load(
+	't/cucumber_core_features/' );
+
+# Just core for now
+@features = grep { $_->name eq 'Core: Scenarios, Steps, Mappings' } @features;
+
 my $harness = Test::BDD::Cucumber::Harness::TestBuilder->new({
     fail_skip => 1
 });

@@ -222,6 +222,7 @@ sub _extract_multiline_string {
 		my $content = $line->content_remove_indentation( $indent );
 		# Unescape it
 		$content =~ s/\\(.)/$1/g;
+		push( @{ $step->data_as_strings }, $content );
 		$content .= "\n";
 		$data .= $content;
 	}
@@ -242,6 +243,11 @@ sub _extract_table {
 		return ($line, @lines) if index( $line->content, '|' );
 
 		my @rows = $self->_pipe_array( $line->content );
+		if ( $target->can('data_as_strings') ) {
+			my $t_content = $line->content;
+			$t_content =~ s/^\s+//;
+			push( @{ $target->data_as_strings }, $t_content );
+		}
 
 		if ( @columns ) {
 			ouch 'parse_error', "Inconsistent number of rows in table", $line

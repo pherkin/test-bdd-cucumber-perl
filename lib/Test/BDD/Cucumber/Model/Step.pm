@@ -49,6 +49,16 @@ hashrefs for a data table.
 
 has 'data' => ( is => 'rw' );
 
+=head2 data_as_strings
+
+An arrayref of strings containing the original step's data, for printing out
+by harnesses
+
+=cut
+
+has 'data_as_strings' => ( is => 'rw', default => sub {[]},
+	isa => 'ArrayRef[Str]' );
+
 =head1 AUTHOR
 
 Peter Sergeant C<pete@clueball.com>

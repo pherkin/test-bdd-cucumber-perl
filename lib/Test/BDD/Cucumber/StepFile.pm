@@ -13,7 +13,7 @@ use Ouch;
 
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(Given Then);
+our @EXPORT = qw(Given When Then Step);
 
 our @definitions;
 
