@@ -42,27 +42,29 @@ sub scenario {
 sub scenario_done { note ""; }
 
 sub step_done {
-    my ($self, $context, $tb_hash) = @_;
+    my ($self, $context, $result) = @_;
+    my $status = $result->result;
+    warn "HERE AND STATUS $status";
 
 	my $step = $context->step;
     my $step_name = $si . ucfirst($step->verb_original) . ' ' .
         $context->text;
 
-    if ( $context->stash->{'step'}->{'notfound'} ) {
+    if ( $status eq 'undefined' || $status eq 'pending' ) {
         if ( $self->fail_skip ) {
             fail( "No matcher for: $step_name" );
-	        $self->_note_step_data( $step );
+            $self->_note_step_data( $step );
         } else {
             TODO: { todo_skip $step_name, 1 };
-	        $self->_note_step_data( $step );
+            $self->_note_step_data( $step );
         }
-    } elsif ( $tb_hash->{'builder'}->is_passing ) {
+    } elsif ( $status eq 'passing' ) {
         pass( $step_name );
         $self->_note_step_data( $step );
     } else {
         fail( $step_name );
         $self->_note_step_data( $step );
-        diag( ${$tb_hash->{'output'}} );
+        diag( $result->output );
     }
 }
 

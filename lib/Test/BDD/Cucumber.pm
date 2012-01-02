@@ -15,6 +15,9 @@ incompatible changes, but it's certainly possible. Do have a read of the
 B<Bugs and Missing> section below so you're not surprised when these things
 don't work.
 
+In almost all cases, where the behaviour of this module is different from
+the I<real> Cucumber, the plan is to move it to be more similar to that.
+
 =head1 NEXT STEPS
 
 If you are B<completely new to Cucumber>, you'd get a pretty overview from

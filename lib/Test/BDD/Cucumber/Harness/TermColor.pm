@@ -58,19 +58,19 @@ sub scenario_done { print "\n"; }
 sub step {}
 
 sub step_done {
-    my ($self, $context, $tb_hash) = @_;
+    my ($self, $context, $result ) = @_;
 
     my $color;
     my $follow_up = [];
+    my $status = $result->result;
 
-    if ( $context->stash->{'step'}->{'notfound'} ) {
+    if ( $status eq 'undefined' || $status eq 'pending' ) {
         $color = 'yellow';
-    } elsif ( $tb_hash->{'builder'}->is_passing ) {
+    } elsif ( $status eq 'passing' ) {
         $color = 'green';
     } else {
         $color = 'red';
-        $follow_up = [ split(/\n/, ${ $tb_hash->{'output'} } ) ];
-
+        $follow_up = [ split(/\n/, $result->{'output'} ) ];
     }
 
     $self->_display({
@@ -82,6 +82,37 @@ sub step_done {
         follow_up => $follow_up,
         longest_line => $context->stash->{'scenario'}->{'longest_step_line'}
     });
+
+    $self->_note_step_data( $context->step );
+}
+
+sub _note_step_data {
+    my ( $self, $step ) = @_;
+    my @step_data = @{ $step->data_as_strings };
+    return unless @step_data;
+
+    my $note = sub {
+        my ( $text, $extra_indent ) = @_;
+        $extra_indent ||= 0;
+
+        $self->_display({
+            indent   => 6 + $extra_indent,
+            color    => 'bright_cyan',
+            text      => $text
+        });
+    };
+
+    if ( ref( $step->data ) eq 'ARRAY' ) {
+        for ( @step_data ) {
+            $note->( $_ );
+        }
+    } else {
+        $note->('"""');
+        for ( @step_data ) {
+            $note->( $_, 2 );
+        }
+        $note->('"""');
+    }
 }
 
 sub _display {

@@ -1,40 +1,11 @@
-Alpha Release Path:
+Important
+    + Get the Data.pm harness working properly
+    + Stop the parser being monolithic
+    + Colour output doesn't show step data
+    + Get core features passing
 
     - Test::BDD::Cucumber::Manual::Integration
-    - Test::BDD::Cucumber::Manual::Architecture
-
-    + Test::BDD::Cucumber::Manual::Steps
-    + Fix up dzil
-    + Add some reasonable internal tests                (3h)
-    + Document both pieces of example code
-    + lib/Test/BDD/Cucumber/Model/Scenario.pm
-    + lib/Test/BDD/Cucumber/Model/Step.pm
-    + lib/Test/BDD/Cucumber/Model/Document.pm
-    + lib/Test/BDD/Cucumber/Model/Feature.pm
-    + lib/Test/BDD/Cucumber/Model/Line.pm
-    + lib/Test/BDD/Cucumber/Loader.pm
-    + lib/Test/BDD/Cucumber/Harness/TermColor.pm
-    + lib/Test/BDD/Cucumber/Harness/TestBuilder.pm
-    + lib/Test/BDD/Cucumber/Harness.pm
-    + lib/Test/BDD/Cucumber/Executor.pm
-    + Make sure all the internal links work
-    + lib/Test/BDD/Cucumber/Parser.pm
-    + lib/Test/BDD/Cucumber/StepContext.pm
-    + lib/Test/BDD/Cucumber/StepFile.pm
-    + lib/Test/BDD/Cucumber/Util.pm
-    + Add an example test script
-    + App::pherkin
-    + Test::BDD::Cucumber::Manual::Tutorial
-    + Add dist stuff                                    (0.5h)
-    + Name changes                                      (0.5h)
-    + Add an example based on a Perl core module
-    + Add a pretty-print pherkin
-    + Add 'When' as a command
-    + Skip tests with no matcher
-    + Proper eval of steps
-    + Build a Gherkin corpus
-    + Make parser work on newlines not indentation      (1h)
-
+    - Get the tests to suck a lot less
 
 Future:
 	- Tags
@@ -45,5 +16,5 @@ Future:
 	- Unicode support is probably ropey
 	- Pherkin isn't really fit for purpose yet
     - Pass against https://github.com/cucumber/cucumber-features
-
-    The parser is over-complicated because of how it started life - simplify
+    - The parser is over-complicated because of how it started life - simplify
+    - Add support for explicit outlines

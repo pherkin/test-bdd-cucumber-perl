@@ -58,16 +58,7 @@ sub scenario_done {
 
 Called at the start and end of step execution respectively. Both methods
 accept a L<Test::BDD::Cucmber::StepConcept> object. C<step_done> also accepts
-a hash of data relating to L<Test::Builder> of the structure:
-
-    {
-        output => SCALAR REF,
-        builder => Test::Builder object
-    };
-
-The output is the output of the step as if it had been run as a test script -
-useful for providing debugging output when a step has failed. The
-L<Test::Builder> is a localized instance just for that step.
+a L<Test::BDD::Cucumber::Model::Result> object.
 
 =cut
 
@@ -76,7 +67,7 @@ sub step {
 }
 
 sub step_done {
-    my ($self, $context, $tb_hash) = @_;
+    my ($self, $context, $result) = @_;
 
 }
 

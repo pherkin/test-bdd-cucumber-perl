@@ -1,5 +1,12 @@
-0.03: 24 Dec 2011
-      - Unbroke the test suite :-P Left a bit too many development pieces in there
+0.03:
+    - Unbroke the test suite :-P Left a bit too many development pieces in there
+    - Added a new Data Harness
+    - Tidied up the parser
+    - Switched the harnesses to use ::Model::Result, which mirrors Cucumber's
+      result types
+    - Added step data to colour output
+    - Got the core cucumber-tck thingies passing
+
 0.02: 20 Dec 2011
       - Added extra docs, and a few tiny bug fixes
 

@@ -161,7 +161,7 @@ sub _extract_steps {
 		if ( $line->content =~ m/^(Given|And|When|Then|But) (.+)/ ) {
 			my ( $verb, $text ) = ( $1, $2 );
 			my $original_verb = $verb;
-			$verb = $last_verb if lc($verb) eq 'and' or $verb eq 'but';
+			$verb = $last_verb if lc($verb) eq 'and' or lc($verb) eq 'but';
             $last_verb = $verb;
 
 			my $step = Test::BDD::Cucumber::Model::Step->new({
