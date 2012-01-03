@@ -1,11 +1,28 @@
 Important
-    + Get the Data.pm harness working properly
-    + Stop the parser being monolithic
-    + Colour output doesn't show step data
-    + Get core features passing
+    - Get indentation all matching
 
-    - Test::BDD::Cucumber::Manual::Integration
-    - Get the tests to suck a lot less
+Documentation refresh:
+    lib/App/pherkin.pm
+    lib/Test/BDD/Cucumber/Executor.pm
+    lib/Test/BDD/Cucumber/Harness/Data.pm
+    lib/Test/BDD/Cucumber/Harness/TermColor.pm
+    lib/Test/BDD/Cucumber/Harness/TestBuilder.pm
+    lib/Test/BDD/Cucumber/Harness.pm
+    lib/Test/BDD/Cucumber/Loader.pm
+    lib/Test/BDD/Cucumber/Manual/Architecture.pod
+    lib/Test/BDD/Cucumber/Manual/Integration.pod
+    lib/Test/BDD/Cucumber/Manual/Steps.pod
+    lib/Test/BDD/Cucumber/Manual/Tutorial.pod
+    lib/Test/BDD/Cucumber/Model/Document.pm
+    lib/Test/BDD/Cucumber/Model/Feature.pm
+    lib/Test/BDD/Cucumber/Model/Line.pm
+    lib/Test/BDD/Cucumber/Model/Result.pm
+    lib/Test/BDD/Cucumber/Model/Scenario.pm
+    lib/Test/BDD/Cucumber/Model/Step.pm
+    lib/Test/BDD/Cucumber/Parser.pm
+    lib/Test/BDD/Cucumber/StepContext.pm
+    lib/Test/BDD/Cucumber/StepFile.pm
+    lib/Test/BDD/Cucumber/Util.pm
 
 Future:
 	- Tags

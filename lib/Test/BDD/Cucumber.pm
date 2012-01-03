@@ -18,6 +18,10 @@ don't work.
 In almost all cases, where the behaviour of this module is different from
 the I<real> Cucumber, the plan is to move it to be more similar to that.
 
+The idea is that the first 1.0 release will be the first production release and
+before that, you're on your own. There are many things still to add, but B<I'm>
+using it to do Real Things already.
+
 =head1 NEXT STEPS
 
 If you are B<completely new to Cucumber>, you'd get a pretty overview from
@@ -33,7 +37,7 @@ If you B<want to extend or integrated Test::BDD::Cucumber> then you'd probably
 be more interested in our L<Architecture
 overview|Test::BDD::Cucumber::Manual::Architecture>.
 
-=head1 BUGS AND MISSING
+=head1 BUGS, MISSING, AND LIMITATIONS
 
 The following things do not work in this release, although support is planned
 in the very near future:
@@ -50,7 +54,11 @@ in the very near future:
 
 =item * Placeholders in pystrings is broken
 
-=item * Documentation is barely sufficient, rather than excellent :-/
+=item * Explicit Step Outline notation doesn't work (although step outlines are explictly supported)
+
+=item * Unicode support is probably a bit ropey
+
+=item * Pherkin isn't really fit for purpose yet
 
 =back
 
