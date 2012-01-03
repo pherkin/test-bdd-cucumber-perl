@@ -6,7 +6,7 @@ use FindBin::libs;
 
 use Test::More;
 use Test::BDD::Cucumber::Loader;
-use Test::BDD::Cucumber::Harness::TermColor;
+use Test::BDD::Cucumber::Harness::TestBuilder;
 
 # Check we actually have these checked out...
 Test::More->builder->skip_all('cucumber-features has not been checked out')
@@ -17,11 +17,11 @@ my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load(
 
 # Just core for now
 @features = grep { $_->name eq 'Core: Scenarios, Steps, Mappings' } @features;
+my $scen = $features[0]->scenarios->[0];
 
-my $harness = Test::BDD::Cucumber::Harness::TermColor->new({
+my $harness = Test::BDD::Cucumber::Harness::TestBuilder->new({
 	fail_skip => 1
 });
-fail("Too few tests") unless @features > 1;
 
 $executor->execute( $_, $harness ) for @features;
 done_testing;

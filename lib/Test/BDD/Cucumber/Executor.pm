@@ -212,6 +212,7 @@ sub dispatch {
         $context->harness->step( $context );
 
         # New scope for the localization
+        my $result;
         {
             # Localize test builder
             local $Test::Builder::Test = $tb_return->{'builder'};
@@ -249,15 +250,17 @@ sub dispatch {
                     'passing';
 
             # Create the result object
-            my $result = Test::BDD::Cucumber::Model::Result->new({
+            $result = Test::BDD::Cucumber::Model::Result->new({
                result => $status,
                output => $output
             });
 
-            # Say the step is done, and return the result
-            $context->harness->step_done( $context, $result );
-            return $result;
         }
+        # Say the step is done, and return the result. Happens outside
+        # the above block so that we don't have the localized harness
+        # anymore...
+        $context->harness->step_done( $context, $result );
+        return $result;
     }
 }
 

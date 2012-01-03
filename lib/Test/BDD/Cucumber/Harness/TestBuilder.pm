@@ -41,10 +41,11 @@ sub scenario {
 }
 sub scenario_done { note ""; }
 
+sub step {}
+
 sub step_done {
     my ($self, $context, $result) = @_;
     my $status = $result->result;
-    warn "HERE AND STATUS $status";
 
 	my $step = $context->step;
     my $step_name = $si . ucfirst($step->verb_original) . ' ' .
