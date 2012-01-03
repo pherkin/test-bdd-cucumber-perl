@@ -23,10 +23,6 @@ the features.
 Steps that pass will be printed in green, those that fail in red, and those
 for which there is no step definition as yellow (for TODO).
 
-If you'd like this to happen as part of your general test execution, consider
-using L<t/900_run_features.thttps://github.com/sheriff/test-bdd-cucumber-perl/blob/master/t/900_run_features.t>
-instead.
-
 =cut
 
 use Test::BDD::Cucumber::Loader;

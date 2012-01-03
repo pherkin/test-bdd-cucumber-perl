@@ -18,10 +18,45 @@ use Test::More;
 use Test::BDD::Cucumber::Model::Result;
 
 extends 'Test::BDD::Cucumber::Harness';
+
+=head1 ATTRIBUTES
+
+=head2 features
+
+An array-ref in which we store all the features executed, and completed. Until
+C<feature_done> is called, it won't be in here.
+
+=cut
+
 has 'features' => ( is => 'rw', isa => 'ArrayRef', default => sub {[]} );
+
+=head2 current_feature
+
+=head2 current_scenario
+
+=head2 current_step
+
+The current feature/step/scenario for which we've had the starting method, but
+not the C<_done> method.
+
+=cut
+
 has 'current_feature'  => ( is => 'rw', isa => 'HashRef', default => sub {{}} );
 has 'current_scenario' => ( is => 'rw', isa => 'HashRef', default => sub {{}} );
 has 'current_step'     => ( is => 'rw', isa => 'HashRef', default => sub {{}} );
+
+=head2 feature
+
+=head2 feature_done
+
+Feature hashref looks like:
+
+ {
+	object    => Test::BDD::Cucumber::Model::Feature object
+	scenarios => []
+ }
+
+=cut
 
 # We will keep track of where we are each time...
 sub feature {
@@ -32,11 +67,26 @@ sub feature {
 	};
 	$self->current_feature( $feature_ref );
 }
+
 sub feature_done {
 	my $self = shift;
 	push( @{ $self->features }, $self->current_feature );
 	$self->current_feature({});
 }
+
+=head2 scenario
+
+=head2 scenario_done
+
+Scenario hashref looks like:
+
+ {
+	object  => Test::BDD::Cucumber::Model::Scenario object
+	dataset => Data hash the scenario was invoked with
+	steps   => [],
+ }
+
+=cut
 
 sub scenario {
 	my ( $self, $scenario, $dataset ) = @_;
@@ -53,6 +103,19 @@ sub scenario_done {
 	$self->current_scenario({});
 }
 
+=head2 step
+
+=head2 step_done
+
+Step hashref looks like:
+
+ {
+ 	context => Test::BDD::Cucumber::StepContext object
+ 	result  => Test::BDD::Cucumber::Model::Result object (after step_done)
+ }
+
+=cut
+
 sub step {
 	my ( $self, $step_context ) = @_;
 	my $step_ref = {
@@ -68,6 +131,18 @@ sub step_done {
     push( @{ $self->current_scenario->{'steps'} }, $self->current_step );
     $self->current_step({});
 }
+
+=head2 feature_status
+
+=head2 scenario_status
+
+=head2 step_status
+
+Accepting one of the data-hashes above, returns a
+L<Test::BDD::Cucumber::Model::Result> object representing it. If it's a Feature
+or a Scenario, then it returns one representing all the child objects.
+
+=cut
 
 # Status methods
 sub feature_status {
@@ -86,6 +161,13 @@ sub step_status {
 	my ($self, $step) = @_;
 	return $step->{'result'};
 }
+
+=head2 find_scenario_step_by_name
+
+Given a Scenario and a string, searches through the steps for it and returns
+the data-hash where the Step Object's C<<->text>> matches the string.
+
+=cut
 
 # Find a step
 sub find_scenario_step_by_name {

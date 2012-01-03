@@ -1,5 +1,15 @@
 package Test::BDD::Cucumber::Model::Result;
 
+=head1 NAME
+
+Test::BDD::Cucumber::Model::Result - Encapsulates a result state
+
+=head1 DESCRIPTION
+
+Encapsulation of result state - whether that's for a step, scenario, or feature
+
+=cut
+
 use strict;
 use warnings;
 use Moose;
@@ -7,8 +17,38 @@ use Moose::Util::TypeConstraints;
 
 enum 'StepStatus', [qw( passing failing pending undefined )];
 
+=head1 ATTRIBUTES
+
+=head2 result
+
+Enum of: C<passing>, C<failing>, C<pending> or C<undefined>. C<pending> is used
+if there was any TODO output from a test, and C<undefined> for a test that
+wasn't run, either due to no matching step, or because a previous step failed.
+
+=cut
+
 has 'result' => ( is => 'ro', isa => 'StepStatus', required => 1 );
+
+=head2 output
+
+The underlying test-output that contributed to a result.
+
+=cut
+
 has 'output' => ( is => 'ro', isa => 'Str',        required => 1 );
+
+=head1 METHODS
+
+=head2 from_children
+
+Collates the Result objects you pass in, and returns one that encompasses all
+of them.
+
+As they may be varied, it runs through them in order of C<failing>,
+C<undefined>, C<pending> and C<passing> - the first it finds is the overall
+result. The empty set passes.
+
+=cut
 
 sub from_children {
 	my ( $class, @children ) = @_;

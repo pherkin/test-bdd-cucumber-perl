@@ -59,9 +59,8 @@ sub add_steps {
 
 =head2 execute
 
-Execute accepts a feature and a harness object, and creates
-L<Test::BDD::Cucumber::StepContext> for each step in each scenario, passing them on to
-C<dispatch()>
+Execute accepts a feature and a harness object, and for each sub-scenario,
+runs C<execute_scenario()>
 
 =cut
 
@@ -83,6 +82,24 @@ sub execute {
 
     $harness->feature_done( $feature );
 }
+
+=head2 execute_scenario
+
+Accepts a hashref of options, and executes each step in a scenario. Options:
+
+C<feature> - A L<Test::BDD::Cucumber::Model::Feature> object
+
+C<feature_stash> - A hashref that should live the lifetime of feature execution
+
+C<harness> - A L<Test::BDD::Cucumber::Harness> subclass object
+
+C<scenario> - A L<Test::BDD::Cucumber::Model::Scenario> object
+
+For each step, a L<Test::BDD::Cucumber::StepContext> object is created, and
+passed to C<dispatch()>. Nothing is returned - everything is played back through
+the Harness interface.
+
+=cut
 
 sub execute_scenario {
     my ( $self, $options ) = @_;
@@ -168,6 +185,9 @@ sub add_placeholders {
 Accepts a L<Test::BDD::Cucumber::StepContext> object, and searches through
 the steps that have been added to the executor object, executing against the
 first matching one.
+
+You can also pass in a boolean 'short-circuit' flag if the Scenario's remaining
+steps should be skipped.
 
 =cut
 
@@ -263,6 +283,13 @@ sub dispatch {
         return $result;
     }
 }
+
+=head2 skip_step
+
+Accepts a step-context, a result-type, and a textual reason, exercises the
+Harness's step start and step_done methods, and returns a skipped-test result.
+
+=cut
 
 sub skip_step {
     my ( $self, $context, $type, $reason ) = @_;
