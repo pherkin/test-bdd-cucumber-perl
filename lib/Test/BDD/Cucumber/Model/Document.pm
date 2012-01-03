@@ -39,6 +39,14 @@ objects
 has 'lines'    => ( is => 'rw', default => sub {[]},
 	isa => 'ArrayRef[Test::BDD::Cucumber::Model::Line]' );
 
+=head1 OTHER
+
+=head2 BUILD
+
+The instantiation populates C<lines()> by splitting the input on newlines.
+
+=cut
+
 # Create lines
 sub BUILD {
 	my $self = shift;

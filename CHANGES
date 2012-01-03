@@ -6,6 +6,7 @@
       result types
     - Added step data to colour output
     - Got the core cucumber-tck thingies passing
+    - Various bits of documentation enhancements
 
 0.02: 20 Dec 2011
       - Added extra docs, and a few tiny bug fixes
