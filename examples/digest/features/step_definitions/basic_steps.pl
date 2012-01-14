@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 
+use Digest;
 use Test::More;
 use Test::BDD::Cucumber::StepFile;
 use Method::Signatures;

@@ -1,4 +1,7 @@
-0.03:
+0.04: 14 Jan 2012
+    - Fixed a bug relating to recognizing newlines after the end of Scenario
+      tabular data, as reported by Graham TerMarsch
+0.03: 03 Jan 2012
     - Unbroke the test suite :-P Left a bit too many development pieces in there
     - Added a new Data Harness
     - Tidied up the parser

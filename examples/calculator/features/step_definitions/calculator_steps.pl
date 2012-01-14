@@ -7,6 +7,7 @@ use Test::More;
 use Test::BDD::Cucumber::StepFile;
 use Method::Signatures;
 
+use lib 'examples/calculator/lib/';
 use Calculator;
 
 Given qr/^a usable "(\w+)" class/, func($c) { use_ok( $1 ) };
