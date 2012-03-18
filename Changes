@@ -1,3 +1,5 @@
+0.05: 18 Mar 2012
+    - Yet another feature parsing bug, relating to empty lines after scenarios
 0.04: 14 Jan 2012
     - Fixed a bug relating to recognizing newlines after the end of Scenario
       tabular data, as reported by Graham TerMarsch

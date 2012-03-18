@@ -117,8 +117,7 @@ sub _extract_scenarios {
 	my $scenarios = 0;
 
 	while ( my $line = shift( @lines ) ) {
-		next if $line->is_comment;
-		last if $line->is_blank;
+		next if $line->is_comment || $line->is_blank;
 
 		if ( $line->content =~ m/^(Background|Scenario)(?: Outline)?: ?(.+)?/ ) {
 			my ( $type, $name ) = ( $1, $2 );
