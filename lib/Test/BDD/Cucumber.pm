@@ -8,6 +8,10 @@ Test::BDD::Cucumber - Feature-complete Cucumber-style testing in Perl
 
 A sane and complete Cucumber implementation in Perl
 
+=head1 QUICK LINKS
+
+L<Cucumber on Perl on MetaCPAN|https://metacpan.org/release/Test-BDD-Cucumber>
+
 =head1 WARNING
 
 This is beta software, at best. The interface is unlikely to undergo major
