@@ -9,6 +9,13 @@ Test::BDD::Cucumber::Harness::TermColor - Prints colorized text to the screen
 A L<Test::BDD::Cucumber::Harness> subclass that prints test output, colorized,
 to the terminal.
 
+=head1 METHODS
+
+=head2 result
+
+Returns a collective view on the passing status of all steps run so far,
+as a L<Test::BDD::Cucumber::Model::Resullt> object.
+
 =cut
 
 use strict;
@@ -16,16 +23,27 @@ use warnings;
 use Moose;
 use Term::ANSIColor;
 use Test::BDD::Cucumber::Util;
+use Test::BDD::Cucumber::Model::Result;
 
 extends 'Test::BDD::Cucumber::Harness';
+
+my @results;
+
+sub result {
+    my $self = shift;
+    return Test::BDD::Cucumber::Model::Result->from_children( @results );
+}
 
 my $margin = 2;
 if ( $margin > 1 ) {
     print "\n" x ( $margin - 1 );
 }
 
+my $current_feature;
+
 sub feature {
     my ( $self, $feature ) = @_;
+    $current_feature = $feature;
     $self->_display({
         indent    => 0,
         color     => 'bright_white',
@@ -55,9 +73,9 @@ sub scenario {
 sub scenario_done { print "\n"; }
 
 sub step {}
-
 sub step_done {
     my ($self, $context, $result ) = @_;
+    push(@results, $result);
 
     my $color;
     my $follow_up = [];

@@ -1,6 +1,5 @@
 
 - [ ] Add Tags
-- [ ] Fix pherkin's exit code
 - [ ] Make TAP output for scenario outlines interpolate correctly
 - [ ] Get passing against Cucumber-Features
 - [ ] Add support for explicit outlines
