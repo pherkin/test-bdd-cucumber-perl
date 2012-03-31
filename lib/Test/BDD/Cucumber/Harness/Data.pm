@@ -7,7 +7,7 @@ of test passes / failures
 
 =head1 DESCRIPTION
 
-A L<Test::BDD::Cucumber::Harness> subclass which collates test data in C<data>.
+A L<Test::BDD::Cucumber::Harness> subclass which collates test data
 
 =cut
 

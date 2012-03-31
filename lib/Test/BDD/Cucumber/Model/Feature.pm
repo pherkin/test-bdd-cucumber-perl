@@ -46,6 +46,15 @@ The corresponding L<Test::BDD::Cucumber::Model::Document> object
 
 has 'document'   => ( is => 'rw', isa => 'Test::BDD::Cucumber::Model::Document' );
 
+=head2 background
+
+The L<Test::BDD::Cucumber::Model::Scenario> object that was marked as the
+background section.
+
+=cut
+
+has 'background' => ( is => 'rw', isa => 'Test::BDD::Cucumber::Model::Scenario' );
+
 =head2 scenarios
 
 An arrayref of the L<Test::BDD::Cucumber::Model::Scenario> objects that
@@ -53,7 +62,7 @@ constitute the test.
 
 =cut
 
-has 'scenarios'  => ( is => 'rw', isa => 'ArrayRef[Test::BDD::Cucumber::Model::Scenario]',
+has 'scenarios' => ( is => 'rw', isa => 'ArrayRef[Test::BDD::Cucumber::Model::Scenario]',
 	default => sub {[]} );
 
 =head1 AUTHOR

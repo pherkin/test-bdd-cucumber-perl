@@ -69,10 +69,14 @@ sub execute {
     my $feature_stash = {};
 
     $harness->feature( $feature );
+    my @background = (
+        $feature->background ? ( background => $feature->background ) : () );
 
-    # Execute scenarios
     for my $scenario ( @{ $feature->scenarios } ) {
+
+        # Execute the scenario itself
         $self->execute_scenario({
+            @background,
             scenario      => $scenario,
             feature       => $feature,
             feature_stash => $feature_stash,
@@ -95,6 +99,13 @@ C<harness> - A L<Test::BDD::Cucumber::Harness> subclass object
 
 C<scenario> - A L<Test::BDD::Cucumber::Model::Scenario> object
 
+C<background_obj> - An optional L<Test::BDD::Cucumber::Model::Scenario> object
+representing the Background
+
+C<scenario_stash> - We'll create a new scenario stash unless you've posted one
+in. This is used exclusively for giving Background sections access to the same
+stash as the scenario they're running before.
+
 For each step, a L<Test::BDD::Cucumber::StepContext> object is created, and
 passed to C<dispatch()>. Nothing is returned - everything is played back through
 the Harness interface.
@@ -103,22 +114,46 @@ the Harness interface.
 
 sub execute_scenario {
     my ( $self, $options ) = @_;
-    my ( $feature, $feature_stash, $harness, $outline ) = @$options{
-        qw/ feature feature_stash harness scenario /
+    my (
+        $feature, $feature_stash, $harness, $outline, $background_obj,
+        $incoming_scenario_stash, $incoming_outline_stash
+    ) = @$options{
+        qw/ feature feature_stash harness scenario background scenario_stash
+        outline_stash
+        /
     };
 
-    my $short_circuit = 0;
+    my $is_background = $outline->background;
+
+    my $harness_start = $is_background ? 'background' : 'scenario';
+    my $harness_stop  = $is_background ? 'background_done' : 'scenario_done';
+
+    my $outline_stash = $incoming_outline_stash || { short_circuit => 0 };
 
     # Multiply out Scenario Outlines as appropriate
     my @datasets = @{ $outline->data };
     @datasets = ({}) unless @datasets;
 
     foreach my $dataset ( @datasets ) {
-        my $scenario_stash = {};
+        my $scenario_stash = $incoming_scenario_stash || {};
 
         # OK, back to the normal execution
-        $harness->scenario( $outline, $dataset,
+        $harness->$harness_start( $outline, $dataset,
             $scenario_stash->{'longest_step_line'} );
+
+        # Run the background if we have one. This recurses back in to
+        # execute_scenario...
+        if ( $background_obj ) {
+            $self->execute_scenario({
+                is_background  => 1,
+                scenario       => $background_obj,
+                feature        => $feature,
+                feature_stash  => $feature_stash,
+                harness        => $harness,
+                scenario_stash => $scenario_stash,
+                outline_stash  => $outline_stash
+            });
+        }
 
         foreach my $step (@{ $outline->steps }) {
 
@@ -148,16 +183,17 @@ sub execute_scenario {
 
             });
 
-            my $result = $self->dispatch( $context, $short_circuit );
+            my $result = $self->dispatch( $context,
+                    $outline_stash->{'short_circuit'} );
 
             # If it didn't pass, short-circuit the rest
             unless ( $result->result eq 'passing' ) {
-                $short_circuit++;
+                $outline_stash->{'short_circuit'}++;
             }
 
         }
 
-        $harness->scenario_done( $outline, $dataset );
+        $harness->$harness_stop( $outline, $dataset );
     }
 
     return;

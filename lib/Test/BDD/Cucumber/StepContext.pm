@@ -83,6 +83,17 @@ C<$1>, C<$2> etc as appropriate.
 
 has 'matches'  => ( is => 'rw', isa => 'ArrayRef' );
 
+=head1 METHODS
+
+=head2 background
+
+Boolean for "is this step being run as part of the background section?".
+Currently implemented by asking the linked Scenario object...
+
+=cut
+
+sub background { my $self = shift; return $self->scenario->background }
+
 =head1 AUTHOR
 
 Peter Sergeant C<pete@clueball.com>

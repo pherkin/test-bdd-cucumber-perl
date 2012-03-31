@@ -1,14 +1,17 @@
-Important
-    - Get indentation all matching
 
-Future:
-	- Tags
-	- Transforms
-	- Localization
-	- Quoting in tables is broken
-	- Placeholders in Pystrings
-	- Unicode support is probably ropey
-	- Pherkin isn't really fit for purpose yet
-    - Pass against https://github.com/cucumber/cucumber-features
-    - The parser is over-complicated because of how it started life - simplify
-    - Add support for explicit outlines
+- [ ] Add Tags
+- [ ] Fix pherkin's exit code
+- [ ] Make TAP output for scenario outlines interpolate correctly
+- [ ] Get passing against Cucumber-Features
+- [ ] Add support for explicit outlines
+- [ ] Simplify Parser
+- [ ] Add a document on integrating with test suties and CI
+- [ ] Add a jUnit outputer
+- [ ] Remove Ouch
+- [ ] Fix indentation
+- [ ] Add Transforms
+- [ ] Allow command localization
+- [ ] Quoting in tables is broken
+- [ ] Placeholders in Pystrings
+- [ ] Add Unicode exmaples
+- [ ] Make Pherkin feature complete

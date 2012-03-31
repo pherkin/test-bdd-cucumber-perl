@@ -138,7 +138,11 @@ sub _extract_scenarios {
 			# Attempt to populate it
 			@lines = $self->_extract_steps( $feature, $scenario, @lines );
 
-			push( @{ $feature->scenarios }, $scenario );
+			if ( $type eq 'Background' ) {
+				$feature->background( $scenario );
+			} else {
+				push( @{ $feature->scenarios }, $scenario );
+			}
 		} else {
 			ouch 'parse_error', "Malformed scenario line", $line;
 		}

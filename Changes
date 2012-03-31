@@ -1,3 +1,7 @@
+0.06: ???
+    - Fixed up the behaviour of Background sections, to run before each and
+      every Scenario. See: https://github.com/sheriff/test-bdd-cucumber-perl/issues/3
+      Bug reported by: intrigeri@boum.org
 0.05: 18 Mar 2012
     - Yet another feature parsing bug, relating to empty lines after scenarios
 0.04: 14 Jan 2012

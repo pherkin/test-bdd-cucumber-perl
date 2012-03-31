@@ -118,8 +118,9 @@ by convention, they're a L<user story|http://en.wikipedia.org/wiki/User_story>.
 
 Next up, we have the Background section. The Background is a special kind of
 Scenario that doesn't have an explicit name, and should occur only once in your
-feature file. As with all scenarios, it's a collection of steps. The only step
-in this Scenario is C<Given a usable Digest class">.
+feature file. Its steps are run before the steps of every other scenario - the
+harnesses distributed with this distro won't display the Background section
+separately, they'll just subsume the steps in to the other scenarios.
 
 This is matched by:
 

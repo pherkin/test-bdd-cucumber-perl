@@ -39,8 +39,7 @@ sub feature_done { print "\n"; }
 
 sub scenario {
     my ( $self, $scenario, $dataset, $longest ) = @_;
-    my $text = $scenario->background ?
-        "Background:" :
+    my $text =
         "Scenario: " . color('bright_blue') . ($scenario->name || '' );
 
     $self->_display({

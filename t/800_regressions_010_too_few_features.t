@@ -13,7 +13,6 @@ my $feature = Test::BDD::Cucumber::Parser->parse_file(
 my @scenarios = @{ $feature->scenarios };
 
 for my $scenario_name (
-	'',
 	'Check MD5',
 	'Check SHA-1',
 	'MD5 longer data'
@@ -23,5 +22,7 @@ for my $scenario_name (
 	is( $scenario->name || '', $scenario_name,
 		"Scenario name matches: " . $scenario_name );
 }
+
+ok( $feature->background, "Background section exists" );
 
 done_testing();

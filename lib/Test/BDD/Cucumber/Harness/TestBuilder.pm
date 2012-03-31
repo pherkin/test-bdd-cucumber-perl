@@ -33,11 +33,7 @@ sub feature {
 
 sub scenario {
     my ( $self, $scenario, $dataset ) = @_;
-    if ( $scenario->background ) {
-        note "$li${ni}Background:";
-    } else {
-        note "$li${ni}Scenario: " . ($scenario->name || '');
-    }
+    note "$li${ni}Scenario: " . ($scenario->name || '');
 }
 sub scenario_done { note ""; }
 
