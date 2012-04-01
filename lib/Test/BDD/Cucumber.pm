@@ -41,14 +41,17 @@ If you B<want to extend or integrated Test::BDD::Cucumber> then you'd probably
 be more interested in our L<Architecture
 overview|Test::BDD::Cucumber::Manual::Architecture>.
 
+=head1 TEN SECOND GUIDE TO USING THIS IN YOUR CI ENVIRONMENT
+
+Don't use the command-line tool, L<App::pherkin>. Instead, look at the L<How to integrate with
+Test::Builder|Test::BDD::Cucumber::Manual::Integration> document.
+
 =head1 BUGS, MISSING, AND LIMITATIONS
 
 The following things do not work in this release, although support is planned
 in the very near future:
 
 =over 4
-
-=item * Tags
 
 =item * Localization
 
