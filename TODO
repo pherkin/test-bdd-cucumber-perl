@@ -1,6 +1,15 @@
 
 - [ ] Make TAP output for scenario outlines interpolate correctly
 - [ ] Get passing against Cucumber-Features
+	- [ ] comments.feature
+	- [X] core.feature
+	- [ ] data_tables.feature
+	- [ ] doc_strings.feature
+	- [ ] failing_steps.feature
+	- [ ] hooks.feature
+	- [X] tags.feature
+	- [ ] undefined_steps.feature
+	- [ ] world.feature
 - [ ] Add support for explicit outlines
 - [ ] Simplify Parser
 - [ ] Add a document on integrating with test suties and CI
