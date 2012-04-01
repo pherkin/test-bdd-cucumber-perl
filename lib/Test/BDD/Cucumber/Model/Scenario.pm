@@ -53,6 +53,15 @@ the C<Scenario> keyword is.
 
 has 'line'       => ( is => 'rw', isa => 'Test::BDD::Cucumber::Model::Line' );
 
+=head2 tags
+
+Tags that the scenario has been tagged with, and has inherited from its
+feature.
+
+=cut
+
+has 'tags' => ( is => 'rw', isa => 'ArrayRef[Str]', default => sub {[]} );
+
 =head1 AUTHOR
 
 Peter Sergeant C<pete@clueball.com>

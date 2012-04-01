@@ -59,8 +59,10 @@ sub add_steps {
 
 =head2 execute
 
-Execute accepts a feature and a harness object, and for each sub-scenario,
-runs C<execute_scenario()>
+Execute accepts a feature object, a harness object, and an optional
+L<Test::BDD::Cucumber::TagSpec> object and for each scenario in the
+feature which meets the tag requirements (or all of them, if you
+haven't specified one), runs C<execute_scenario>.
 
 =cut
 

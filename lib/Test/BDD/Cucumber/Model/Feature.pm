@@ -65,6 +65,15 @@ constitute the test.
 has 'scenarios' => ( is => 'rw', isa => 'ArrayRef[Test::BDD::Cucumber::Model::Scenario]',
 	default => sub {[]} );
 
+=head2 tags
+
+Tags that the feature has been tagged with, and will pass on to its
+Scenarios.
+
+=cut
+
+has 'tags' => ( is => 'rw', isa => 'ArrayRef[Str]', default => sub {[]} );
+
 =head1 AUTHOR
 
 Peter Sergeant C<pete@clueball.com>

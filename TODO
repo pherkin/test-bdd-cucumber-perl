@@ -1,5 +1,4 @@
 
-- [ ] Add Tags
 - [ ] Make TAP output for scenario outlines interpolate correctly
 - [ ] Get passing against Cucumber-Features
 - [ ] Add support for explicit outlines

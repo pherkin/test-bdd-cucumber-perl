@@ -78,6 +78,7 @@ sub _remove_next_blanks {
 
 sub _extract_feature_name {
 	my ( $self, $feature, @lines ) = @_;
+	my @feature_tags = ();
 
 	while ( my $line = shift( @lines ) ) {
 		next if $line->is_comment;
@@ -86,7 +87,15 @@ sub _extract_feature_name {
 		if ( $line->content =~ m/^Feature: (.+)/ ) {
 			$feature->name( $1 );
 			$feature->name_line( $line );
+			$feature->tags( \@feature_tags );
+
 			last;
+
+		# Feature-level tags
+		} elsif ( $line->content =~ m/^\s*\@\w/ ) {
+			my @tags = $line->content =~ m/\@([^\s]+)/g;
+			push( @feature_tags, @tags );
+
 		} else {
 			ouch 'parse_error', "Malformed feature line", $line;
 		}
@@ -115,6 +124,7 @@ sub _extract_conditions_of_satisfaction {
 sub _extract_scenarios {
 	my ( $self, $feature, @lines ) = @_;
 	my $scenarios = 0;
+	my @scenario_tags;
 
 	while ( my $line = shift( @lines ) ) {
 		next if $line->is_comment || $line->is_blank;
@@ -132,8 +142,10 @@ sub _extract_scenarios {
 			my $scenario = Test::BDD::Cucumber::Model::Scenario->new({
 				( $name ? ( name => $name ) : () ),
 				background => $type eq 'Background' ? 1 : 0,
-				line       => $line
+				line       => $line,
+				tags       => [@{$feature->tags}, @scenario_tags]
 			});
+			@scenario_tags = ();
 
 			# Attempt to populate it
 			@lines = $self->_extract_steps( $feature, $scenario, @lines );
@@ -143,6 +155,12 @@ sub _extract_scenarios {
 			} else {
 				push( @{ $feature->scenarios }, $scenario );
 			}
+
+		# Scenario-level tags
+		} elsif ( $line->content =~ m/^\s*\@\w/ ) {
+			my @tags = $line->content =~ m/\@([^\s]+)/g;
+			push( @scenario_tags, @tags );
+
 		} else {
 			ouch 'parse_error', "Malformed scenario line", $line;
 		}

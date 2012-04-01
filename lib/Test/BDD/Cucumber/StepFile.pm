@@ -9,7 +9,6 @@ Test::BDD::Cucumber::StepFile - Functions for creating and loading Step Definiti
 use strict;
 use warnings;
 use File::Find;
-use Ouch;
 
 require Exporter;
 our @ISA = qw(Exporter);
@@ -79,12 +78,10 @@ defined in it, of the form:
 
 sub load {
     my ( $class, $filename ) = @_;
-
     {
         local @definitions;
         do $filename;
-        ouch 'step_compilation', "Step file [$filename] failed to load: $@"
-            if $@;
+        die "Step file [$filename] failed to load: $@" if $@;
         return @definitions;
     }
 
