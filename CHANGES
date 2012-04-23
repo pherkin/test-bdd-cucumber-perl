@@ -1,3 +1,7 @@
+0.08: 23 Apr 2012
+    - Removed some OmniOutliner artifacts. Ooops.
+    - Fixed a spelling mistake
+    - Both as reported by intrigeri@boum.org
 0.07: 01 Apr 2012
     - Started migration away from Ouch
     - Added tags at a code-level (but not to pherkin, yet)

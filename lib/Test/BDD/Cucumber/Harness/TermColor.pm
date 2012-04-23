@@ -14,7 +14,7 @@ to the terminal.
 =head2 result
 
 Returns a collective view on the passing status of all steps run so far,
-as a L<Test::BDD::Cucumber::Model::Resullt> object.
+as a L<Test::BDD::Cucumber::Model::Result> object.
 
 =cut
 
