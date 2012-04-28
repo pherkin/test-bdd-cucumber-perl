@@ -4,9 +4,25 @@
 
 pherkin - Execute tests written using Test::BDD::Cucumber
 
-=head1 OVERVIEW
+=head1 SYNOPSIS
 
-For more detailed documentation, try: C<man App::pherkin>
+ pherkin
+ pherkin some/path/features/
+
+=head1 DESCRIPTION
+
+C<pherkin> accepts a single argument of a directory name, defaulting
+to C<./features/> if none is specified. This directory will be searched
+for feature files (any file matching C<*.feature>) and step definition
+files (any file matching C<*_steps.pl>). The step definitions will be
+loaded, and then the features will be executed.
+
+Steps that pass will be printed in green, those that fail in red, and those
+for which there is no step definition - or that are skipped as the result of a
+previous failure - as yellow.
+
+C<pherkin> will exit with a non-zero status if the overall result is considered
+to be failing.
 
 =head1 AUTHOR
 
