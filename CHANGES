@@ -1,3 +1,7 @@
+0.09: 28 Apr 2012
+    - Fixed a few spelling mistakes
+    - Added a minimal man page to pherkin
+    - Both as reported by intrigeri@boum.org
 0.08: 23 Apr 2012
     - Removed some OmniOutliner artifacts. Ooops.
     - Fixed a spelling mistake

@@ -61,7 +61,7 @@ in the very near future:
 
 =item * Placeholders in pystrings is broken
 
-=item * Explicit Step Outline notation doesn't work (although step outlines are explictly supported)
+=item * Explicit Step Outline notation doesn't work (although step outlines are explicitly supported)
 
 =item * Unicode support is probably a bit ropey
 

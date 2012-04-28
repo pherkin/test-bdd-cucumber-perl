@@ -2,8 +2,7 @@ package Test::BDD::Cucumber::Harness::Data;
 
 =head1 NAME
 
-Test::BDD::Cucumber::Harness::Data - Builds up an internal data representation
-of test passes / failures
+Test::BDD::Cucumber::Harness::Data - Builds up an internal data representation of test passes / failures
 
 =head1 DESCRIPTION
 

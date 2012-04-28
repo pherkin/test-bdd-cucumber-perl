@@ -40,7 +40,7 @@ has 'raw_content' => ( is => 'rw', isa => 'Str' );
 
 =head2 indent
 
-Returns the number of preceeding spaces before content on a line
+Returns the number of preceding spaces before content on a line
 
 =cut
 
@@ -61,7 +61,7 @@ sub content { return _strip( $_[0]->raw_content ) }
 =head2 content_remove_indentation
 
 Accepts an int of number of spaces, and returns the content with exactly that
-many preceeding spaces removed.
+many preceding spaces removed.
 
 =cut
 

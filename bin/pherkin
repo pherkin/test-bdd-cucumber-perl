@@ -1,5 +1,23 @@
 #!/usr/bin/env perl
 
+=head1 NAME
+
+pherkin - Execute tests written using Test::BDD::Cucumber
+
+=head1 OVERVIEW
+
+For more detailed documentation, try: C<man App::pherkin>
+
+=head1 AUTHOR
+
+Peter Sergeant C<pete@clueball.com>
+
+=head1 LICENSE
+
+Copyright 2012, Peter Sergeant; Licensed under the same terms as Perl
+
+=cut
+
 # See App::pherkin for documentation
 use strict;
 use warnings;
