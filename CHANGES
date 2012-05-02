@@ -1,3 +1,7 @@
+0.10: 02 May 2012
+    - Changed dependency from Clone::Fast to Clone, because the following
+      bug stopped it being installed without a force...
+      https://rt.cpan.org/Public/Bug/Display.html?id=65485
 0.09: 28 Apr 2012
     - Fixed a few spelling mistakes
     - Added a minimal man page to pherkin

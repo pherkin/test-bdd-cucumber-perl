@@ -14,7 +14,7 @@ way.
 use strict;
 use warnings;
 use Moose;
-use Clone::Fast qw( clone );
+use Clone qw/clone/;
 
 =head1 OVERVIEW
 
