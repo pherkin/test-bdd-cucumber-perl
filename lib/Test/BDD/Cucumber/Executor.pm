@@ -67,14 +67,22 @@ haven't specified one), runs C<execute_scenario>.
 =cut
 
 sub execute {
-    my ( $self, $feature, $harness ) = @_;
+    my ( $self, $feature, $harness, $tag_spec ) = @_;
     my $feature_stash = {};
 
     $harness->feature( $feature );
     my @background = (
         $feature->background ? ( background => $feature->background ) : () );
 
-    for my $scenario ( @{ $feature->scenarios } ) {
+    # Get all scenarios
+    my @scenarios = @{ $feature->scenarios() };
+
+    # Filter them by the tag spec, if we have one
+    if ( defined $tag_spec ) {
+        @scenarios = $tag_spec->filter( @scenarios );
+    }
+
+    for my $scenario ( @scenarios ) {
 
         # Execute the scenario itself
         $self->execute_scenario({
