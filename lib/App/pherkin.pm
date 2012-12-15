@@ -43,7 +43,7 @@ Returns a L<Test::BDD::Cucumber::Model::Result> object for all steps run.
 sub run {
     my ( $class, @arguments ) = @_;
     my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load(
-        $arguments[0] || './features/'
+        $arguments[0] || './features/', $arguments[1]
     );
     die "No feature files found" unless @features;
 
