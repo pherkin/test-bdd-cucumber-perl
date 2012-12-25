@@ -61,221 +61,207 @@ Feature: Basic Calculator Functions
       """
     Then the display should show -1025
 ----------DIVIDER----------
---- 
+---
 line: 1
 name: Basic Calculator Functions
-satisfaction: 
+satisfaction:
   - In order to check I've written the Calculator class correctly
   - As a developer I want to check some basic operations
   - So that I can have confidence in my Calculator class.
-scenarios: 
-  - 
-    background: 1
-    data: []
-
-    line: 6
-    name: ~
-    steps: 
-      - 
-        data: ~
-        line: 7
-        text: a usable "Calculator" class
-        verb: Given
-        verb_original: Given
-  - 
+scenarios:
+  -
     background: 0
     data: []
-
     line: 9
     name: First Key Press on the Display
-    steps: 
-      - 
+    steps:
+      -
         data: ~
         line: 10
         text: a new Calculator object
         verb: Given
         verb_original: Given
-      - 
+      -
         data: ~
         line: 11
         text: having pressed 1
         verb: Given
         verb_original: And
-      - 
+      -
         data: ~
         line: 12
         text: the display should show 1
         verb: Then
         verb_original: Then
-  - 
+  -
     background: 0
     data: []
 
     line: 14
     name: Several Key Presses on the Display
-    steps: 
-      - 
+    steps:
+      -
         data: ~
         line: 15
         text: a new Calculator object
         verb: Given
         verb_original: Given
-      - 
+      -
         data: ~
         line: 16
         text: having pressed 1 and 2 and 3 and . and 5 and 0
         verb: Given
         verb_original: And
-      - 
+      -
         data: ~
         line: 17
         text: the display should show 123.50
         verb: Then
         verb_original: Then
-  - 
+  -
     background: 0
     data: []
 
     line: 19
     name: Pressing Clear Wipes the Display
-    steps: 
-      - 
+    steps:
+      -
         data: ~
         line: 20
         text: a new Calculator object
         verb: Given
         verb_original: Given
-      - 
+      -
         data: ~
         line: 21
         text: having pressed 1 and 2 and 3
         verb: Given
         verb_original: And
-      - 
+      -
         data: ~
         line: 22
         text: having pressed C
         verb: Given
         verb_original: And
-      - 
+      -
         data: ~
         line: 23
         text: the display should show 0
         verb: Then
         verb_original: Then
-  - 
+  -
     background: 0
     data: []
 
     line: 25
     name: Add as you go
-    steps: 
-      - 
+    steps:
+      -
         data: ~
         line: 26
         text: a new Calculator object
         verb: Given
         verb_original: Given
-      - 
+      -
         data: ~
         line: 27
         text: having pressed 1 and 2 and 3 and + and 4 and 5 and 6 and +
         verb: Given
         verb_original: And
-      - 
+      -
         data: ~
         line: 28
         text: the display should show 579
         verb: Then
         verb_original: Then
-  - 
+  -
     background: 0
-    data: 
-      - 
+    data:
+      -
         first: '5.0'
         operator: +
         result: 10
         second: '5.0'
-      - 
+      -
         first: 6
         operator: /
         result: 2
         second: 3
-      - 
+      -
         first: 10
         operator: "*"
         result: '75.5'
         second: '7.550'
-      - 
+      -
         first: 3
         operator: "-"
         result: -7
         second: 10
     line: 30
     name: Basic arithmetic
-    steps: 
-      - 
+    steps:
+      -
         data: ~
         line: 31
         text: a new Calculator object
         verb: Given
         verb_original: Given
-      - 
+      -
         data: ~
         line: 32
         text: having keyed <first>
         verb: Given
         verb_original: And
-      - 
+      -
         data: ~
         line: 33
         text: having keyed <operator>
         verb: Given
         verb_original: And
-      - 
+      -
         data: ~
         line: 34
         text: having keyed <second>
         verb: Given
         verb_original: And
-      - 
+      -
         data: ~
         line: 35
         text: having pressed =
         verb: Given
         verb_original: And
-      - 
+      -
         data: ~
         line: 36
         text: the display should show <result>
         verb: Then
         verb_original: Then
-  - 
+  -
     background: 0
     data: []
 
     line: 44
     name: Separation of calculations
-    steps: 
-      - 
+    steps:
+      -
         data: ~
         line: 45
         text: a new Calculator object
         verb: Given
         verb_original: Given
-      - 
-        data: 
-          - 
+      -
+        data:
+          -
             first: '0.5'
             operator: +
             result: '0.6'
             second: '0.1'
-          - 
+          -
             first: '0.01'
             operator: /
             result: 1
             second: '0.01'
-          - 
+          -
             first: 10
             operator: "*"
             result: 10
@@ -284,38 +270,38 @@ scenarios:
         text: having successfully performed the following calculations
         verb: Given
         verb_original: And
-      - 
+      -
         data: ~
         line: 51
         text: having pressed 3
         verb: Given
         verb_original: And
-      - 
+      -
         data: ~
         line: 52
         text: the display should show 3
         verb: Then
         verb_original: Then
-  - 
+  -
     background: 0
     data: []
 
     line: 54
     name: Ticker Tape
-    steps: 
-      - 
+    steps:
+      -
         data: ~
         line: 55
         text: a new Calculator object
         verb: Given
         verb_original: Given
-      - 
+      -
         data: "1 + 2 + 3 + 4 + 5 + 6 -\n100\n* 13 === + 2 =\n"
         line: 56
         text: having entered the following sequence
         verb: Given
         verb_original: And
-      - 
+      -
         data: ~
         line: 62
         text: the display should show -1025

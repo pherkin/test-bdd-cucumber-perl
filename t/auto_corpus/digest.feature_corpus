@@ -34,117 +34,104 @@ Feature: Simple tests of Digest.pm
     Then the hex output is "75ad9f578e43b863590fae52d5d19ce6"
 
 ----------DIVIDER----------
---- 
+---
 line: 1
 name: Simple tests of Digest.pm
-satisfaction: 
+satisfaction:
   - As a developer planning to use Digest.pm
   - I want to test the basic functionality of Digest.pm
   - In order to have confidence in it
-scenarios: 
-  - 
-    background: 1
-    data: []
-
-    line: 6
-    name: ~
-    steps: 
-      - 
-        data: ~
-        line: 7
-        text: a usable Digest class
-        verb: Given
-        verb_original: Given
-  - 
+scenarios:
+  -
     background: 0
     data: []
 
     line: 9
     name: Check MD5
-    steps: 
-      - 
+    steps:
+      -
         data: ~
         line: 10
         text: a Digest MD5 object
         verb: Given
         verb_original: Given
-      - 
+      -
         data: ~
         line: 11
         text: I've added "foo bar baz" to the object
         verb: When
         verb_original: When
-      - 
+      -
         data: ~
         line: 12
         text: I've added "bat ban shan" to the object
         verb: When
         verb_original: And
-      - 
+      -
         data: ~
         line: 13
         text: the hex output is "bcb56b3dd4674d5d7459c95e4c8a41d5"
         verb: Then
         verb_original: Then
-      - 
+      -
         data: ~
         line: 14
         text: the base64 output is "1B2M2Y8AsgTpgAmY7PhCfg"
         verb: Then
         verb_original: Then
-  - 
+  -
     background: 0
-    data: 
-      - 
+    data:
+      -
         data: foo
         output: 0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33
-      - 
+      -
         data: bar
         output: 62cdb7020ff920e5aa642c3d4066950dd1f01f4d
-      - 
+      -
         data: baz
         output: bbe960a25ea311d21d40669e93df2003ba9b90a2
     line: 16
     name: Check SHA-1
-    steps: 
-      - 
+    steps:
+      -
         data: ~
         line: 17
         text: a Digest SHA-1 object
         verb: Given
         verb_original: Given
-      - 
+      -
         data: ~
         line: 18
         text: I've added "<data>" to the object
         verb: When
         verb_original: When
-      - 
+      -
         data: ~
         line: 19
         text: the hex output is "<output>"
         verb: Then
         verb_original: Then
-  - 
+  -
     background: 0
     data: []
 
     line: 26
     name: MD5 longer data
-    steps: 
-      - 
+    steps:
+      -
         data: ~
         line: 27
         text: a Digest MD5 object
         verb: Given
         verb_original: Given
-      - 
+      -
         data: "Here is a chunk of text that works a bit like a HereDoc. We'll split\noff indenting space from the lines in it up to the indentation of the\nfirst \"\"\"\n"
         line: 28
         text: I've added the following to the object
         verb: When
         verb_original: When
-      - 
+      -
         data: ~
         line: 34
         text: the hex output is "75ad9f578e43b863590fae52d5d19ce6"
