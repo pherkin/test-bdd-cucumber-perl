@@ -3,6 +3,7 @@ package App::pherkin;
 use strict;
 use warnings;
 use FindBin::libs;
+use Getopt::Long;
 
 =head1 NAME
 
@@ -42,6 +43,9 @@ Returns a L<Test::BDD::Cucumber::Model::Result> object for all steps run.
 
 sub run {
     my ( $class, @arguments ) = @_;
+
+    @arguments = $class->_process_arguments(@arguments);
+
     my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load(
         $arguments[0] || './features/'
     );
@@ -51,6 +55,25 @@ sub run {
     $executor->execute( $_, $harness ) for @features;
 
     return $harness->result;
+}
+
+sub _process_arguments {
+    my ( $class, @args ) = @_;
+    local @ARGV = @args;
+
+    # Allow -Ilib, -bl
+    Getopt::Long::Configure('bundling');
+
+    my $includes = [];
+    GetOptions(
+        'I=s@'   => \$includes,
+        'l|lib'  => sub { unshift @$includes, 'lib' },
+        'b|blib' => sub { unshift @$includes, 'blib/lib', 'blib/arch' },
+    );
+
+    lib->import(@$includes) if @$includes;
+
+    return @ARGV;
 }
 
 =head1 AUTHOR

@@ -24,6 +24,12 @@ previous failure - as yellow.
 C<pherkin> will exit with a non-zero status if (and only if) the overall result
 is considered to be failing.
 
+=head1 OPTIONS
+
+ -l, --lib   (Boolean) Add 'lib' to the path
+ -b, --blib  (Boolean) Add 'blib/lib' and 'blib/arch' to the path
+ -I          Add argument to the path
+
 =head1 AUTHOR
 
 Peter Sergeant C<pete@clueball.com>
