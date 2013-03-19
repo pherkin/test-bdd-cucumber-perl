@@ -67,9 +67,11 @@ sub _process_arguments {
     my $includes = [];
     GetOptions(
         'I=s@'   => \$includes,
-        'l|lib'  => sub { unshift @$includes, 'lib' },
-        'b|blib' => sub { unshift @$includes, 'blib/lib', 'blib/arch' },
+        'l|lib'  => \(my $add_lib),
+        'b|blib' => \(my $add_blib),
     );
+    unshift @$includes, 'lib'                   if $add_lib;
+    unshift @$includes, 'blib/lib', 'blib/arch' if $add_blib;
 
     lib->import(@$includes) if @$includes;
 

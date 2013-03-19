@@ -26,9 +26,9 @@ is considered to be failing.
 
 =head1 OPTIONS
 
- -l, --lib   (Boolean) Add 'lib' to the path
- -b, --blib  (Boolean) Add 'blib/lib' and 'blib/arch' to the path
- -I          Add argument to the path
+ -l, --lib   Add 'lib' to @INC
+ -b, --blib  Add 'blib/lib' and 'blib/arch' to @INC
+ -I [dir]    Add given directory to @INC
 
 =head1 AUTHOR
 
