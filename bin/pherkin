@@ -24,6 +24,12 @@ previous failure - as yellow.
 C<pherkin> will exit with a non-zero status if (and only if) the overall result
 is considered to be failing.
 
+=head1 OPTIONS
+
+ -l, --lib   Add 'lib' to @INC
+ -b, --blib  Add 'blib/lib' and 'blib/arch' to @INC
+ -I [dir]    Add given directory to @INC
+
 =head1 AUTHOR
 
 Peter Sergeant C<pete@clueball.com>
