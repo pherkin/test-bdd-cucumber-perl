@@ -1,4 +1,8 @@
 -----
+0.14: 04 May 2013
+    - Actually apply the Test::Builder 1.5 stuff
+0.13: 04 May 2013
+    - Command-line options for pherkin thanks to cursork
     - Reintroduced the "auto_corpus" tests, and made them work
 0.12: 17 Nov 2012
     - Fixed tag-related issues, thanks to Craig Caroon
