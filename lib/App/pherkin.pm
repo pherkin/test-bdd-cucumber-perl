@@ -57,7 +57,11 @@ sub run {
     die "No feature files found" unless @features;
 
     my $harness  = Test::BDD::Cucumber::Harness::TermColor->new();
-    $executor->execute( $_, $harness ) for @features;
+    my $tag_spec;
+    if ($self->tag_scheme) {
+        $tag_spec = Test::BDD::Cucumber::Model::TagSpec->new({ tags => $self->tag_scheme });
+    }
+    $executor->execute( $_, $harness, $tag_spec ) for @features;
 
     return $harness->result;
 }

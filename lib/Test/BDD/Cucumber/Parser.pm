@@ -67,12 +67,6 @@ sub _construct {
         $feature, @lines
 	)));
 
-    if (defined $tag_scheme) {
-        my $tag_matcher = Test::BDD::Cucumber::Model::TagSpec->new({ tags => $tag_scheme });
-        my @filtered = $tag_matcher->filter( @{$feature->scenarios} );
-        $feature->scenarios(\@filtered);
-    }
-
 	return $feature;
 }
 
