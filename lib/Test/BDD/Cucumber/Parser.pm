@@ -28,6 +28,7 @@ L<Test::BDD::Cucumber::Model::Feature> object on success.
 use strict;
 use warnings;
 use Ouch;
+use Data::Dumper;
 
 use File::Slurp;
 use Test::BDD::Cucumber::Model::Document;
@@ -47,15 +48,15 @@ sub parse_string {
 }
 
 sub parse_file   {
-	my ( $self, $string, $tags ) = @_;
+	my ( $self, $string, $tag_scheme ) = @_;
 	return $self->_construct( Test::BDD::Cucumber::Model::Document->new({
 		content  => scalar( read_file $string ),
 		filename => $string
-	}), $tags );
+	}), $tag_scheme );
 }
 
 sub _construct {
-	my ( $self, $document, $tags ) = @_;
+	my ( $self, $document, $tag_scheme ) = @_;
 
 	my $feature = Test::BDD::Cucumber::Model::Feature->new({ document => $document });
     my @lines = $self->_remove_next_blanks( @{ $document->lines } );
@@ -66,9 +67,8 @@ sub _construct {
         $feature, @lines
 	)));
 
-    if (defined $tags) {
-        my $tag_list = [ or => split(' ', $tags) ];
-        my $tag_matcher = Test::BDD::Cucumber::Model::TagSpec->new({ tags => $tag_list });
+    if (defined $tag_scheme) {
+        my $tag_matcher = Test::BDD::Cucumber::Model::TagSpec->new({ tags => $tag_scheme });
         my @filtered = $tag_matcher->filter( @{$feature->scenarios} );
         $feature->scenarios(\@filtered);
     }

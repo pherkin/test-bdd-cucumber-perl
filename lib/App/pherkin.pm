@@ -4,9 +4,11 @@ use strict;
 use warnings;
 use FindBin::libs;
 use Getopt::Long;
+use Data::Dumper;
 
 use Moose;
-has 'tags' => ( is => 'rw', isa => 'Str', required => 0 );
+has 'tags' => ( is => 'rw', isa => 'ArrayRef', required => 0 );
+has 'tag_scheme' => ( is => 'rw', isa => 'ArrayRef', required => 0 );
 
 =head1 NAME
 
@@ -50,7 +52,7 @@ sub run {
     @arguments = $self->_process_arguments(@arguments);
 
     my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load(
-        $arguments[0] || './features/', $self->tags
+        $arguments[0] || './features/', $self->tag_scheme
     );
     die "No feature files found" unless @features;
 
@@ -68,18 +70,38 @@ sub _process_arguments {
     Getopt::Long::Configure('bundling');
 
     my $includes = [];
+    my $tags = [];
     GetOptions(
         'I=s@'   => \$includes,
         'l|lib'  => \(my $add_lib),
         'b|blib' => \(my $add_blib),
-        't|tags=s' => \(my $tags),
+        't|tags=s@' => \$tags,
     );
     unshift @$includes, 'lib'                   if $add_lib;
     unshift @$includes, 'blib/lib', 'blib/arch' if $add_blib;
 
     lib->import(@$includes) if @$includes;
 
-    $self->tags($tags);
+    my $tag_scheme = [];
+    my @ands = ();
+    foreach my $tag (@{$tags}) {
+        my @parts = ();
+        foreach my $part (split(',', $tag)) {
+            $part =~ s/^(~?)@//;
+            if ($1 eq '~') {
+                push @parts, [ not => $part ];
+            } else {
+                push @parts, $part;
+            }
+        }
+        if (scalar @parts > 1) {
+            push @ands, [ or => @parts ];
+        } else {
+            push @ands, @parts;
+        }
+    }
+    $tag_scheme = [ and => @ands ];
+    $self->tag_scheme($tag_scheme);
 
     return @ARGV;
 }
