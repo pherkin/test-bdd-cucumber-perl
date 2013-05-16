@@ -86,29 +86,46 @@ sub _process_arguments {
 
     lib->import(@$includes) if @$includes;
 
+    # Store our TagSpecScheme
+    $self->tag_scheme( $self->_process_tags( @{$tags} ) );
+
+    return @ARGV;
+}
+
+sub _process_tags {
+    my ( $self, @tags ) = @_;
+
+    # This is a bit faffy and possibly suboptimal.
     my $tag_scheme = [];
     my @ands = ();
-    foreach my $tag (@{$tags}) {
+
+    # Iterate over our commandline tag strings.
+    foreach my $tag (@tags) {
         my @parts = ();
+
         foreach my $part (split(',', $tag)) {
+            # Trim any @ or ~@ from the front of the tag
             $part =~ s/^(~?)@//;
-            if ($1 eq '~') {
+
+            # ~@tag => "NOT tag" => [ not => tag ]
+            if (defined $1 and $1 eq '~') {
                 push @parts, [ not => $part ];
             } else {
                 push @parts, $part;
             }
         }
-        if (scalar @parts > 1) {
-            push @ands, [ or => @parts ];
-        } else {
-            push @ands, @parts;
-        }
-    }
-    $tag_scheme = [ and => @ands ];
-    $self->tag_scheme($tag_scheme);
 
-    return @ARGV;
+        # @tag,@cow => "@tag OR @cow" => [ or => tag, cow ]
+        # (It's simpler to always stick an 'or' on the front.)
+        push @ands, [ or => @parts ];
+    }
+    # -t @tag -t @cow => "@tag AND @cow" => [ and => tag, cow ]
+    # (It's simpler to always stick an 'and' on the front.)
+    $tag_scheme = [ and => @ands ];
+
+    return $tag_scheme;
 }
+
 
 =head1 AUTHOR
 
