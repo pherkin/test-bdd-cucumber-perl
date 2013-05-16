@@ -28,7 +28,7 @@ use Test::BDD::Cucumber::Parser;
 use Test::BDD::Cucumber::StepFile();
 
 sub load {
-    my ( $class, $path ) = @_;
+    my ( $class, $path, $tags ) = @_;
     my $executor = Test::BDD::Cucumber::Executor->new();
 
     # Either load a feature or a directory...
@@ -51,7 +51,7 @@ sub load {
     # Grab the feature files
     my @features = map {
         my $file = $_;
-        my $feature = Test::BDD::Cucumber::Parser->parse_file( $file );
+        my $feature = Test::BDD::Cucumber::Parser->parse_file( $file, $tags );
     } ( $file ? ($file.'') : File::Find::Rule
         ->file()
         ->name( '*.feature' )

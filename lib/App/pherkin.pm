@@ -5,6 +5,9 @@ use warnings;
 use FindBin::libs;
 use Getopt::Long;
 
+use Moose;
+has 'tags' => ( is => 'rw', isa => 'Str', required => 0 );
+
 =head1 NAME
 
 App::pherkin - Run Cucumber tests from the command line
@@ -42,12 +45,12 @@ Returns a L<Test::BDD::Cucumber::Model::Result> object for all steps run.
 =cut
 
 sub run {
-    my ( $class, @arguments ) = @_;
+    my ( $self, @arguments ) = @_;
 
-    @arguments = $class->_process_arguments(@arguments);
+    @arguments = $self->_process_arguments(@arguments);
 
     my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load(
-        $arguments[0] || './features/'
+        $arguments[0] || './features/', $self->tags
     );
     die "No feature files found" unless @features;
 
@@ -58,7 +61,7 @@ sub run {
 }
 
 sub _process_arguments {
-    my ( $class, @args ) = @_;
+    my ( $self, @args ) = @_;
     local @ARGV = @args;
 
     # Allow -Ilib, -bl
@@ -69,11 +72,14 @@ sub _process_arguments {
         'I=s@'   => \$includes,
         'l|lib'  => \(my $add_lib),
         'b|blib' => \(my $add_blib),
+        't|tags=s' => \(my $tags),
     );
     unshift @$includes, 'lib'                   if $add_lib;
     unshift @$includes, 'blib/lib', 'blib/arch' if $add_blib;
 
     lib->import(@$includes) if @$includes;
+
+    $self->tags($tags);
 
     return @ARGV;
 }
