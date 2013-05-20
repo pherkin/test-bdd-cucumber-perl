@@ -46,6 +46,6 @@ use warnings;
 use FindBin::libs;
 
 use App::pherkin;
-my $result = App::pherkin->run( @ARGV );
+my $result = App::pherkin->new()->run( @ARGV );
 
 exit( $result->result eq 'failing' );
