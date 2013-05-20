@@ -45,6 +45,10 @@ use strict;
 use warnings;
 use FindBin::libs;
 
+if ( not -t STDOUT ) {
+    $ENV{'ANSI_COLORS_DISABLED'} = 1;
+}
+
 use App::pherkin;
 my $result = App::pherkin->run( @ARGV );
 
