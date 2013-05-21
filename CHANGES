@@ -1,5 +1,9 @@
 -----
-0.15: ??
+0.15: 21 May 2013
+    - pherkin now accepts an output type via -o, eg:
+        pherkin -o TestBuilder ; pherkin -o TermColor
+      This is a partial solution to: 
+        https://github.com/sheriff/test-bdd-cucumber-perl/issues/8
     - Use the original verb that the test file used
       https://github.com/sheriff/test-bdd-cucumber-perl/issues/9
 0.14: 04 May 2013

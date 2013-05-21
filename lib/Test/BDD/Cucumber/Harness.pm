@@ -22,6 +22,8 @@ use strict;
 use warnings;
 use Moose;
 
+has 'results' => ( is => 'ro', default => sub {[]}, isa => 'ArrayRef' );
+
 =head2 feature
 
 =head2 feature_done
@@ -65,13 +67,55 @@ sub scenario_done { my ( $self, $scenario, $dataset ) = @_; }
 =head2 step_done
 
 Called at the start and end of step execution respectively. Both methods
-accept a L<Test::BDD::Cucmber::StepConcept> object. C<step_done> also accepts
+accept a L<Test::BDD::Cucmber::StepContext> object. C<step_done> also accepts
 a L<Test::BDD::Cucumber::Model::Result> object.
 
 =cut
 
 sub step      { my ( $self, $context ) = @_; }
 sub step_done { my ($self, $context, $result) = @_; }
+
+=head2 startup
+
+=head2 shutdown
+
+Some tests will run one feature, some will run many. For this reason, you may
+have harnesses that have something they need to do on start (print an HTML
+header), that they shouldn't do at the start of every feature, or a close-down
+task (like running C<done_testing()>), that again shouldn't happen on I<every>
+feature close-out, just the last.
+
+Just C<$self> as the single argument for both.
+
+=cut
+
+sub startup  { my $self = shift; }
+sub shutdown { my $self = shift; }
+
+=head2 add_result
+
+Called before C<step_done> with the step's result. Expected to silently add the
+result in to a pool that facilitate the C<result> method. No need to override
+this behaviour.
+
+=head2 result
+
+Returns a collective view on the passing status of all steps run so far,
+as a L<Test::BDD::Cucumber::Model::Result> object. Default implementation should
+be fine for all your needs.
+
+=cut
+
+sub add_result {
+    my $self = shift;
+    push( @{$self->results}, shift() );
+}
+
+sub result {
+    my $self = shift;
+    return Test::BDD::Cucumber::Model::Result->from_children(
+        @{$self->results} );
+}
 
 =head1 AUTHOR
 

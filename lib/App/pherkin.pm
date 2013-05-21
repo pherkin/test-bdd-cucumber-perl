@@ -22,12 +22,12 @@ file matching C<*_steps.pl>), loading the step definitions and then executing
 the features.
 
 Steps that pass will be printed in green, those that fail in red, and those
-for which there is no step definition as yellow (for TODO).
+for which there is no step definition as yellow (for TODO), assuming you're
+using the default output harness.
 
 =cut
 
 use Test::BDD::Cucumber::Loader;
-use Test::BDD::Cucumber::Harness::TermColor;
 
 =head1 METHODS
 
@@ -44,16 +44,20 @@ Returns a L<Test::BDD::Cucumber::Model::Result> object for all steps run.
 sub run {
     my ( $class, @arguments ) = @_;
 
-    @arguments = $class->_process_arguments(@arguments);
+    my ($options, @feature_files) = $class->_process_arguments(@arguments);
 
     my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load(
-        $arguments[0] || './features/'
+        $feature_files[0] || './features/'
     );
     die "No feature files found" unless @features;
 
-    my $harness  = Test::BDD::Cucumber::Harness::TermColor->new();
+    eval "require $options->{'harness'}" || die $@;
+    my $harness  = $options->{'harness'}->new();
+    $harness->startup();
+
     $executor->execute( $_, $harness ) for @features;
 
+    $harness->shutdown();
     return $harness->result;
 }
 
@@ -69,13 +73,19 @@ sub _process_arguments {
         'I=s@'   => \$includes,
         'l|lib'  => \(my $add_lib),
         'b|blib' => \(my $add_blib),
+        'o|output=s' => \(my $harness),
     );
     unshift @$includes, 'lib'                   if $add_lib;
     unshift @$includes, 'blib/lib', 'blib/arch' if $add_blib;
 
+    # Munge the output harness
+    $harness //= "TermColor";
+    $harness = "Test::BDD::Cucumber::Harness::$harness" unless
+        $harness =~ m/\:\:/;
+
     lib->import(@$includes) if @$includes;
 
-    return @ARGV;
+    return ({ harness => $harness }, @ARGV);
 }
 
 =head1 AUTHOR

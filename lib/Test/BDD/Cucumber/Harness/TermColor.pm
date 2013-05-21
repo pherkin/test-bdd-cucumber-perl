@@ -11,11 +11,6 @@ to the terminal.
 
 =head1 METHODS
 
-=head2 result
-
-Returns a collective view on the passing status of all steps run so far,
-as a L<Test::BDD::Cucumber::Model::Result> object.
-
 =cut
 
 use strict;
@@ -26,13 +21,6 @@ use Test::BDD::Cucumber::Util;
 use Test::BDD::Cucumber::Model::Result;
 
 extends 'Test::BDD::Cucumber::Harness';
-
-my @results;
-
-sub result {
-    my $self = shift;
-    return Test::BDD::Cucumber::Model::Result->from_children( @results );
-}
 
 my $margin = 2;
 if ( $margin > 1 ) {
@@ -75,7 +63,6 @@ sub scenario_done { print "\n"; }
 sub step {}
 sub step_done {
     my ($self, $context, $result ) = @_;
-    push(@results, $result);
 
     my $color;
     my $follow_up = [];

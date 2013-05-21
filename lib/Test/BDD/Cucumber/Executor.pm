@@ -307,6 +307,7 @@ sub dispatch {
         # Say the step is done, and return the result. Happens outside
         # the above block so that we don't have the localized harness
         # anymore...
+        $context->harness->add_result( $result );
         $context->harness->step_done( $context, $result );
         return $result;
     }

@@ -26,9 +26,19 @@ is considered to be failing.
 
 =head1 OPTIONS
 
- -l, --lib   Add 'lib' to @INC
- -b, --blib  Add 'blib/lib' and 'blib/arch' to @INC
- -I [dir]    Add given directory to @INC
+ -l, --lib     Add 'lib' to @INC
+ -b, --blib    Add 'blib/lib' and 'blib/arch' to @INC
+ -I [dir]      Add given directory to @INC
+ -o, --output  Output harness to use. Default to 'TermColor'. See 'Outputs'
+
+=head1 OUTPUTS
+
+C<pherkin> can output using any of the C<Test::BDD::Cucumber::Harness> output
+modules. L<Test::BDD::Cucumber::TermColor> is the default, but
+L<Test::BDD::Cucumber::TestBuilder> is also a reasonable option:
+
+  pherkin -o TermColor some/path/feature   # The default
+  pherkin -o TestBuilder some/path/feature # Test::Builder-type text output
 
 =head1 AUTHOR
 
