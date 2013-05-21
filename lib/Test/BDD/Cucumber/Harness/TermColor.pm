@@ -93,7 +93,7 @@ sub step_done {
     $self->_display({
         indent    => 4,
         color     => $color,
-        text      => $context->step->verb . ' ' . $context->text,
+        text      => $context->step->verb_original . ' ' . $context->text,
         highlight => 'bright_cyan',
         trailing  => 0,
         follow_up => $follow_up,

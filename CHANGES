@@ -1,4 +1,7 @@
 -----
+0.15: ??
+    - Use the original verb that the test file used
+      https://github.com/sheriff/test-bdd-cucumber-perl/issues/9
 0.14: 04 May 2013
     - Actually apply the Test::Builder 1.5 stuff
 0.13: 04 May 2013
