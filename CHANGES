@@ -1,8 +1,12 @@
 -----
+0.16: 21 May 2013
+    - Default behaviour from pherkin is to supress colours when outputting
+        to not a tty; thanks (for this, and much of the stuff in 0.15) to
+        rjp: https://github.com/sheriff/test-bdd-cucumber-perl/pull/11
 0.15: 21 May 2013
     - pherkin now accepts an output type via -o, eg:
         pherkin -o TestBuilder ; pherkin -o TermColor
-      This is a partial solution to: 
+      This is a partial solution to:
         https://github.com/sheriff/test-bdd-cucumber-perl/issues/8
     - Use the original verb that the test file used
       https://github.com/sheriff/test-bdd-cucumber-perl/issues/9
