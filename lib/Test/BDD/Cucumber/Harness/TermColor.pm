@@ -16,6 +16,26 @@ to the terminal.
 use strict;
 use warnings;
 use Moose;
+
+# Try and make the colors just work on Windows...
+BEGIN {
+    if (
+        # We're apparently on Windows
+        $^O =~ /MSWin32/i &&
+        # We haven't disabled coloured output for Term::ANSIColor
+        ( ! $ENV{'ANSI_COLORS_DISABLED'} ) &&
+        # Here's a flag you can use if you really really need to turn this fall-
+        # back behaviour off
+        (! $ENV{'DISABLE_WIN32_FALLBACK'} )
+    ) {
+        # Try and load
+        eval "require Win32::Console::ANSI";
+        if ( $@ ) {
+            print "# Install Win32::Console::ANSI to display colors properly\n";
+        }
+    }
+}
+
 use Term::ANSIColor;
 use Test::BDD::Cucumber::Util;
 use Test::BDD::Cucumber::Model::Result;
