@@ -272,6 +272,7 @@ sub _extract_table {
 		if ( @columns ) {
 			ouch 'parse_error', "Inconsistent number of rows in table", $line
 				unless @rows == @columns;
+            $target->columns( [ @columns ] ) if $target->can('columns');
 			my $i = 0;
 			my %data_hash = map { $columns[$i++] => $_ } @rows;
 			push( @$data, \%data_hash );

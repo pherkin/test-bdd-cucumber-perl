@@ -1,6 +1,8 @@
 package Test::BDD::Cucumber::StepContext;
 use Moose;
 
+use List::Util qw( first );
+
 =head1 NAME
 
 Test::BDD::Cucumber::StepContext - Data made available to step definitions
@@ -13,14 +15,25 @@ populated by L<Test::BDD::Cucumber::Executor>.
 
 =head1 ATTRIBUTES
 
-=head2 data
+=head2 columns
+
+If the step-specific data supplied is a table, the this attribute will contain
+the column names in the order they appeared.
+
+=cut
+
+has 'columns' => ( is => 'ro', isa => 'ArrayRef' );
+
+=head2 _data
 
 Step-specific data. Will either be a text string in the case of a """ string, or
 an arrayref of hashrefs if the step had an associated table.
 
+See the C<data> method below.
+
 =cut
 
-has 'data'     => ( is => 'ro' );
+has '_data'     => ( is => 'ro', isa => 'Str|ArrayRef', init_arg => 'data', default => '' );
 
 =head2 stash
 
@@ -47,7 +60,7 @@ objects respectively.
 
 has 'feature'  => ( is => 'ro', required => 1, isa => 'Test::BDD::Cucumber::Model::Feature' );
 has 'scenario' => ( is => 'ro', required => 1, isa => 'Test::BDD::Cucumber::Model::Scenario' );
-has 'step'     => ( is => 'ro', required => 1, isa => 'Test::BDD::Cucumber::Model::Step' );
+has 'step'     => ( is => 'ro', required => 0, isa => 'Test::BDD::Cucumber::Model::Step' );
 
 =head2 verb
 
@@ -64,7 +77,7 @@ multiplied out at this point.
 
 =cut
 
-has 'text'     => ( is => 'ro', required => 1, isa => 'Str' );
+has 'text'     => ( is => 'ro', required => 1, isa => 'Str', default => '' );
 
 =head2 harness
 
@@ -81,7 +94,22 @@ C<$1>, C<$2> etc as appropriate.
 
 =cut
 
-has 'matches'  => ( is => 'rw', isa => 'ArrayRef' );
+has '_matches'  => ( is => 'rw', isa => 'ArrayRef', init_arg => 'matches', default => sub { [] } );
+
+has 'transformers' => ( is => 'ro', isa => 'ArrayRef', predicate => 'has_transformers', );
+
+has '_transformed_matches' => ( is => 'ro', isa => 'ArrayRef', lazy => 1, builder => '_build_transformed_matches', clearer => '_clear_transformed_matches', );
+
+has '_transformed_data' => ( is => 'ro', isa => 'Str|ArrayRef', lazy => 1, builder => '_build_transformed_data', clearer => '_clear_transformed_data', );
+
+=head2 is_hook
+
+The harness processing the output can decide whether to shop information for
+this step which is actually an internal hook, i.e. a Before or After step
+
+=cut
+
+has 'is_hook' => ( is => 'ro', isa => 'Bool', lazy => 1, builder => '_build_is_hook' );
 
 =head1 METHODS
 
@@ -93,6 +121,136 @@ Currently implemented by asking the linked Scenario object...
 =cut
 
 sub background { my $self = shift; return $self->scenario->background }
+
+=head2 data
+
+See the C<_data> attribute above.
+
+Calling this method will return either the """ string, or a possibly Transform-ed
+set of table data.
+
+=cut
+
+sub data
+{
+    my $self = shift;
+
+    if ( @_ )
+    {
+        $self->_data( @_ );
+        $self->_clear_transformed_data;
+        return;
+    }
+
+    return $self->_transformed_data;
+}
+
+=head2 matches
+
+See the C<_matches> attribute above.
+
+Call this method will return the possibly Transform-ed matches .
+
+=cut
+
+sub matches
+{
+    my $self = shift;
+
+    if ( @_ )
+    {
+        $self->_matches( @_ );
+        $self->_clear_transformed_matches;
+        return;
+    }
+
+    return $self->_transformed_matches;
+}
+
+=head2 transform
+
+Used internally to transform data and placeholders, but it can also be called
+from within your Given/When/Then code.
+
+=cut
+
+sub transform
+{
+    my $self = shift;
+    my $value = shift;
+
+    defined $value or return $value;
+        
+    TRANSFORM:
+    for my $transformer ( @{ $self->transformers } )
+    {
+        # uses the same magic as other steps
+        # and puts any matches into $1, $2, etc.
+        # and calls the Transform step
+        if ( $value =~ s/$transformer->[0]/$transformer->[1]->( $self )/e )
+        {
+            # if we matched then stop processing this match
+            return $value;
+        }
+    }
+
+    # if we're here, the value will be returned unchanged
+    return $value;
+}
+
+# the builder for the is_hook attribute
+sub _build_is_hook
+{
+    my $self = shift;
+
+    return ( $self->verb eq 'before' or $self->verb eq 'after' ) ? 1 : 0;
+}
+
+# the builder for the _transformed_matches attribute
+sub _build_transformed_matches
+{
+    my $self = shift;
+
+    my @transformed_matches = @{ $self->_matches };
+
+    # this stops it recursing forever...
+    # and only Transform if there are any to process
+    if ( $self->verb ne 'transform'
+        and $self->has_transformers )
+    {
+        @transformed_matches = map { $_ = $self->transform( $_ ) } @transformed_matches;
+    }
+
+    return \@transformed_matches;
+}
+
+# the builder for the _transformed_data attribute
+sub _build_transformed_data
+{
+    my $self = shift;
+
+    my $transformed_data = $self->_data;
+
+    # again stop recursing
+    # only transform table data
+    # and only Transform if there are any to process
+    if ( $self->verb ne 'transform'
+        and ref $transformed_data
+        and $self->has_transformers )
+    {
+        # build the string that a Transform is looking for
+        # table:column1,column2,column3
+        my $table_text = 'table:' . join( ',', @{ $self->columns } );
+
+        if ( my $transformer = first { $table_text =~ $_->[0] } @{ $self->transformers } )
+        {
+            # call the Transform step
+            $transformer->[1]->( $self, $transformed_data );
+        }
+    }
+
+    return $transformed_data;
+}
 
 =head1 AUTHOR
 

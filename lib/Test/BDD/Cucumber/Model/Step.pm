@@ -59,6 +59,15 @@ by harnesses
 has 'data_as_strings' => ( is => 'rw', default => sub {[]},
 	isa => 'ArrayRef[Str]' );
 
+=head2 columns
+
+If data was in a table format, then the column names will be here in the order
+they appeared.
+
+=cut
+
+has 'columns' => ( is => 'rw', isa => 'ArrayRef[Str]' );
+
 =head1 AUTHOR
 
 Peter Sergeant C<pete@clueball.com>

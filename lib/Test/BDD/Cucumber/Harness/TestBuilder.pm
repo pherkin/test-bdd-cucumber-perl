@@ -41,11 +41,22 @@ sub step {}
 
 sub step_done {
     my ($self, $context, $result) = @_;
+
     my $status = $result->result;
 
     my $step = $context->step;
-    my $step_name = $si . ucfirst($step->verb_original) . ' ' .
-        $context->text;
+    my $step_name;
+
+    if ( $context->is_hook )
+    {
+        $status ne 'undefined' and $status ne 'pending' and $status ne 'passing' or return;
+        $step_name = 'In ' . ucfirst( $context->verb ) . ' Hook';
+    }
+    else
+    {
+        $step_name = $si . ucfirst($step->verb_original) . ' ' . $context->text;
+    }
+
 
     if ( $status eq 'undefined' || $status eq 'pending' ) {
         if ( $self->fail_skip ) {
@@ -61,12 +72,18 @@ sub step_done {
     } else {
         fail( $step_name );
         $self->_note_step_data( $step );
+        if ( ! $context->is_hook )
+        {
+            my $step_location = '  in step at ' . $step->line->document->filename . ' line ' . $step->line->number . '.';
+            diag( $step_location );
+        }
         diag( $result->output );
     }
 }
 
 sub _note_step_data {
     my ( $self, $step ) = @_;
+    return unless $step;
     my @step_data = @{ $step->data_as_strings };
     return unless @step_data;
 
