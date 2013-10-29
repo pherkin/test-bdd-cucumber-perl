@@ -458,6 +458,7 @@ sub skip_step {
     });
 
     # Pretend we executed it
+    $context->harness->add_result( $result );
     $context->harness->step_done( $context, $result );
     return $result;
 }
