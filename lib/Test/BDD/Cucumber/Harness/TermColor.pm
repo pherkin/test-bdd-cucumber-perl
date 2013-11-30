@@ -95,12 +95,34 @@ sub step_done {
     } else {
         $color = 'red';
         $follow_up = [ split(/\n/, $result->{'output'} ) ];
+
+        if ( ! $context->is_hook )
+        {
+            unshift @{ $follow_up },
+                'step defined at '
+                . $context->step->line->document->filename
+                . ' line '
+                .  $context->step->line->number
+                . '.';
+        }
+    }
+
+    my $text;
+
+    if ( $context->is_hook )
+    {
+        $color eq 'red' or return;
+        $text = 'In ' . ucfirst( $context->verb ) . ' Hook';
+    }
+    else
+    {
+        $text = $context->step->verb_original . ' ' . $context->text;
     }
 
     $self->_display({
         indent    => 4,
         color     => $color,
-        text      => $context->step->verb_original . ' ' . $context->text,
+        text      => $text,
         highlight => 'bright_cyan',
         trailing  => 0,
         follow_up => $follow_up,
@@ -112,6 +134,7 @@ sub step_done {
 
 sub _note_step_data {
     my ( $self, $step ) = @_;
+    return unless $step;
     my @step_data = @{ $step->data_as_strings };
     return unless @step_data;
 

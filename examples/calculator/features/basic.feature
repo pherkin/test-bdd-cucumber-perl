@@ -3,9 +3,6 @@ Feature: Basic Calculator Functions
   As a developer I want to check some basic operations
   So that I can have confidence in my Calculator class.
 
-  Background:
-    Given a usable "Calculator" class
-
   Scenario: First Key Press on the Display
     Given a new Calculator object
     And having pressed 1
@@ -60,3 +57,18 @@ Feature: Basic Calculator Functions
       * 13 \=\=\= + 2 =
       """
     Then the display should show -1025
+
+  Scenario: Enter number using text
+    Given a new Calculator object
+    And having keyed __THE_NUMBER_FIVE__
+    Then the display should show 5
+
+  Scenario: Enter numbers using text
+    Given a new Calculator object
+    And having added these numbers
+      | number as word      |
+      | __THE_NUMBER_FOUR__ |
+      | __THE_NUMBER_FIVE__ |
+      | __THE_NUMBER_ONE__  |
+    Then the display should show 10
+    And the display should show __THE_NUMBER_TEN__

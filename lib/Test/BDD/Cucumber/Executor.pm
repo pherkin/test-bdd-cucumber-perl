@@ -47,13 +47,32 @@ sub add_steps {
     for ( @steps ) {
         my ( $verb, $match, $code ) = @$_;
         $verb = lc $verb;
-        unless (ref( $match )) {
-            $match =~ s/:\s*$//;
-            $match = quotemeta( $match );
-            $match = qr/^$match:?/i;
+
+        if ( $verb =~ /^(before|after)$/ )
+        {
+            $code = $match;
+            $match = qr//;
+        }
+        else
+        {
+            unless (ref( $match )) {
+                $match =~ s/:\s*$//;
+                $match = quotemeta( $match );
+                $match = qr/^$match:?/i;
+            }
         }
 
-        push( @{ $self->{'steps'}->{$verb} }, [ $match, $code ] );
+        if ( $verb eq 'transform' or $verb eq 'after' )
+        {
+            # Most recently defined Transform takes precedence
+            # and After blocks need to be run in reverse order
+            unshift( @{ $self->{'steps'}->{$verb} }, [ $match, $code ] );
+        }
+        else
+        {
+            push( @{ $self->{'steps'}->{$verb} }, [ $match, $code ] );
+        }
+
     }
 }
 
@@ -144,12 +163,52 @@ sub execute_scenario {
     my @datasets = @{ $outline->data };
     @datasets = ({}) unless @datasets;
 
+    my $scenario_stash = $incoming_scenario_stash || {};
+
+    my %context_defaults = (
+        # Data portion
+        data    => '',
+        stash   => {
+            feature  => $feature_stash,
+            scenario => $scenario_stash,
+            step     => {},
+        },
+    
+        # Step-specific info
+        feature  => $feature,
+        scenario => $outline,
+    
+        # Communicators
+        harness  => $harness,
+
+        transformers => $self->{'steps'}->{'transform'} || [],
+    );
+
     foreach my $dataset ( @datasets ) {
-        my $scenario_stash = $incoming_scenario_stash || {};
 
         # OK, back to the normal execution
         $harness->$harness_start( $outline, $dataset,
             $scenario_stash->{'longest_step_line'} );
+
+        if ( not $is_background )
+        {
+            for my $before_step ( @{ $self->{'steps'}->{'before'} || [] } )
+            {
+                # Set up a context
+                my $context = Test::BDD::Cucumber::StepContext->new({
+                    %context_defaults,
+                    verb => 'before',
+                });
+    
+                my $result = $self->dispatch( $context, $before_step,
+                        $outline_stash->{'short_circuit'} );
+    
+                # If it didn't pass, short-circuit the rest
+                unless ( $result->result eq 'passing' ) {
+                    $outline_stash->{'short_circuit'}++;
+                }
+            }
+        }
 
         # Run the background if we have one. This recurses back in to
         # execute_scenario...
@@ -172,28 +231,19 @@ sub execute_scenario {
 
             # Set up a context
             my $context = Test::BDD::Cucumber::StepContext->new({
+                %context_defaults,
 
                 # Data portion
+                columns => $step->columns || [],
                 data    => ref($step->data) ? dclone($step->data) : $step->data || '',
-                stash   => {
-                    feature  => $feature_stash,
-                    scenario => $scenario_stash,
-                    step     => {},
-                },
 
                 # Step-specific info
-                feature  => $feature,
-                scenario => $outline,
                 step     => $step,
                 verb     => lc($step->verb),
                 text     => $text,
-
-                # Communicators
-                harness  => $harness
-
             });
 
-            my $result = $self->dispatch( $context,
+            my $result = $self->find_and_dispatch( $context,
                     $outline_stash->{'short_circuit'} );
 
             # If it didn't pass, short-circuit the rest
@@ -202,6 +252,22 @@ sub execute_scenario {
             }
 
         }
+
+        if ( not $is_background )
+        {
+            for my $after_step ( @{ $self->{'steps'}->{'after'} || [] } )
+            {
+                # Set up a context
+                my $context = Test::BDD::Cucumber::StepContext->new({
+                    %context_defaults,
+                    verb => 'after',
+                });
+    
+                # All After steps should happen, to ensure cleanup
+                my $result = $self->dispatch( $context, $after_step, 0 );
+            }
+        }
+
 
         $harness->$harness_stop( $outline, $dataset );
     }
@@ -237,7 +303,7 @@ steps should be skipped.
 
 =cut
 
-sub dispatch {
+sub find_and_dispatch {
     my ( $self, $context, $short_circuit ) = @_;
 
     # Short-circuit if we need to
@@ -254,63 +320,69 @@ sub dispatch {
         "No matching step definition for: " . $context->verb . ' ' . $context->text
     ) unless $step;
 
+    return $self->dispatch( $context, $step, 0 );
+}
+
+sub dispatch {
+    my ( $self, $context, $step, $short_circuit ) = @_;
+
+    return $self->skip_step($context, 'pending', "Short-circuited from previous tests")
+        if $short_circuit;
+
     # Execute the step definition
     my ( $regular_expression, $coderef ) = @$step;
 
     # Setup what we'll pass to step_done, with out localized Test::Builder stuff
-    my $tb_return;
+    my $output = '';
+    my $tb_return = {
+        output => \$output,
+        builder => Test::Builder->create()
+    };
+
+    # Set its outputs to be self-referential
+    $tb_return->{'builder'}->output( \$output );
+    $tb_return->{'builder'}->failure_output( \$output );
+    $tb_return->{'builder'}->todo_output( \$output );
+
+    # Make a minumum pass
+    $tb_return->{'builder'}->ok(1, "Starting to execute step: " . $context->text );
+
+    # Say we're about to start it up
+    $context->harness->step( $context );
+
+    # New scope for the localization
+    my $result;
     {
-        my $output = '';
-        $tb_return = {
-            output => \$output,
-            builder => Test::Builder->create()
-        };
+        # Localize test builder
+        local $Test::Builder::Test = $tb_return->{'builder'};
+        # Guarantee the $<digits> :-/
+        $context->matches([ $context->text =~ $regular_expression ]);
 
-        # Set its outputs to be self-referential
-        $tb_return->{'builder'}->output( \$output );
-        $tb_return->{'builder'}->failure_output( \$output );
-        $tb_return->{'builder'}->todo_output( \$output );
-
-        # Make a minumum pass
-        $tb_return->{'builder'}->ok(1, "Starting to execute step: " . $context->text );
-
-        # Say we're about to start it up
-        $context->harness->step( $context );
-
-        # New scope for the localization
-        my $result;
-        {
-            # Localize test builder
-            local $Test::Builder::Test = $tb_return->{'builder'};
-            # Guarantee the $<digits> :-/
-            $context->matches([ $context->text =~ $regular_expression ]);
-
-            # Execute!
-            eval { $coderef->( $context ) };
-            if ( $@ ) {
-                $Test::Builder::Test->ok( 0, "Test compiled" );
-                $Test::Builder::Test->diag( $@ );
-            }
-
-            # Close up the Test::Builder object
-            $tb_return->{'builder'}->done_testing();
-
-            my $status = $self->_test_status($tb_return->{builder});
-
-            # Create the result object
-            $result = Test::BDD::Cucumber::Model::Result->new({
-               result => $status,
-               output => $output
-            });
-
+        # Execute!
+        eval { $coderef->( $context ) };
+        if ( $@ ) {
+            $Test::Builder::Test->ok( 0, "Test compiled" );
+            $Test::Builder::Test->diag( $@ );
         }
-        # Say the step is done, and return the result. Happens outside
-        # the above block so that we don't have the localized harness
-        # anymore...
-        $context->harness->add_result( $result );
-        $context->harness->step_done( $context, $result );
-        return $result;
+
+        # Close up the Test::Builder object
+        $tb_return->{'builder'}->done_testing();
+
+        my $status = $self->_test_status($tb_return->{builder});
+
+        # Create the result object
+        $result = Test::BDD::Cucumber::Model::Result->new({
+            result => $status,
+            output => $output
+        });
+
     }
+    # Say the step is done, and return the result. Happens outside
+    # the above block so that we don't have the localized harness
+    # anymore...
+    $context->harness->add_result( $result );
+    $context->harness->step_done( $context, $result );
+    return $result;
 }
 
 
@@ -386,6 +458,7 @@ sub skip_step {
     });
 
     # Pretend we executed it
+    $context->harness->add_result( $result );
     $context->harness->step_done( $context, $result );
     return $result;
 }

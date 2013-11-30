@@ -12,7 +12,7 @@ use File::Find;
 
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(Given When Then Step);
+our @EXPORT = qw(Given When Then Step Transform Before After);
 
 our @definitions;
 
@@ -32,10 +32,13 @@ Defining steps:
  use Test::BDD::Cucumber::StepFile;
  use Method::Signatures; # Allows short-hand func method
 
- Given 'something',          func ($c) { print "YEAH!" }
- When  qr/smooooth (\d+)/,   func ($c) { print "YEEEHAH $1" }
- Then  qr/something (else)/, func ($c) { print "Meh $1" }
- Step  qr/die now/,          func ($c) { die "now" }
+ Given     'something',          func ($c) { print "YEAH!" }
+ When      qr/smooooth (\d+)/,   func ($c) { print "YEEEHAH $1" }
+ Then      qr/something (else)/, func ($c) { print "Meh $1" }
+ Step      qr/die now/,          func ($c) { die "now" }
+ Transform qr/^(\d+)$/,          func ($c) { int $1 }
+ Before                          func ($c) { setup_db() }
+ After                           func ($c) { teardown() }
 
 Loading steps, in a different file:
 
@@ -52,17 +55,27 @@ Loading steps, in a different file:
 
 =head2 Step
 
+=head2 Transform
+
+=head2 Before
+
+=head2 After
+
 Accept a regular expression or string, and a coderef. Some cute tricks ensure
 that when you call the C<load()> method on a file with these statements in,
 these are returned to it...
 
 =cut
 
-sub Given { push( @definitions, [ Given => @_ ] ) }
-sub When  { push( @definitions, [ When  => @_ ] ) }
-sub Then  { push( @definitions, [ Then  => @_ ] ) }
+sub Given     { push( @definitions, [ Given     => @_ ] ) }
+sub When      { push( @definitions, [ When      => @_ ] ) }
+sub Then      { push( @definitions, [ Then      => @_ ] ) }
 
-sub Step  { push( @definitions, [ Step  => @_ ] ) }
+sub Step      { push( @definitions, [ Step      => @_ ] ) }
+
+sub Transform { push( @definitions, [ Transform => @_ ] ) }
+sub Before    { push( @definitions, [ Before    => @_ ] ) }
+sub After     { push( @definitions, [ After     => @_ ] ) }
 
 =head2 load
 
