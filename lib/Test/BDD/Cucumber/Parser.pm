@@ -28,12 +28,14 @@ L<Test::BDD::Cucumber::Model::Feature> object on success.
 use strict;
 use warnings;
 use Ouch;
+use Data::Dumper;
 
 use File::Slurp;
 use Test::BDD::Cucumber::Model::Document;
 use Test::BDD::Cucumber::Model::Feature;
 use Test::BDD::Cucumber::Model::Scenario;
 use Test::BDD::Cucumber::Model::Step;
+use Test::BDD::Cucumber::Model::TagSpec;
 
 # https://github.com/cucumber/cucumber/wiki/Multiline-Step-Arguments
 # https://github.com/cucumber/cucumber/wiki/Scenario-outlines
@@ -46,15 +48,15 @@ sub parse_string {
 }
 
 sub parse_file   {
-	my ( $self, $string ) = @_;
+	my ( $self, $string, $tag_scheme ) = @_;
 	return $self->_construct( Test::BDD::Cucumber::Model::Document->new({
 		content  => scalar( read_file $string ),
 		filename => $string
-	}) );
+	}), $tag_scheme );
 }
 
 sub _construct {
-	my ( $self, $document ) = @_;
+	my ( $self, $document, $tag_scheme ) = @_;
 
 	my $feature = Test::BDD::Cucumber::Model::Feature->new({ document => $document });
     my @lines = $self->_remove_next_blanks( @{ $document->lines } );

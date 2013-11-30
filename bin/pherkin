@@ -62,6 +62,6 @@ BEGIN {
 }
 
 use App::pherkin;
+my $result = App::pherkin->new()->run( @ARGV );
 
-my $result = App::pherkin->run( @ARGV );
 exit( $result->result eq 'failing' );
