@@ -1,10 +1,18 @@
 -----
-0.16: 21 May 2013
+0.16: 30 Nov 2013
     - Default behaviour from pherkin is to supress colours when outputting
         to not a tty; thanks (for this, and much of the stuff in 0.15) to
         rjp: https://github.com/sheriff/test-bdd-cucumber-perl/pull/11
     - Try and use Win32::Console::ANSI if on Windows
         https://github.com/sheriff/test-bdd-cucumber-perl/issues/13
+    - Before and After Hooks now implemented
+        highflying: https://github.com/sheriff/test-bdd-cucumber-perl/pull/15
+    - Step Placeholder Transform now implemented
+    - Step line number now displayed on failing steps (TestBuilder output)
+    - Fixed bug where results from skipped steps were not being added to the overall results
+    - Run tagged scenarios
+        rjp: https://github.com/sheriff/test-bdd-cucumber-perl/pull/15
+        highflying: https://github.com/sheriff/test-bdd-cucumber-perl/pull/10
 0.15: 21 May 2013
     - pherkin now accepts an output type via -o, eg:
         pherkin -o TestBuilder ; pherkin -o TermColor
