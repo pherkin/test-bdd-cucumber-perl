@@ -1,4 +1,8 @@
 -----
+0.17: 01 Dec 2013
+    - the Calculator module should now be hidden from the PAUSE indexer
+    - The scenario stash wasn't being reset between each Outline Scenario
+        execution.
 0.16: 01 Dec 2013
     - Default behaviour from pherkin is to supress colours when outputting
         to not a tty; thanks (for this, and much of the stuff in 0.15) to
