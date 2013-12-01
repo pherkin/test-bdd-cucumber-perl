@@ -1,4 +1,5 @@
-package Calculator;
+package # hide from PAUSE indexer
+    Calculator;
 
 use strict;
 use warnings;
