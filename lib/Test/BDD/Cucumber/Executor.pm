@@ -292,7 +292,7 @@ sub add_placeholders {
     return Test::BDD::Cucumber::Util::bs_unquote( $quoted_text );
 }
 
-=head2 dispatch
+=head2 find_and_dispatch
 
 Accepts a L<Test::BDD::Cucumber::StepContext> object, and searches through
 the steps that have been added to the executor object, executing against the
@@ -322,6 +322,16 @@ sub find_and_dispatch {
 
     return $self->dispatch( $context, $step, 0 );
 }
+
+=head2 dispatch
+
+Accepts a L<Test::BDD::Cucumber::StepContext> object, and a L<Test::BDD::Cucumber::Step>
+object and executes it.
+
+You can also pass in a boolean 'short-circuit' flag if the Scenario's remaining
+steps should be skipped.
+
+=cut
 
 sub dispatch {
     my ( $self, $context, $step, $short_circuit ) = @_;
