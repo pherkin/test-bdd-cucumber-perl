@@ -1,5 +1,5 @@
 -----
-0.16: 30 Nov 2013
+0.16: 01 Dec 2013
     - Default behaviour from pherkin is to supress colours when outputting
         to not a tty; thanks (for this, and much of the stuff in 0.15) to
         rjp: https://github.com/sheriff/test-bdd-cucumber-perl/pull/11
