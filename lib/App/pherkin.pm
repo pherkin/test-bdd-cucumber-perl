@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use FindBin::libs;
 use Getopt::Long;
-use Data::Dumper;
 
 use Moose;
 has 'tags' => ( is => 'rw', isa => 'ArrayRef', required => 0 );
