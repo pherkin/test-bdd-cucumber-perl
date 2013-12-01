@@ -170,7 +170,6 @@ sub execute_scenario {
         data    => '',
         stash   => {
             feature  => $feature_stash,
-            scenario => $scenario_stash,
             step     => {},
         },
     
@@ -185,6 +184,8 @@ sub execute_scenario {
     );
 
     foreach my $dataset ( @datasets ) {
+        my $scenario_stash = $incoming_scenario_stash || {};
+        $context_defaults{stash}->{scenario} = $scenario_stash;
 
         # OK, back to the normal execution
         $harness->$harness_start( $outline, $dataset,
