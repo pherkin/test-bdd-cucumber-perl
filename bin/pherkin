@@ -26,10 +26,13 @@ is considered to be failing.
 
 =head1 OPTIONS
 
- -l, --lib     Add 'lib' to @INC
- -b, --blib    Add 'blib/lib' and 'blib/arch' to @INC
- -I [dir]      Add given directory to @INC
- -o, --output  Output harness to use. Default to 'TermColor'. See 'Outputs'
+ -l, --lib              Add 'lib' to @INC
+ -b, --blib             Add 'blib/lib' and 'blib/arch' to @INC
+ -I [dir]               Add given directory to @INC
+ -o, --output           Output harness to use. Default to 'TermColor'. See 'Outputs'
+ -t, --tags @tag        Run scenarios tagged with '@tag'
+ -t, --tags @tag1,@tag2 Run scenarios tagged with '@tag1' and '@tag2'
+ -t, --tags ~@tag       Run scenarios tagged without '@tag'
 
 =head1 OUTPUTS
 
