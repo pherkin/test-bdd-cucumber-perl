@@ -184,6 +184,9 @@ sub transform
     TRANSFORM:
     for my $transformer ( @{ $self->transformers } )
     {
+        # turn off this warning so undef can be set in the following regex
+        no warnings 'uninitialized';
+
         # uses the same magic as other steps
         # and puts any matches into $1, $2, etc.
         # and calls the Transform step
