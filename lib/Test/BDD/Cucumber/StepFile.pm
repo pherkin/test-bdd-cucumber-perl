@@ -8,7 +8,6 @@ Test::BDD::Cucumber::StepFile - Functions for creating and loading Step Definiti
 
 use strict;
 use warnings;
-use File::Find;
 
 require Exporter;
 our @ISA = qw(Exporter);
