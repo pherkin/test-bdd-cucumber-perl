@@ -8,10 +8,11 @@ Test::BDD::Cucumber::StepFile - Functions for creating and loading Step Definiti
 
 use strict;
 use warnings;
+use Carp qw/croak/;
 
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(Given When Then Step Transform Before After);
+our @EXPORT = qw(Given When Then Step Transform Before After C S);
 
 our @definitions;
 
@@ -75,6 +76,18 @@ sub Step      { push( @definitions, [ Step      => @_ ] ) }
 sub Transform { push( @definitions, [ Transform => @_ ] ) }
 sub Before    { push( @definitions, [ Before    => @_ ] ) }
 sub After     { push( @definitions, [ After     => @_ ] ) }
+
+=head2 C
+
+=head2 S
+
+Return the context and the Scenario stash, respectively, B<but only when called
+inside a step definition>.
+
+=cut
+
+sub S { croak "You can only call `S` inside a step definition" }
+sub C { croak "You can only call `C` inside a step definition" }
 
 =head2 load
 
