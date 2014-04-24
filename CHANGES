@@ -1,4 +1,6 @@
 -----
+0.18: 06 Apr 2014
+    - Removed Find::File dependency in StepFile.pm
 0.17: 01 Dec 2013
     - the Calculator module should now be hidden from the PAUSE indexer
     - The scenario stash wasn't being reset between each Outline Scenario
