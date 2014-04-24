@@ -1,4 +1,7 @@
 -----
+0.19: 24 Apr 2014
+    - Removed Method::Signatures dependency
+    - Added C and S step file shortcut subrefs
 0.18: 06 Apr 2014
     - Removed Find::File dependency in StepFile.pm
 0.17: 01 Dec 2013
