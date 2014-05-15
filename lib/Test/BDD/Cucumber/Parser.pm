@@ -28,9 +28,10 @@ L<Test::BDD::Cucumber::Model::Feature> object on success.
 use strict;
 use warnings;
 use Ouch;
-use Data::Dumper;
+use encoding 'utf8';
 
 use File::Slurp;
+use JSON::XS;
 use Test::BDD::Cucumber::Model::Document;
 use Test::BDD::Cucumber::Model::Feature;
 use Test::BDD::Cucumber::Model::Scenario;
@@ -40,26 +41,33 @@ use Test::BDD::Cucumber::Model::TagSpec;
 # https://github.com/cucumber/cucumber/wiki/Multiline-Step-Arguments
 # https://github.com/cucumber/cucumber/wiki/Scenario-outlines
 
+my $LANGUAGES = decode_json( read_file( "./lib/Test/BDD/Cucumber/i18n.json", { binmode => ':raw' } ) );
+
 sub parse_string {
-	my ( $self, $string ) = @_;
-	return $self->_construct( Test::BDD::Cucumber::Model::Document->new({
+	my ( $class, $string, $tag_scheme, $language ) = @_;
+        $language = 'en' unless($language);
+	return $class->_construct( Test::BDD::Cucumber::Model::Document->new({
 		content => $string
-	}) );
+	}), $tag_scheme, $language );
 }
 
 sub parse_file   {
-	my ( $self, $string, $tag_scheme ) = @_;
+	my ( $self, $string, $tag_scheme, $language ) = @_;
+        $language = 'en' unless($language);
 	return $self->_construct( Test::BDD::Cucumber::Model::Document->new({
-		content  => scalar( read_file $string ),
+		content  => scalar( read_file( $string, { binmode => ':utf8' } ) ),
 		filename => $string
-	}), $tag_scheme );
+	}), $tag_scheme, $language );
 }
 
 sub _construct {
-	my ( $self, $document, $tag_scheme ) = @_;
+	my ( $class, $document, $tag_scheme, $language ) = @_;
+	
+	my $self = { keywords => $LANGUAGES->{$language} };
+        bless $self, $class;
 
 	my $feature = Test::BDD::Cucumber::Model::Feature->new({ document => $document });
-    my @lines = $self->_remove_next_blanks( @{ $document->lines } );
+        my @lines = $self->_remove_next_blanks( @{ $document->lines } );
 
 	$self->_extract_scenarios(
 	$self->_extract_conditions_of_satisfaction(
@@ -86,7 +94,7 @@ sub _extract_feature_name {
 		next if $line->is_comment;
 		last if $line->is_blank;
 
-		if ( $line->content =~ m/^Feature: (.+)/ ) {
+		if ( $line->content =~ m/^(?:$self->{keywords}->{feature}): (.+)/ ) {
 			$feature->name( $1 );
 			$feature->name_line( $line );
 			$feature->tags( \@feature_tags );
@@ -112,7 +120,7 @@ sub _extract_conditions_of_satisfaction {
 	while ( my $line = shift( @lines ) ) {
 		next if $line->is_comment || $line->is_blank;
 
-		if ( $line->content =~ m/^(Background:|Scenario:|@)/ ) {
+		if ( $line->content =~ m/^((?:$self->{keywords}->{background}):|(?:$self->{keywords}->{scenario}):|@)/ ) {
 			unshift( @lines, $line );
 			last;
 		} else {
@@ -131,11 +139,11 @@ sub _extract_scenarios {
 	while ( my $line = shift( @lines ) ) {
 		next if $line->is_comment || $line->is_blank;
 
-		if ( $line->content =~ m/^(Background|Scenario)(?: Outline)?: ?(.+)?/ ) {
+		if ( $line->content =~ m/^((?:$self->{keywords}->{background})|(?:$self->{keywords}->{scenario}))(?: Outline)?: ?(.+)?/ ) {
 			my ( $type, $name ) = ( $1, $2 );
 
 			# Only one background section, and it must be the first
-			if ( $scenarios++ && $type eq 'Background' ) {
+			if ( $scenarios++ && $type =~ m/^($self->{keywords}->{background})/ ) {
 				ouch 'parse_error', "Background not allowed after scenarios",
 					$line;
 			}
@@ -143,7 +151,7 @@ sub _extract_scenarios {
 			# Create the scenario
 			my $scenario = Test::BDD::Cucumber::Model::Scenario->new({
 				( $name ? ( name => $name ) : () ),
-				background => $type eq 'Background' ? 1 : 0,
+				background => $type =~ m/^($self->{keywords}->{background})/ ? 1 : 0,
 				line       => $line,
 				tags       => [@{$feature->tags}, @scenario_tags]
 			});
@@ -152,7 +160,7 @@ sub _extract_scenarios {
 			# Attempt to populate it
 			@lines = $self->_extract_steps( $feature, $scenario, @lines );
 
-			if ( $type eq 'Background' ) {
+			if ( $type =~ m/^($self->{keywords}->{background})/ ) {
 				$feature->background( $scenario );
 			} else {
 				push( @{ $feature->scenarios }, $scenario );
@@ -174,17 +182,21 @@ sub _extract_scenarios {
 sub _extract_steps {
 	my ( $self, $feature, $scenario, @lines ) = @_;
 
-	my $last_verb = 'Given';
+        my @givens = split( /\|/, $self->{keywords}->{given} );
+	my $last_verb = $givens[-1];
 
 	while ( my $line = shift( @lines ) ) {
 		next if $line->is_comment;
 		last if $line->is_blank;
 
 		# Conventional step?
-		if ( $line->content =~ m/^(Given|And|When|Then|But) (.+)/ ) {
+		if ( $line->content =~ m/^((?:$self->{keywords}->{given})|(?:$self->{keywords}->{and})|(?:$self->{keywords}->{when})|(?:$self->{keywords}->{then})|(?:$self->{keywords}->{but})) (.+)/ ) {
 			my ( $verb, $text ) = ( $1, $2 );
 			my $original_verb = $verb;
-			$verb = $last_verb if lc($verb) eq 'and' or lc($verb) eq 'but';
+			$verb = 'Given' if $verb =~ m/($self->{keywords}->{given})/;
+			$verb = 'When' if  $verb =~ m/($self->{keywords}->{when})/;
+			$verb = 'Then' if  $verb =~ m/($self->{keywords}->{then})/;
+			$verb = $last_verb if $verb =~ m/^($self->{keywords}->{and})/ or $verb =~ m/^($self->{keywords}->{but})/;
             $last_verb = $verb;
 
 			my $step = Test::BDD::Cucumber::Model::Step->new({
@@ -200,7 +212,7 @@ sub _extract_steps {
 			push( @{ $scenario->steps }, $step );
 
 		# Outline data block...
-		} elsif ( $line->content =~ m/^Examples:$/ ) {
+		} elsif ( $line->content =~ m/^($self->{keywords}->{examples}):$/ ) {
 			return $self->_extract_table( 6, $scenario,
 			    $self->_remove_next_blanks( @lines ));
 		} else {
