@@ -172,11 +172,11 @@ sub execute_scenario {
             feature  => $feature_stash,
             step     => {},
         },
-    
+
         # Step-specific info
         feature  => $feature,
         scenario => $outline,
-    
+
         # Communicators
         harness  => $harness,
 
@@ -200,10 +200,10 @@ sub execute_scenario {
                     %context_defaults,
                     verb => 'before',
                 });
-    
+
                 my $result = $self->dispatch( $context, $before_step,
                         $outline_stash->{'short_circuit'} );
-    
+
                 # If it didn't pass, short-circuit the rest
                 unless ( $result->result eq 'passing' ) {
                     $outline_stash->{'short_circuit'}++;
@@ -263,7 +263,7 @@ sub execute_scenario {
                     %context_defaults,
                     verb => 'after',
                 });
-    
+
                 # All After steps should happen, to ensure cleanup
                 my $result = $self->dispatch( $context, $after_step, 0 );
             }
@@ -370,7 +370,16 @@ sub dispatch {
         $context->matches([ $context->text =~ $regular_expression ]);
 
         # Execute!
-        eval { $coderef->( $context ) };
+        eval {
+            no warnings 'redefine';
+            local *Test::BDD::Cucumber::StepFile::S = sub {
+                return $context->stash->{'scenario'}
+            };
+            local *Test::BDD::Cucumber::StepFile::C = sub {
+                return $context
+            };
+            $coderef->( $context )
+        };
         if ( $@ ) {
             $Test::Builder::Test->ok( 0, "Test compiled" );
             $Test::Builder::Test->diag( $@ );
