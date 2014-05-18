@@ -51,7 +51,7 @@ sub run {
     my ($options, @feature_files) = $self->_process_arguments(@arguments);
 
     my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load(
-        $feature_files[0] || './features/', $self->tag_scheme, $arguments[1]
+        $feature_files[0] || './features/', $self->tag_scheme
     );
     die "No feature files found" unless @features;
 

@@ -44,24 +44,23 @@ use Test::BDD::Cucumber::Model::TagSpec;
 my $LANGUAGES = decode_json( read_file( "./lib/Test/BDD/Cucumber/i18n.json", { binmode => ':raw' } ) );
 
 sub parse_string {
-	my ( $class, $string, $tag_scheme, $language ) = @_;
-        $language = 'en' unless($language);
+	my ( $class, $string, $tag_scheme ) = @_;
+
 	return $class->_construct( Test::BDD::Cucumber::Model::Document->new({
 		content => $string
-	}), $tag_scheme, $language );
+	}), $tag_scheme );
 }
 
 sub parse_file   {
-	my ( $self, $string, $tag_scheme, $language ) = @_;
-        $language = 'en' unless($language);
+	my ( $self, $string, $tag_scheme) = @_;
 	return $self->_construct( Test::BDD::Cucumber::Model::Document->new({
 		content  => scalar( read_file( $string, { binmode => ':utf8' } ) ),
 		filename => $string
-	}), $tag_scheme, $language );
+	}), $tag_scheme );
 }
 
 sub _construct {
-	my ( $class, $document, $tag_scheme, $language ) = @_;
+	my ( $class, $document, $tag_scheme ) = @_;
 	
 	my $feature = Test::BDD::Cucumber::Model::Feature->new({ document => $document });
         my @lines = $class->_remove_next_blanks( @{ $document->lines } );
@@ -324,7 +323,7 @@ sub _pipe_array {
 
 =head1 ERROR HANDLING
 
-L<Test::BDD::Cucumber> uses L<Ouch> for exception handling. Error originating in this
+L<Test::BDD::Cucumber> uses L<Ouch> for exception handling. Errors originating in this
 class tend to have a code of C<parse_error> and a L<Test::BDD::Cucumber::Model::Line>
 object for data.
 
