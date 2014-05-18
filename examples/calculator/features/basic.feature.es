@@ -1,3 +1,4 @@
+# language: es
 Característica: Funciones Básicas de Calculadora
   In order to check I've written the Calculator class correctly
   As a developer I want to check some basic operations

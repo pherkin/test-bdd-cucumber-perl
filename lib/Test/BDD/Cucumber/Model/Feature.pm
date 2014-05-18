@@ -74,6 +74,15 @@ Scenarios.
 
 has 'tags' => ( is => 'rw', isa => 'ArrayRef[Str]', default => sub {[]} );
 
+=head2 language
+
+Language the feature is written in. Defaults to 'en'.
+
+=cut
+
+has 'language' => ( is => 'rw', isa => 'Str',
+	default => sub { 'en' });
+
 =head1 AUTHOR
 
 Peter Sergeant C<pete@clueball.com>

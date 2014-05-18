@@ -63,11 +63,13 @@ sub parse_file   {
 sub _construct {
 	my ( $class, $document, $tag_scheme, $language ) = @_;
 	
-	my $self = { keywords => $LANGUAGES->{$language} };
-        bless $self, $class;
-
 	my $feature = Test::BDD::Cucumber::Model::Feature->new({ document => $document });
-        my @lines = $self->_remove_next_blanks( @{ $document->lines } );
+        my @lines = $class->_remove_next_blanks( @{ $document->lines } );
+
+	$feature->language($class->_extract_language(\@lines));
+
+	my $self = { keywords => $LANGUAGES->{$feature->language} };
+        bless $self, $class;
 
 	$self->_extract_scenarios(
 	$self->_extract_conditions_of_satisfaction(
@@ -76,6 +78,19 @@ sub _construct {
 	)));
 
 	return $feature;
+}
+
+sub _extract_language {
+    my ($self, $lines)=@_;
+
+    # return default language if we don't see the language directive on the first line
+    return 'en' unless $lines->[0]->raw_content =~ m{^\s*#\s*language:\s+(.+)$};
+
+    # remove the language directive if we saw it ...
+    shift @$lines;
+
+    # ... and return the language it declared
+    return $1;
 }
 
 sub _remove_next_blanks {
