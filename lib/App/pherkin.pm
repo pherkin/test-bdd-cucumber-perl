@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use FindBin::libs;
 use Getopt::Long;
+use Test::BDD::Cucumber::I18n qw(languages langdef);
+use List::Util qw(max);
 
 use Moose;
 has 'tags' => ( is => 'rw', isa => 'ArrayRef', required => 0 );
@@ -80,12 +82,19 @@ sub _process_arguments {
     my $includes = [];
     my $tags = [];
     GetOptions(
-        'I=s@'   => \$includes,
-        'l|lib'  => \(my $add_lib),
-        'b|blib' => \(my $add_blib),
+        'I=s@'       => \$includes,
+        'l|lib'      => \(my $add_lib),
+        'b|blib'     => \(my $add_blib),
         'o|output=s' => \(my $harness),
-        't|tags=s@' => \$tags,
+	't|tags=s@'  => \$tags,
+	'i18n=s'     => \(my $i18n)
     );
+
+    if ($i18n) {
+        _print_langdef($i18n) unless $i18n eq 'help';
+        _print_languages();
+    };
+
     unshift @$includes, 'lib'                   if $add_lib;
     unshift @$includes, 'blib/lib', 'blib/arch' if $add_blib;
 
@@ -136,6 +145,42 @@ sub _process_tags {
     return $tag_scheme;
 }
 
+sub _print_languages {
+
+    my @languages=languages();
+
+    my $max_code_length   = max map { length } @languages;
+    my $max_name_length   = max map { length(langdef($_)->{name}) } @languages;
+    my $max_native_length = max map { length(langdef($_)->{native}) } @languages;
+
+    my $format= "| %-${max_code_length}s | %-${max_name_length}s | %-${max_native_length}s |\n";
+
+    for my $language (sort @languages) {
+        binmode STDOUT, ':utf8';
+        my $langdef=langdef($language);
+	printf $format, $language, $langdef->{name}, $langdef->{native};
+    }
+    exit;
+}
+
+sub _print_langdef {
+    my ($language)=@_;
+
+    my $langdef=langdef($language);
+
+    my @keywords= qw(feature background scenario scenario_outline examples
+		     given when then and but);
+    my $max_length = max map { length $langdef->{$_} } @keywords;
+
+    my $format= "| %-16s | %-${max_length}s |\n";
+
+    for my $keyword (qw(feature background scenario scenario_outline
+			examples given when then and but )) {
+        binmode STDOUT, ':utf8';
+        printf $format, $keyword, $langdef->{$keyword};
+    }
+    exit;
+}
 
 =head1 AUTHOR
 

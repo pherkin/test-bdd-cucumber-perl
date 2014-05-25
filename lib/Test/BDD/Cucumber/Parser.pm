@@ -36,7 +36,7 @@ use Test::BDD::Cucumber::Model::Feature;
 use Test::BDD::Cucumber::Model::Scenario;
 use Test::BDD::Cucumber::Model::Step;
 use Test::BDD::Cucumber::Model::TagSpec;
-use Test::BDD::Cucumber::I18n;
+use Test::BDD::Cucumber::I18n qw(langdef);
 
 # https://github.com/cucumber/cucumber/wiki/Multiline-Step-Arguments
 # https://github.com/cucumber/cucumber/wiki/Scenario-outlines
@@ -65,8 +65,8 @@ sub _construct {
 
 	$feature->language($class->_extract_language(\@lines));
 
-	my $self = { keywords => 
-		     Test::BDD::Cucumber::I18n::keywords($feature->language) };
+	my $self = { langdef => 
+		     langdef($feature->language) };
         bless $self, $class;
 
 	$self->_extract_scenarios(
@@ -107,7 +107,7 @@ sub _extract_feature_name {
 		next if $line->is_comment;
 		last if $line->is_blank;
 
-		if ( $line->content =~ m/^(?:$self->{keywords}->{feature}): (.+)/ ) {
+		if ( $line->content =~ m/^(?:$self->{langdef}->{feature}): (.+)/ ) {
 			$feature->name( $1 );
 			$feature->name_line( $line );
 			$feature->tags( \@feature_tags );
@@ -133,7 +133,7 @@ sub _extract_conditions_of_satisfaction {
 	while ( my $line = shift( @lines ) ) {
 		next if $line->is_comment || $line->is_blank;
 
-		if ( $line->content =~ m/^((?:$self->{keywords}->{background}):|(?:$self->{keywords}->{scenario}):|@)/ ) {
+		if ( $line->content =~ m/^((?:$self->{langdef}->{background}):|(?:$self->{langdef}->{scenario}):|@)/ ) {
 			unshift( @lines, $line );
 			last;
 		} else {
@@ -152,11 +152,11 @@ sub _extract_scenarios {
 	while ( my $line = shift( @lines ) ) {
 		next if $line->is_comment || $line->is_blank;
 
-		if ( $line->content =~ m/^((?:$self->{keywords}->{background})|(?:$self->{keywords}->{scenario}))(?: Outline)?: ?(.+)?/ ) {
+		if ( $line->content =~ m/^((?:$self->{langdef}->{background})|(?:$self->{langdef}->{scenario}))(?: Outline)?: ?(.+)?/ ) {
 			my ( $type, $name ) = ( $1, $2 );
 
 			# Only one background section, and it must be the first
-			if ( $scenarios++ && $type =~ m/^($self->{keywords}->{background})/ ) {
+			if ( $scenarios++ && $type =~ m/^($self->{langdef}->{background})/ ) {
 				ouch 'parse_error', "Background not allowed after scenarios",
 					$line;
 			}
@@ -164,7 +164,7 @@ sub _extract_scenarios {
 			# Create the scenario
 			my $scenario = Test::BDD::Cucumber::Model::Scenario->new({
 				( $name ? ( name => $name ) : () ),
-				background => $type =~ m/^($self->{keywords}->{background})/ ? 1 : 0,
+				background => $type =~ m/^($self->{langdef}->{background})/ ? 1 : 0,
 				line       => $line,
 				tags       => [@{$feature->tags}, @scenario_tags]
 			});
@@ -173,7 +173,7 @@ sub _extract_scenarios {
 			# Attempt to populate it
 			@lines = $self->_extract_steps( $feature, $scenario, @lines );
 
-			if ( $type =~ m/^($self->{keywords}->{background})/ ) {
+			if ( $type =~ m/^($self->{langdef}->{background})/ ) {
 				$feature->background( $scenario );
 			} else {
 				push( @{ $feature->scenarios }, $scenario );
@@ -195,7 +195,7 @@ sub _extract_scenarios {
 sub _extract_steps {
 	my ( $self, $feature, $scenario, @lines ) = @_;
 
-        my @givens = split( /\|/, $self->{keywords}->{given} );
+        my @givens = split( /\|/, $self->{langdef}->{given} );
 	my $last_verb = $givens[-1];
 
 	while ( my $line = shift( @lines ) ) {
@@ -203,13 +203,13 @@ sub _extract_steps {
 		last if $line->is_blank;
 
 		# Conventional step?
-		if ( $line->content =~ m/^((?:$self->{keywords}->{given})|(?:$self->{keywords}->{and})|(?:$self->{keywords}->{when})|(?:$self->{keywords}->{then})|(?:$self->{keywords}->{but})) (.+)/ ) {
+		if ( $line->content =~ m/^((?:$self->{langdef}->{given})|(?:$self->{langdef}->{and})|(?:$self->{langdef}->{when})|(?:$self->{langdef}->{then})|(?:$self->{langdef}->{but})) (.+)/ ) {
 			my ( $verb, $text ) = ( $1, $2 );
 			my $original_verb = $verb;
-			$verb = 'Given' if $verb =~ m/($self->{keywords}->{given})/;
-			$verb = 'When' if  $verb =~ m/($self->{keywords}->{when})/;
-			$verb = 'Then' if  $verb =~ m/($self->{keywords}->{then})/;
-			$verb = $last_verb if $verb =~ m/^($self->{keywords}->{and})/ or $verb =~ m/^($self->{keywords}->{but})/;
+			$verb = 'Given' if $verb =~ m/($self->{langdef}->{given})/;
+			$verb = 'When' if  $verb =~ m/($self->{langdef}->{when})/;
+			$verb = 'Then' if  $verb =~ m/($self->{langdef}->{then})/;
+			$verb = $last_verb if $verb =~ m/^($self->{langdef}->{and})/ or $verb =~ m/^($self->{langdef}->{but})/;
             $last_verb = $verb;
 
 			my $step = Test::BDD::Cucumber::Model::Step->new({
@@ -225,7 +225,7 @@ sub _extract_steps {
 			push( @{ $scenario->steps }, $step );
 
 		# Outline data block...
-		} elsif ( $line->content =~ m/^($self->{keywords}->{examples}):$/ ) {
+		} elsif ( $line->content =~ m/^($self->{langdef}->{examples}):$/ ) {
 			return $self->_extract_table( 6, $scenario,
 			    $self->_remove_next_blanks( @lines ));
 		} else {

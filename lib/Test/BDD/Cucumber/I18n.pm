@@ -1,5 +1,28 @@
 package Test::BDD::Cucumber::I18n;
 
+=head1 NAME
+
+Test::BDD::Cucumber::I18N - Internationalization
+
+=head1 DESCRIPTION
+
+Internationalization of feature files and step definitions.
+
+=head1 SYNOPSIS
+
+use Test::BDD::Cucumber::I18N qw(languages has_language langdef);
+
+# get codes of supported languages
+my @supported_languages = languages();
+
+# look up if a language is supported
+my $language_is_supported = has_language('de');
+
+# get definition of a language
+my $langdef = langdef('de');
+
+=cut
+
 use strict;
 use warnings;
 
@@ -7,26 +30,72 @@ use Encode qw(encode);
 use JSON::XS;
 use utf8;
 
+use base 'Exporter';
+
+our @EXPORT_OK=qw(languages langdef has_language);
+
 # Parse keywords hash for all supported languages from the DATA segment
 my $json      = join '', (<DATA>);
 my $json_utf8 = encode('UTF-8', $json);
-my $keywords  = decode_json( $json_utf8 );
+my $langdefs  = decode_json( $json_utf8 );
 
 sub languages {
-    return keys $keywords;
+    return keys $langdefs;
 }
 
 sub has_language {
     my ($language) = @_;
-    exists $keywords->{$language};
+    exists $langdefs->{$language};
 }
 
-sub keywords {
+sub langdef {
     my ($language) = @_;
 
     return unless has_language($language);
-    return $keywords->{$language};
+    return $langdefs->{$language};
 }
+
+=head1 LANGUAGES
+
+Languages are defined in a JSON-based hash in the __DATA__ section of this file.
+That hash is based on the i18n.json of the Gherkin project (the parser for
+features that the original Cucumber tool uses).
+
+Gherkin can be found at L<https://github.com/cucumber/gherkin>,
+its i18n.json at L<https://github.com/cucumber/gherkin/blob/master/lib/gherkin/i18n.json>.
+
+=head1 AUTHOR
+
+Gregor Goldbach C<glauschwuffel@nomaden.org>
+(based on the works of Pablo Duboue)
+
+=head1 LICENSE
+
+Copyright 2014, Gregor Goldbach; Licensed under the same terms as Perl
+
+Definition of languages based on data from Gherkin.
+Copyright (c) 2009-2013 Mike Sassak, Gregory Hnatiuk, Aslak Hellesøy
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+=cut
 
 __DATA__
 {
