@@ -50,6 +50,9 @@ Returns a L<Test::BDD::Cucumber::Model::Result> object for all steps run.
 sub run {
     my ( $self, @arguments ) = @_;
 
+    # localized features will have utf8 in them and options may output utf8 as well
+    binmode STDOUT, ':utf8';
+
     my ($options, @feature_files) = $self->_process_arguments(@arguments);
 
     my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load(
@@ -156,7 +159,6 @@ sub _print_languages {
     my $format= "| %-${max_code_length}s | %-${max_name_length}s | %-${max_native_length}s |\n";
 
     for my $language (sort @languages) {
-        binmode STDOUT, ':utf8';
         my $langdef=langdef($language);
 	printf $format, $language, $langdef->{name}, $langdef->{native};
     }
@@ -176,7 +178,6 @@ sub _print_langdef {
 
     for my $keyword (qw(feature background scenario scenario_outline
 			examples given when then and but )) {
-        binmode STDOUT, ':utf8';
         printf $format, $keyword, $langdef->{$keyword};
     }
     exit;
