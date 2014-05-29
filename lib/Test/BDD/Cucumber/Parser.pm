@@ -206,10 +206,10 @@ sub _extract_steps {
 		if ( $line->content =~ m/^((?:$self->{langdef}->{given})|(?:$self->{langdef}->{and})|(?:$self->{langdef}->{when})|(?:$self->{langdef}->{then})|(?:$self->{langdef}->{but})) (.+)/ ) {
 			my ( $verb, $text ) = ( $1, $2 );
 			my $original_verb = $verb;
-			$verb = 'Given' if $verb =~ m/($self->{langdef}->{given})/;
-			$verb = 'When' if  $verb =~ m/($self->{langdef}->{when})/;
-			$verb = 'Then' if  $verb =~ m/($self->{langdef}->{then})/;
-			$verb = $last_verb if $verb =~ m/^($self->{langdef}->{and})/ or $verb =~ m/^($self->{langdef}->{but})/;
+			$verb = 'Given' if $verb =~ m/^($self->{langdef}->{given}$)/;
+			$verb = 'When' if  $verb =~ m/^($self->{langdef}->{when}$)/;
+			$verb = 'Then' if  $verb =~ m/^($self->{langdef}->{then}$)/;
+			$verb = $last_verb if $verb =~ m/^($self->{langdef}->{and}$)/ or $verb =~ m/^($self->{langdef}->{but}$)/;
             $last_verb = $verb;
 
 			my $step = Test::BDD::Cucumber::Model::Step->new({
