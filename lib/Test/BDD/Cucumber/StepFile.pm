@@ -13,7 +13,7 @@ use Carp qw/croak/;
 use Test::BDD::Cucumber::I18n qw(languages langdef keyword_to_subname);
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(Givenn When Then Step Transform Before After C S Angenommen);
+our @EXPORT = qw(Step Transform Before After C S);
 
 our @definitions;
 
