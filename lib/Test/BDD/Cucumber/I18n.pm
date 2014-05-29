@@ -58,7 +58,7 @@ sub langdef {
 sub readable_keywords {
     my ($string, $transform)=@_;
 
-    my @keywords= grep { $_ ne '[*]' } split(/\|/, $string);
+    my @keywords= grep { $_ ne '*' } split(/\|/, $string);
 
     @keywords = map { $transform->($_) } @keywords if $transform;
 

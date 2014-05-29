@@ -104,7 +104,7 @@ sub _alias_function {
   my @keywords=split('\|', $keywords);
   for my $word (@keywords) {
     # asterisks won't be aliased to any sub
-    next if $word eq '[*]';
+    next if $word eq '*';
 
     my $subname=keyword_to_subname($word);
 
