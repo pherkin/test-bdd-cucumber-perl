@@ -1,5 +1,7 @@
 package Test::BDD::Cucumber::Manual::Tutorial
 
+=encoding utf8
+
 =head1 NAME
 
 Test::BDD::Cucumber::Manual::Tutorial - Quick Start Guide
@@ -248,6 +250,41 @@ steps, which will also be available via C<data()>:
 
 You can find out more about these features in the Cucumber documentation here:
 L<https://github.com/cucumber/cucumber/wiki/Multiline-Step-Arguments>.
+
+=head1 Writing features and step files in languages other than English
+
+By default, pherkin expects your features and step definitions to be written in English.
+Since feature files are mainly used for communication within your team, you might want
+to use your native language. To see a list of the languages you can used, ask pherkin
+what languages are supported:
+
+ > pherkin --i18n help
+ | af        | Afrikaans           | Afrikaans         |
+ | ar        | Arabic              | العربية           |
+ | bg        | Bulgarian           | български         |
+ | bm        | Malay               | Bahasa Melayu     |
+ | ca        | Catalan             | català            |
+ ...
+
+To see which keywords (and sub names) to use, ask pherkin about a specific language:
+
+ > pherkin --i18n de
+ | feature          | "Funktionalität"                             |
+ | background       | "Grundlage"                                  |
+ | scenario         | "Szenario"                                   |
+ | scenario_outline | "Szenariogrundriss"                          |
+ | examples         | "Beispiele"                                  |
+ | given            | "Angenommen", "Gegeben sei", "Gegeben seien" |
+ | when             | "Wenn"                                       |
+ | then             | "Dann"                                       |
+ | and              | "Und"                                        |
+ | but              | "Aber"                                       |
+ | given (code)     | "Angenommen", "Gegebensei", "Gegebenseien"   |
+ | when (code)      | "Wenn"                                       |
+ | then (code)      | "Dann"                                       |
+
+The last three lines of this list show you which sub names to use in your step file.
+Head over to the F<i18n> directory for some examples.
 
 =head1 Next Steps...
 
