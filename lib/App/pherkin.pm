@@ -2,9 +2,10 @@ package App::pherkin;
 
 use strict;
 use warnings;
+
 use FindBin::libs;
 use Getopt::Long;
-use Test::BDD::Cucumber::I18n qw(languages langdef);
+use Test::BDD::Cucumber::I18n qw(languages langdef readable_keywords keyword_to_subname);
 use List::Util qw(max);
 
 use Moose;
@@ -172,14 +173,20 @@ sub _print_langdef {
 
     my @keywords= qw(feature background scenario scenario_outline examples
 		     given when then and but);
-    my $max_length = max map { length $langdef->{$_} } @keywords;
+    my $max_length = max map { length readable_keywords ($langdef->{$_}) } @keywords;
 
     my $format= "| %-16s | %-${max_length}s |\n";
-
     for my $keyword (qw(feature background scenario scenario_outline
 			examples given when then and but )) {
-        printf $format, $keyword, $langdef->{$keyword};
+        printf $format, $keyword, readable_keywords($langdef->{$keyword});
     }
+
+    my $codeformat= "| %-16s | %-${max_length}s |\n";
+    for my $keyword (qw(given when then )) {
+        printf $codeformat, $keyword.' (code)',
+          readable_keywords($langdef->{$keyword}, \&keyword_to_subname);
+    }
+
     exit;
 }
 

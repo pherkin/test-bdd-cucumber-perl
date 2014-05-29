@@ -32,7 +32,7 @@ use utf8;
 
 use base 'Exporter';
 
-our @EXPORT_OK=qw(languages langdef has_language);
+our @EXPORT_OK=qw(languages langdef has_language readable_keywords keyword_to_subname);
 
 # Parse keywords hash for all supported languages from the DATA segment
 my $json      = join '', (<DATA>);
@@ -53,6 +53,25 @@ sub langdef {
 
     return unless has_language($language);
     return $langdefs->{$language};
+}
+
+sub readable_keywords {
+    my ($string, $transform)=@_;
+
+    my @keywords= grep { $_ ne '[*]' } split(/\|/, $string);
+
+    @keywords = map { $transform->($_) } @keywords if $transform;
+
+    return join(', ', map { '"'.$_.'"' } @keywords);
+}
+
+sub keyword_to_subname {
+    my ($word)=@_;
+
+    # remove non-word characters so we have a decent sub name
+    $word =~ s{[^\p{Word}]}{}g;
+
+    return $word;
 }
 
 =head1 LANGUAGES

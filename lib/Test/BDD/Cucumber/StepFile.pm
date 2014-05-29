@@ -10,7 +10,7 @@ use strict;
 use warnings;
 use Carp qw/croak/;
 
-use Test::BDD::Cucumber::I18n qw(languages langdef);
+use Test::BDD::Cucumber::I18n qw(languages langdef keyword_to_subname);
 require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(Givenn When Then Step Transform Before After C S Angenommen);
@@ -103,16 +103,17 @@ sub _alias_function {
 
   my @keywords=split('\|', $keywords);
   for my $word (@keywords) {
+    # asterisks won't be aliased to any sub
     next if $word eq '[*]';
-    # remove non-word characters
-    $word =~ s{[^\p{Word}]}{}g;
+
+    my $subname=keyword_to_subname($word);
 
     no strict 'refs';
     no warnings 'redefine';
-    *$word=$f;
+    *$subname=$f;
     use warnings 'redefine';
 
-    push @SUBS, $word;
+    push @SUBS, $subname;
     use strict 'refs';
   }
 }
