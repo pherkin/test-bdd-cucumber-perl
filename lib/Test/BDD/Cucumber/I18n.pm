@@ -21,6 +21,9 @@ my $language_is_supported = has_language('de');
 # get definition of a language
 my $langdef = langdef('de');
 
+# get readable keyword definitions
+my $string = readable_keywords
+
 =cut
 
 use strict;
@@ -39,6 +42,14 @@ my $json      = join '', (<DATA>);
 my $json_utf8 = encode('UTF-8', $json);
 my $langdefs  = decode_json( $json_utf8 );
 
+# strip asterisks from the keyword definitions since they don't work anyway
+for my $language ( languages() ) {
+  my $langdef=langdef($language);
+    for my $key ( keys %$langdef ) {
+      $langdef->{$key} =~ s{\Q*|\E}{};
+    }
+}
+
 sub languages {
     return keys $langdefs;
 }
@@ -56,13 +67,13 @@ sub langdef {
 }
 
 sub readable_keywords {
-    my ($string, $transform)=@_;
+    my ( $string, $transform ) = @_;
 
-    my @keywords= grep { $_ ne '*' } split(/\|/, $string);
+    my @keywords = split( /\|/, $string );
 
     @keywords = map { $transform->($_) } @keywords if $transform;
 
-    return join(', ', map { '"'.$_.'"' } @keywords);
+    return join( ', ', map { '"' . $_ . '"' } @keywords );
 }
 
 sub keyword_to_subname {
@@ -77,8 +88,9 @@ sub keyword_to_subname {
 =head1 LANGUAGES
 
 Languages are defined in a JSON-based hash in the __DATA__ section of this file.
-That hash is based on the i18n.json of the Gherkin project (the parser for
-features that the original Cucumber tool uses).
+That hash the i18n.json of the Gherkin project (the parser for
+features that the original Cucumber tool uses). Just copy Gherkin's i18n.json
+in the data section to update language definitions.
 
 Gherkin can be found at L<https://github.com/cucumber/gherkin>,
 its i18n.json at L<https://github.com/cucumber/gherkin/blob/master/lib/gherkin/i18n.json>.
@@ -115,6 +127,8 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 =cut
+
+1;
 
 __DATA__
 {
