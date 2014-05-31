@@ -33,26 +33,24 @@ use Encode qw(encode);
 use JSON::XS;
 use utf8;
 use Ouch;
+use File::ShareDir qw( dist_dir );
+use File::Spec;
 
 use base 'Exporter';
 
 our @EXPORT_OK=qw(languages langdef has_language readable_keywords keyword_to_subname);
 
-use File::ShareDir qw( dist_dir );
-
-my $dir=dist_dir('My-Dist');       # dir with files from $dist/share
-my $filename=$dir.'/i18n.json'; # TODO FileSpec
+my $dir=dist_dir('My-Dist');
+my $filename=File::Spec->catfile($dir, 'i18n.json');
 ouch 'i18n_error', 'I18n file does not exist', $filename unless -e $filename;
 my $success=open(my $fh, '<', $filename);
 ouch 'i18n_error', "Unable to open i18n file: $!", $filename unless $success;
 
-# Parse keywords hash for all supported languages from the DATA segment
-#my $json      = join '', (<DATA>);
+# Parse keywords hash for all supported languages from the JSON file
 my $json      = join '', (<$fh>);
-#my $json_utf8 = encode('UTF-8', $json);
 my $langdefs  = decode_json( $json );
 
-# strip asterisks from the keyword definitions since they don't work anyway
+# strip asterisks from the keyword definitions since they don't work yet
 for my $language ( languages() ) {
   my $langdef=langdef($language);
     for my $key ( keys %$langdef ) {
