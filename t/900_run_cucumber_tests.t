@@ -8,7 +8,7 @@ use Test::More;
 
 use Test::File::ShareDir
   -share => {
-    -dist   => { 'My-Dist'    => 'share' }
+    -dist   => { 'Test-BDD-Cucumber'    => 'share' }
   };
 
 use Test::BDD::Cucumber::Loader;

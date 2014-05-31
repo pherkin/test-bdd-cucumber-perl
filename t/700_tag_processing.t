@@ -7,7 +7,7 @@ use Test::More;
 use FindBin::libs;
 use Test::File::ShareDir
   -share => {
-    -dist   => { 'My-Dist'    => 'share' }
+    -dist   => { 'Test-BDD-Cucumber'    => 'share' }
   };
 use App::pherkin;
 use Data::Dumper;
