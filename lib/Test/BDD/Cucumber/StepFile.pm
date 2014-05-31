@@ -10,9 +10,10 @@ use strict;
 use warnings;
 use Carp qw/croak/;
 
+use Test::BDD::Cucumber::I18n qw(languages langdef keyword_to_subname);
 require Exporter;
 our @ISA = qw(Exporter);
-our @EXPORT = qw(Given When Then Step Transform Before After C S);
+our @EXPORT = qw(Step Transform Before After C S);
 
 our @definitions;
 
@@ -75,6 +76,46 @@ sub Step      { push( @definitions, [ Step      => @_ ] ) }
 sub Transform { push( @definitions, [ Transform => @_ ] ) }
 sub Before    { push( @definitions, [ Before    => @_ ] ) }
 sub After     { push( @definitions, [ After     => @_ ] ) }
+
+my @SUBS;
+
+for my $language (languages()) {
+    # skip English since these are the function we alias
+    next if $language eq 'en';
+
+    my $langdef=langdef($language);
+
+    _alias_function( $langdef->{given}, \&Given);
+    _alias_function( $langdef->{when}, \&When);
+    _alias_function( $langdef->{then}, \&Then);
+
+# Hm ... in cucumber, all step definining keywords are the same.
+# Here, the parser replaces 'and' and 'but' with the last verb. Tricky ...
+#    _alias_function( $langdef->{and}, \&And);
+#    _alias_function( $langdef->{but}, \&But);
+}
+
+push @EXPORT, @SUBS;
+
+sub _alias_function {
+  my ($keywords, $f)=@_;
+
+  my @keywords=split('\|', $keywords);
+  for my $word (@keywords) {
+    # asterisks won't be aliased to any sub
+    next if $word eq '*';
+
+    my $subname=keyword_to_subname($word);
+
+    no strict 'refs';
+    no warnings 'redefine';
+    *$subname=$f;
+    use warnings 'redefine';
+
+    push @SUBS, $subname;
+    use strict 'refs';
+  }
+}
 
 =head2 C
 

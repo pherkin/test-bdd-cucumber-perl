@@ -27,39 +27,47 @@ L<Test::BDD::Cucumber::Model::Feature> object on success.
 
 use strict;
 use warnings;
-use Ouch;
-use Data::Dumper;
 
+use Ouch;
 use File::Slurp;
+
 use Test::BDD::Cucumber::Model::Document;
 use Test::BDD::Cucumber::Model::Feature;
 use Test::BDD::Cucumber::Model::Scenario;
 use Test::BDD::Cucumber::Model::Step;
 use Test::BDD::Cucumber::Model::TagSpec;
+use Test::BDD::Cucumber::I18n qw(langdef);
 
 # https://github.com/cucumber/cucumber/wiki/Multiline-Step-Arguments
 # https://github.com/cucumber/cucumber/wiki/Scenario-outlines
 
 sub parse_string {
-	my ( $self, $string ) = @_;
-	return $self->_construct( Test::BDD::Cucumber::Model::Document->new({
+	my ( $class, $string, $tag_scheme ) = @_;
+
+	return $class->_construct( Test::BDD::Cucumber::Model::Document->new({
 		content => $string
-	}) );
+	}), $tag_scheme );
 }
 
 sub parse_file   {
-	my ( $self, $string, $tag_scheme ) = @_;
-	return $self->_construct( Test::BDD::Cucumber::Model::Document->new({
-		content  => scalar( read_file $string ),
+	my ( $class, $string, $tag_scheme) = @_;
+	return $class->_construct( Test::BDD::Cucumber::Model::Document->new({
+		content  => scalar( read_file( $string, { binmode => ':utf8' } ) ),
 		filename => $string
 	}), $tag_scheme );
 }
 
 sub _construct {
-	my ( $self, $document, $tag_scheme ) = @_;
-
+	my ( $class, $document, $tag_scheme ) = @_;
+	
 	my $feature = Test::BDD::Cucumber::Model::Feature->new({ document => $document });
-    my @lines = $self->_remove_next_blanks( @{ $document->lines } );
+        my @lines = $class->_remove_next_blanks( @{ $document->lines } );
+
+	$feature->language($class->_extract_language(\@lines));
+
+	my $self = { langdef => 
+		     langdef($feature->language) };
+        bless $self, $class;
 
 	$self->_extract_scenarios(
 	$self->_extract_conditions_of_satisfaction(
@@ -68,6 +76,19 @@ sub _construct {
 	)));
 
 	return $feature;
+}
+
+sub _extract_language {
+    my ($self, $lines)=@_;
+
+    # return default language if we don't see the language directive on the first line
+    return 'en' unless $lines->[0]->raw_content =~ m{^\s*#\s*language:\s+(.+)$};
+
+    # remove the language directive if we saw it ...
+    shift @$lines;
+
+    # ... and return the language it declared
+    return $1;
 }
 
 sub _remove_next_blanks {
@@ -86,7 +107,7 @@ sub _extract_feature_name {
 		next if $line->is_comment;
 		last if $line->is_blank;
 
-		if ( $line->content =~ m/^Feature: (.+)/ ) {
+		if ( $line->content =~ m/^(?:$self->{langdef}->{feature}): (.+)/ ) {
 			$feature->name( $1 );
 			$feature->name_line( $line );
 			$feature->tags( \@feature_tags );
@@ -107,109 +128,125 @@ sub _extract_feature_name {
 }
 
 sub _extract_conditions_of_satisfaction {
-	my ( $self, $feature, @lines ) = @_;
+    my ( $self, $feature, @lines ) = @_;
 
-	while ( my $line = shift( @lines ) ) {
-		next if $line->is_comment || $line->is_blank;
+    while ( my $line = shift(@lines) ) {
+        next if $line->is_comment || $line->is_blank;
 
-		if ( $line->content =~ m/^(Background:|Scenario:|@)/ ) {
-			unshift( @lines, $line );
-			last;
-		} else {
-			push( @{ $feature->satisfaction }, $line );
-		}
-	}
+        my $langdef = $self->{langdef};
+        if ( $line->content =~ m/^((?:$langdef->{background}):|(?:$langdef->{scenario}):|@)/) {
+            unshift( @lines, $line );
+            last;
+        } else {
+            push( @{ $feature->satisfaction }, $line );
+        }
+    }
 
-	return $feature, $self->_remove_next_blanks( @lines );
+    return $feature, $self->_remove_next_blanks(@lines);
 }
 
 sub _extract_scenarios {
-	my ( $self, $feature, @lines ) = @_;
-	my $scenarios = 0;
-	my @scenario_tags;
+    my ( $self, $feature, @lines ) = @_;
+    my $scenarios = 0;
+    my @scenario_tags;
 
-	while ( my $line = shift( @lines ) ) {
-		next if $line->is_comment || $line->is_blank;
+    while ( my $line = shift(@lines) ) {
+        next if $line->is_comment || $line->is_blank;
 
-		if ( $line->content =~ m/^(Background|Scenario)(?: Outline)?: ?(.+)?/ ) {
-			my ( $type, $name ) = ( $1, $2 );
+        my $langdef = $self->{langdef};
+        if ( $line->content =~ m/^((?:$langdef->{background})|(?:$langdef->{scenario}))(?: Outline)?: ?(.+)?/) {
+            my ( $type, $name ) = ( $1, $2 );
 
-			# Only one background section, and it must be the first
-			if ( $scenarios++ && $type eq 'Background' ) {
-				ouch 'parse_error', "Background not allowed after scenarios",
-					$line;
-			}
+            # Only one background section, and it must be the first
+            if ( $scenarios++ && $type =~ m/^($langdef->{background})/ ) {
+                ouch 'parse_error', "Background not allowed after scenarios",
+                  $line;
+            }
 
-			# Create the scenario
-			my $scenario = Test::BDD::Cucumber::Model::Scenario->new({
-				( $name ? ( name => $name ) : () ),
-				background => $type eq 'Background' ? 1 : 0,
-				line       => $line,
-				tags       => [@{$feature->tags}, @scenario_tags]
-			});
-			@scenario_tags = ();
+            # Create the scenario
+            my $scenario = Test::BDD::Cucumber::Model::Scenario->new(
+                {
+                    ( $name ? ( name => $name ) : () ),
+                    background => $type =~ m/^($langdef->{background})/ ? 1 : 0,
+                    line => $line,
+                    tags => [ @{ $feature->tags }, @scenario_tags ]
+                }
+            );
+            @scenario_tags = ();
 
-			# Attempt to populate it
-			@lines = $self->_extract_steps( $feature, $scenario, @lines );
+            # Attempt to populate it
+            @lines = $self->_extract_steps( $feature, $scenario, @lines );
 
-			if ( $type eq 'Background' ) {
-				$feature->background( $scenario );
-			} else {
-				push( @{ $feature->scenarios }, $scenario );
-			}
+            if ( $type =~ m/^($langdef->{background})/ ) {
+                $feature->background($scenario);
+            } else {
+                push( @{ $feature->scenarios }, $scenario );
+            }
 
-		# Scenario-level tags
-		} elsif ( $line->content =~ m/^\s*\@\w/ ) {
-			my @tags = $line->content =~ m/\@([^\s]+)/g;
-			push( @scenario_tags, @tags );
+            # Scenario-level tags
+        } elsif ( $line->content =~ m/^\s*\@\w/ ) {
+            my @tags = $line->content =~ m/\@([^\s]+)/g;
+            push( @scenario_tags, @tags );
 
-		} else {
-			ouch 'parse_error', "Malformed scenario line", $line;
-		}
-	}
+        } else {
+            ouch 'parse_error', "Malformed scenario line", $line;
+        }
+    }
 
-	return $feature, $self->_remove_next_blanks( @lines );
+    return $feature, $self->_remove_next_blanks(@lines);
 }
 
 sub _extract_steps {
-	my ( $self, $feature, $scenario, @lines ) = @_;
+    my ( $self, $feature, $scenario, @lines ) = @_;
 
-	my $last_verb = 'Given';
+    my $langdef   = $self->{langdef};
+    my @givens    = split( /\|/, $langdef->{given} );
+    my $last_verb = $givens[-1];
 
-	while ( my $line = shift( @lines ) ) {
-		next if $line->is_comment;
-		last if $line->is_blank;
+    while ( my $line = shift(@lines) ) {
+        next if $line->is_comment;
+        last if $line->is_blank;
 
-		# Conventional step?
-		if ( $line->content =~ m/^(Given|And|When|Then|But) (.+)/ ) {
-			my ( $verb, $text ) = ( $1, $2 );
-			my $original_verb = $verb;
-			$verb = $last_verb if lc($verb) eq 'and' or lc($verb) eq 'but';
+        # Conventional step?
+        if ( $line->content =~
+m/^((?:$langdef->{given})|(?:$langdef->{and})|(?:$langdef->{when})|(?:$langdef->{then})|(?:$langdef->{but})) (.+)/
+          )
+        {
+            my ( $verb, $text ) = ( $1, $2 );
+            my $original_verb = $verb;
+            $verb = 'Given' if $verb =~ m/^($langdef->{given})$/;
+            $verb = 'When'  if $verb =~ m/^($langdef->{when})$/;
+            $verb = 'Then'  if $verb =~ m/^($langdef->{then})$/;
+            $verb = $last_verb
+              if $verb =~ m/^($langdef->{and})$/
+              or $verb =~ m/^($langdef->{but}$)/;
             $last_verb = $verb;
 
-			my $step = Test::BDD::Cucumber::Model::Step->new({
-				text => $text,
-				verb => $verb,
-				line => $line,
-				verb_original => $original_verb,
-			});
+            my $step = Test::BDD::Cucumber::Model::Step->new(
+                {
+                    text          => $text,
+                    verb          => $verb,
+                    line          => $line,
+                    verb_original => $original_verb,
+                }
+            );
 
-			@lines = $self->_extract_step_data(
-				$feature, $scenario, $step, @lines );
+            @lines =
+              $self->_extract_step_data( $feature, $scenario, $step, @lines );
 
-			push( @{ $scenario->steps }, $step );
+            push( @{ $scenario->steps }, $step );
 
-		# Outline data block...
-		} elsif ( $line->content =~ m/^Examples:$/ ) {
-			return $self->_extract_table( 6, $scenario,
-			    $self->_remove_next_blanks( @lines ));
-		} else {
-		    warn $line->content;
-			ouch 'parse_error', "Malformed step line", $line;
-		}
-	}
+            # Outline data block...
+        } elsif ( $line->content =~ m/^($langdef->{examples}):$/ ) {
+            return $self->_extract_table( 6, $scenario,
+                $self->_remove_next_blanks(@lines) );
+        } else {
+            warn $line->content;
+            ouch 'parse_error', "Malformed step line", $line;
+        }
+    }
 
-	return $self->_remove_next_blanks( @lines );
+    return $self->_remove_next_blanks(@lines);
 }
 
 sub _extract_step_data {
@@ -297,7 +334,7 @@ sub _pipe_array {
 
 =head1 ERROR HANDLING
 
-L<Test::BDD::Cucumber> uses L<Ouch> for exception handling. Error originating in this
+L<Test::BDD::Cucumber> uses L<Ouch> for exception handling. Errors originating in this
 class tend to have a code of C<parse_error> and a L<Test::BDD::Cucumber::Model::Line>
 object for data.
 

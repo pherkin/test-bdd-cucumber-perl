@@ -5,8 +5,13 @@ use warnings;
 
 use Test::More;
 use FindBin::libs;
+use Test::File::ShareDir
+  -share => {
+    -dist   => { 'Test-BDD-Cucumber'    => 'share' }
+  };
 use App::pherkin;
 use Data::Dumper;
+
 
 for my $test (
     [

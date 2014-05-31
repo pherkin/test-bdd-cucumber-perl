@@ -2,8 +2,11 @@ package App::pherkin;
 
 use strict;
 use warnings;
+
 use FindBin::libs;
 use Getopt::Long;
+use Test::BDD::Cucumber::I18n qw(languages langdef readable_keywords keyword_to_subname);
+use List::Util qw(max);
 
 use Moose;
 has 'tags' => ( is => 'rw', isa => 'ArrayRef', required => 0 );
@@ -48,6 +51,9 @@ Returns a L<Test::BDD::Cucumber::Model::Result> object for all steps run.
 sub run {
     my ( $self, @arguments ) = @_;
 
+    # localized features will have utf8 in them and options may output utf8 as well
+    binmode STDOUT, ':utf8';
+
     my ($options, @feature_files) = $self->_process_arguments(@arguments);
 
     my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load(
@@ -80,12 +86,19 @@ sub _process_arguments {
     my $includes = [];
     my $tags = [];
     GetOptions(
-        'I=s@'   => \$includes,
-        'l|lib'  => \(my $add_lib),
-        'b|blib' => \(my $add_blib),
+        'I=s@'       => \$includes,
+        'l|lib'      => \(my $add_lib),
+        'b|blib'     => \(my $add_blib),
         'o|output=s' => \(my $harness),
-        't|tags=s@' => \$tags,
+	't|tags=s@'  => \$tags,
+	'i18n=s'     => \(my $i18n)
     );
+
+    if ($i18n) {
+        _print_langdef($i18n) unless $i18n eq 'help';
+        _print_languages();
+    };
+
     unshift @$includes, 'lib'                   if $add_lib;
     unshift @$includes, 'blib/lib', 'blib/arch' if $add_blib;
 
@@ -136,6 +149,46 @@ sub _process_tags {
     return $tag_scheme;
 }
 
+sub _print_languages {
+
+    my @languages=languages();
+
+    my $max_code_length   = max map { length } @languages;
+    my $max_name_length   = max map { length(langdef($_)->{name}) } @languages;
+    my $max_native_length = max map { length(langdef($_)->{native}) } @languages;
+
+    my $format= "| %-${max_code_length}s | %-${max_name_length}s | %-${max_native_length}s |\n";
+
+    for my $language (sort @languages) {
+        my $langdef=langdef($language);
+	printf $format, $language, $langdef->{name}, $langdef->{native};
+    }
+    exit;
+}
+
+sub _print_langdef {
+    my ($language)=@_;
+
+    my $langdef=langdef($language);
+
+    my @keywords= qw(feature background scenario scenario_outline examples
+		     given when then and but);
+    my $max_length = max map { length readable_keywords ($langdef->{$_}) } @keywords;
+
+    my $format= "| %-16s | %-${max_length}s |\n";
+    for my $keyword (qw(feature background scenario scenario_outline
+			examples given when then and but )) {
+        printf $format, $keyword, readable_keywords($langdef->{$keyword});
+    }
+
+    my $codeformat= "| %-16s | %-${max_length}s |\n";
+    for my $keyword (qw(given when then )) {
+        printf $codeformat, $keyword.' (code)',
+          readable_keywords($langdef->{$keyword}, \&keyword_to_subname);
+    }
+
+    exit;
+}
 
 =head1 AUTHOR
 

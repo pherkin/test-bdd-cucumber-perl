@@ -29,6 +29,7 @@ use Test::BDD::Cucumber::StepFile();
 
 sub load {
     my ( $class, $path, $tag_scheme ) = @_;
+
     my $executor = Test::BDD::Cucumber::Executor->new();
 
     # Either load a feature or a directory...
