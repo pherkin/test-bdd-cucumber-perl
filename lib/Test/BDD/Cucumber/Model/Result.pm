@@ -35,7 +35,7 @@ The underlying test-output that contributed to a result.
 
 =cut
 
-has 'output' => ( is => 'ro', isa => 'Str',        required => 1 );
+has 'output' => ( is => 'ro', isa => 'Str', required => 1 );
 
 =head1 METHODS
 
@@ -51,30 +51,34 @@ result. The empty set passes.
 =cut
 
 sub from_children {
-	my ( $class, @children ) = @_;
+    my ( $class, @children ) = @_;
 
-	# We'll be looking for the presence of just one of any of the
-	# short-circuiting statuses, but we need to keep a sum of all the output.
-	# Passing is the default state, so we cheat and say there was one of them.
-	my %results = ( passing => 1 );
-	my $output;
+    # We'll be looking for the presence of just one of any of the
+    # short-circuiting statuses, but we need to keep a sum of all the output.
+    # Passing is the default state, so we cheat and say there was one of them.
+    my %results = ( passing => 1 );
+    my $output;
 
-	for my $child ( @children ) {
-		# Save the status of that child
-		$results{ $child->result }++;
-		# Add its output
-		$output .= $child->output . "\n"
-	}
-	$output .= "\n";
+    for my $child (@children) {
 
-	for my $status ( qw( failing undefined pending passing ) ) {
-		if ( $results{$status} ) {
-			return $class->new({
-				result => $status,
-				output => $output
-			});
-		}
-	}
+        # Save the status of that child
+        $results{ $child->result }++;
+
+        # Add its output
+        $output .= $child->output . "\n";
+    }
+    $output .= "\n";
+
+    for my $status (qw( failing undefined pending passing )) {
+        if ( $results{$status} ) {
+            return $class->new(
+                {
+                    result => $status,
+                    output => $output
+                }
+            );
+        }
+    }
 }
 
 1;

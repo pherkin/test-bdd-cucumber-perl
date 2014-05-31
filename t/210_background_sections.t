@@ -5,17 +5,15 @@ use warnings;
 
 use Test::More;
 
-use Test::File::ShareDir
-  -share => {
-    -dist   => { 'Test-BDD-Cucumber'    => 'share' }
-  };
+use Test::File::ShareDir -share =>
+  { -dist => { 'Test-BDD-Cucumber' => 'share' } };
 
 use Test::BDD::Cucumber::Parser;
 use Test::BDD::Cucumber::Executor;
 use Test::BDD::Cucumber::Harness::Data;
 
 my $feature = Test::BDD::Cucumber::Parser->parse_string(
-<<HEREDOC
+    <<HEREDOC
 Feature: Test Feature
 	Conditions of satisfaction
 
@@ -42,10 +40,13 @@ my $pass_until = 2;
 
 my $executor = Test::BDD::Cucumber::Executor->new();
 $executor->add_steps(
-	[ Given => qr/a passing step called '(.+)'/, sub { 1; } ],
-	[ Given => 'a background step that sometimes passes', sub {
-		ok( ( $pass_until && $pass_until-- ), "Still passes" );
-	}],
+    [ Given => qr/a passing step called '(.+)'/, sub { 1; } ],
+    [
+        Given => 'a background step that sometimes passes',
+        sub {
+            ok( ( $pass_until && $pass_until-- ), "Still passes" );
+          }
+    ],
 );
 
 my $harness = Test::BDD::Cucumber::Harness::Data->new();
@@ -59,7 +60,8 @@ is( @scenarios, 4, "Five scenarios found" );
 
 # Of this, the first two should have passed, the third failed,
 # and the fourth skipped...
-my $scenario_status = sub { $harness->scenario_status( $scenarios[shift()] )->result };
+my $scenario_status =
+  sub { $harness->scenario_status( $scenarios[ shift() ] )->result };
 is( $scenario_status->(0), 'passing', "Scenario 1 passes" );
 is( $scenario_status->(1), 'passing', "Scenario 2 passes" );
 is( $scenario_status->(2), 'failing', "Scenario 3 fails" );
@@ -67,16 +69,12 @@ is( $scenario_status->(3), 'pending', "Scenario 4 marked pending" );
 
 # Third scenario should have four steps. Two from the background,
 # and two from definition
-my @steps = @{
-	$harness->features->[0]
-		->{'scenarios'}->[2]
-		->{'steps'}
-};
+my @steps = @{ $harness->features->[0]->{'scenarios'}->[2]->{'steps'} };
 is( @steps, 4, "Four steps found" );
 
 # The step pattern we should see in Scenario 3 is
 # Pass/Fail/Skip/Skip
-my $step_status = sub { $harness->step_status( $steps[shift()])->result };
+my $step_status = sub { $harness->step_status( $steps[ shift() ] )->result };
 is( $step_status->(0), 'passing', "Step 1 passes" );
 is( $step_status->(1), 'failing', "Step 2 fails" );
 is( $step_status->(2), 'pending', "Step 3 pending" );

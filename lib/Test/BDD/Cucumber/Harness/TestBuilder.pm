@@ -33,49 +33,52 @@ sub feature {
 
 sub scenario {
     my ( $self, $scenario, $dataset ) = @_;
-    note "$li${ni}Scenario: " . ($scenario->name || '');
+    note "$li${ni}Scenario: " . ( $scenario->name || '' );
 }
 sub scenario_done { note ""; }
 
-sub step {}
+sub step { }
 
 sub step_done {
-    my ($self, $context, $result) = @_;
+    my ( $self, $context, $result ) = @_;
 
     my $status = $result->result;
 
     my $step = $context->step;
     my $step_name;
 
-    if ( $context->is_hook )
-    {
-        $status ne 'undefined' and $status ne 'pending' and $status ne 'passing' or return;
+    if ( $context->is_hook ) {
+        $status ne 'undefined'
+          and $status ne 'pending'
+          and $status ne 'passing'
+          or return;
         $step_name = 'In ' . ucfirst( $context->verb ) . ' Hook';
+    } else {
+        $step_name =
+          $si . ucfirst( $step->verb_original ) . ' ' . $context->text;
     }
-    else
-    {
-        $step_name = $si . ucfirst($step->verb_original) . ' ' . $context->text;
-    }
-
 
     if ( $status eq 'undefined' || $status eq 'pending' ) {
         if ( $self->fail_skip ) {
-            fail( "No matcher for: $step_name" );
-            $self->_note_step_data( $step );
+            fail("No matcher for: $step_name");
+            $self->_note_step_data($step);
         } else {
-            TODO: { todo_skip $step_name, 1 };
-            $self->_note_step_data( $step );
+          TODO: { todo_skip $step_name, 1 }
+            $self->_note_step_data($step);
         }
     } elsif ( $status eq 'passing' ) {
-        pass( $step_name );
-        $self->_note_step_data( $step );
+        pass($step_name);
+        $self->_note_step_data($step);
     } else {
-        fail( $step_name );
-        $self->_note_step_data( $step );
-        if ( ! $context->is_hook )
-        {
-            my $step_location = '  in step at ' . $step->line->document->filename . ' line ' . $step->line->number . '.';
-            diag( $step_location );
+        fail($step_name);
+        $self->_note_step_data($step);
+        if ( !$context->is_hook ) {
+            my $step_location =
+                '  in step at '
+              . $step->line->document->filename
+              . ' line '
+              . $step->line->number . '.';
+            diag($step_location);
         }
         diag( $result->output );
     }
@@ -88,12 +91,12 @@ sub _note_step_data {
     return unless @step_data;
 
     if ( ref( $step->data ) eq 'ARRAY' ) {
-        for ( @step_data ) {
+        for (@step_data) {
             note( $di . $_ );
         }
     } else {
         note $di . '"""';
-        for ( @step_data ) {
+        for (@step_data) {
             note( $di . '  ' . $_ );
         }
         note $di . '"""';

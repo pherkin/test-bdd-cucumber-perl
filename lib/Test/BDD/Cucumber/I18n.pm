@@ -41,7 +41,7 @@ use base 'Exporter';
 our @EXPORT_OK =
   qw(languages langdef has_language readable_keywords keyword_to_subname);
 
-my $langdefs=_initialize_language_definitions_from_shared_json_file();
+my $langdefs = _initialize_language_definitions_from_shared_json_file();
 
 sub _initialize_language_definitions_from_shared_json_file {
     my $dir = dist_dir('Test-BDD-Cucumber');

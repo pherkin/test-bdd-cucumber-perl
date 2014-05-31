@@ -4,10 +4,8 @@ use strict;
 use warnings;
 
 use Test::More;
-use Test::File::ShareDir
-  -share => {
-    -dist   => { 'Test-BDD-Cucumber'    => 'share' }
-  };
+use Test::File::ShareDir -share =>
+  { -dist => { 'Test-BDD-Cucumber' => 'share' } };
 use Test::BDD::Cucumber::Parser;
 
 my $feature_with_background = <<'HEREDOC'
@@ -34,33 +32,37 @@ Feature: Test Feature
 		  | ban  |
 		  | fan  |
 HEREDOC
-;
+  ;
 
 my $feature_without_background = $feature_with_background;
 $feature_without_background =~ s/\tBackground.+?\n\n//s;
 
 for (
-	[ "Feature with background section", $feature_with_background ],
-	[ "Feature without background section", $feature_without_background ],
-) {
-	my ( $name, $feature_text ) = @$_;
-	note( $name );
+    [ "Feature with background section",    $feature_with_background ],
+    [ "Feature without background section", $feature_without_background ],
+  )
+{
+    my ( $name, $feature_text ) = @$_;
+    note($name);
 
-	my $feature = Test::BDD::Cucumber::Parser->parse_string( $feature_text );
+    my $feature = Test::BDD::Cucumber::Parser->parse_string($feature_text);
 
-	my @scenarios = @{ $feature->scenarios };
-	is( @scenarios, 2, "Found two scenarios" );
+    my @scenarios = @{ $feature->scenarios };
+    is( @scenarios, 2, "Found two scenarios" );
 
-	my $tags_match = sub {
-		my ( $scenario, @expected_tags ) = @_;
-		my @found_tags = sort @{$scenario->tags};
-		is_deeply( \@found_tags, [sort @expected_tags],
-			"Tags match for " . $scenario->name );
-	};
+    my $tags_match = sub {
+        my ( $scenario, @expected_tags ) = @_;
+        my @found_tags = sort @{ $scenario->tags };
+        is_deeply(
+            \@found_tags,
+            [ sort @expected_tags ],
+            "Tags match for " . $scenario->name
+        );
+    };
 
-	$tags_match->( $feature,      qw/inherited1 inherited2         / );
-	$tags_match->( $scenarios[0], qw/inherited1 inherited2 foo bar / );
-	$tags_match->( $scenarios[1], qw/inherited1 inherited2 baz     / );
+    $tags_match->( $feature,      qw/inherited1 inherited2         / );
+    $tags_match->( $scenarios[0], qw/inherited1 inherited2 foo bar / );
+    $tags_match->( $scenarios[1], qw/inherited1 inherited2 baz     / );
 }
 
 done_testing();

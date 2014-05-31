@@ -5,10 +5,8 @@ use warnings;
 
 use Test::More;
 
-use Test::File::ShareDir
-  -share => {
-    -dist   => { 'Test-BDD-Cucumber'    => 'share' }
-  };
+use Test::File::ShareDir -share =>
+  { -dist => { 'Test-BDD-Cucumber' => 'share' } };
 
 use Test::BDD::Cucumber::Parser;
 

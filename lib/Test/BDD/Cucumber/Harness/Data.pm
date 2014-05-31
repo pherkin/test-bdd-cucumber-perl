@@ -27,7 +27,7 @@ C<feature_done> is called, it won't be in here.
 
 =cut
 
-has 'features' => ( is => 'rw', isa => 'ArrayRef', default => sub {[]} );
+has 'features' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
 
 =head2 current_feature
 
@@ -40,9 +40,11 @@ not the C<_done> method.
 
 =cut
 
-has 'current_feature'  => ( is => 'rw', isa => 'HashRef', default => sub {{}} );
-has 'current_scenario' => ( is => 'rw', isa => 'HashRef', default => sub {{}} );
-has 'current_step'     => ( is => 'rw', isa => 'HashRef', default => sub {{}} );
+has 'current_feature' =>
+  ( is => 'rw', isa => 'HashRef', default => sub { {} } );
+has 'current_scenario' =>
+  ( is => 'rw', isa => 'HashRef', default => sub { {} } );
+has 'current_step' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
 
 =head2 feature
 
@@ -59,18 +61,18 @@ Feature hashref looks like:
 
 # We will keep track of where we are each time...
 sub feature {
-	my ( $self, $feature ) = @_;
-	my $feature_ref = {
-		object    => $feature,
-		scenarios => []
-	};
-	$self->current_feature( $feature_ref );
+    my ( $self, $feature ) = @_;
+    my $feature_ref = {
+        object    => $feature,
+        scenarios => []
+    };
+    $self->current_feature($feature_ref);
 }
 
 sub feature_done {
-	my $self = shift;
-	push( @{ $self->features }, $self->current_feature );
-	$self->current_feature({});
+    my $self = shift;
+    push( @{ $self->features }, $self->current_feature );
+    $self->current_feature( {} );
 }
 
 =head2 scenario
@@ -88,18 +90,19 @@ Scenario hashref looks like:
 =cut
 
 sub scenario {
-	my ( $self, $scenario, $dataset ) = @_;
-	my $scenario_ref = {
-		object  => $scenario,
-		dataset => $dataset,
-		steps   => [],
-	};
-	$self->current_scenario( $scenario_ref );
+    my ( $self, $scenario, $dataset ) = @_;
+    my $scenario_ref = {
+        object  => $scenario,
+        dataset => $dataset,
+        steps   => [],
+    };
+    $self->current_scenario($scenario_ref);
 }
+
 sub scenario_done {
-	my $self = shift;
-	push( @{ $self->current_feature->{'scenarios'} }, $self->current_scenario );
-	$self->current_scenario({});
+    my $self = shift;
+    push( @{ $self->current_feature->{'scenarios'} }, $self->current_scenario );
+    $self->current_scenario( {} );
 }
 
 =head2 step
@@ -116,19 +119,17 @@ Step hashref looks like:
 =cut
 
 sub step {
-	my ( $self, $step_context ) = @_;
-	my $step_ref = {
-		context => $step_context
-	};
-	$self->current_step( $step_ref );
+    my ( $self, $step_context ) = @_;
+    my $step_ref = { context => $step_context };
+    $self->current_step($step_ref);
 }
 
 sub step_done {
-    my ($self, $context, $result) = @_;
+    my ( $self, $context, $result ) = @_;
 
     $self->current_step->{'result'} = $result;
     push( @{ $self->current_scenario->{'steps'} }, $self->current_step );
-    $self->current_step({});
+    $self->current_step( {} );
 }
 
 =head2 feature_status
@@ -145,20 +146,20 @@ or a Scenario, then it returns one representing all the child objects.
 
 # Status methods
 sub feature_status {
-	my ( $self, $feature ) = @_;
-	return Test::BDD::Cucumber::Model::Result->from_children(
-		map { $self->scenario_status($_) } @{ $feature->{'scenarios'} } );
+    my ( $self, $feature ) = @_;
+    return Test::BDD::Cucumber::Model::Result->from_children(
+        map { $self->scenario_status($_) } @{ $feature->{'scenarios'} } );
 }
 
 sub scenario_status {
-	my ( $self, $scenario ) = @_;
-	return Test::BDD::Cucumber::Model::Result->from_children(
-		map { $self->step_status($_) } @{ $scenario->{'steps'} } );
+    my ( $self, $scenario ) = @_;
+    return Test::BDD::Cucumber::Model::Result->from_children(
+        map { $self->step_status($_) } @{ $scenario->{'steps'} } );
 }
 
 sub step_status {
-	my ($self, $step) = @_;
-	return $step->{'result'};
+    my ( $self, $step ) = @_;
+    return $step->{'result'};
 }
 
 =head2 find_scenario_step_by_name
@@ -170,12 +171,11 @@ the data-hash where the Step Object's C<<->text>> matches the string.
 
 # Find a step
 sub find_scenario_step_by_name {
-	my ( $self, $scenario, $name ) = @_;
-	my ( $step ) = grep {
-		$_->{'context'}->text eq $name
-	} @{ $scenario->{'steps'} };
+    my ( $self, $scenario, $name ) = @_;
+    my ($step) =
+      grep { $_->{'context'}->text eq $name } @{ $scenario->{'steps'} };
 
-	return $step;
+    return $step;
 }
 
 =head1 AUTHOR
