@@ -8,15 +8,14 @@ use Test::BDD::Cucumber::StepFile;
 use Test::BDD::Cucumber::Parser;
 use Test::BDD::Cucumber::Model::Scenario;
 use Test::BDD::Cucumber::Model::TagSpec;
-use Method::Signatures;
 
 my %ordinals = qw/0 first 1 second 2 third 3 fourth 4 fifth/;
 
-Given qr/a scenario tagged with (.+)/, func ($c) {
+Given qr/a scenario tagged with (.+)/, sub {
 	my @tags = $1 =~ m/"\@(.+?)"/g;
 
 	# How many scenarios have we created so far?
-	my $count = $c->stash->{'scenario'}->{'count'}++;
+	my $count = S->{'count'}++;
 
 	# Create a new one
 	my $scenario = Test::BDD::Cucumber::Model::Scenario->new({
@@ -25,7 +24,7 @@ Given qr/a scenario tagged with (.+)/, func ($c) {
 	});
 
 	# Add it to our list
-	my $stack = ($c->stash->{'scenario'}->{'scenarios'} ||= []);
+	my $stack = (S->{'scenarios'} ||= []);
 	push( @$stack, $scenario );
 };
 
@@ -35,16 +34,16 @@ Given qr/a scenario tagged with (.+)/, func ($c) {
 
 sub from_tagspec {
 	my ( $c, $expr ) = @_;
-	my @scenarios = @{ $c->stash->{'scenario'}->{'scenarios'} };
+	my @scenarios = @{ S->{'scenarios'} };
 	my @matched = Test::BDD::Cucumber::Model::TagSpec->new({
 		tags => $expr
 	})->filter( @scenarios );
-	$c->stash->{'scenario'}->{'matched'} = \@matched;
+	S->{'matched'} = \@matched;
 }
 
-When qr/^Cucumber executes scenarios (not |)tagged with (both |)"\@([^"]*)"( (and|or|nor) (without |)"\@([^"]*)")?$/, func ($c) {
+When qr/^Cucumber executes scenarios (not |)tagged with (both |)"\@([^"]*)"( (and|or|nor) (without |)"\@([^"]*)")?$/, sub {
 	my ( $not_flag, $both, $tag1, $two_part, $joiner, $negate_2, $tag2 ) =
-		@{ $c->matches };
+		@{ C->matches };
 
 	# Normalize nor to or
 	$joiner = 'or' if $joiner && $joiner eq 'nor';
@@ -62,16 +61,16 @@ When qr/^Cucumber executes scenarios (not |)tagged with (both |)"\@([^"]*)"( (an
 		[ and => [ not => $inner ] ] :
 		[ and => $inner ];
 
-	from_tagspec( $c, $outer );
+	from_tagspec( shift(), $outer );
 };
 
 # Even I, great regex master, wasn't going to tackle this one in the parser
 # above
-When qr/^Cucumber executes scenarios tagged with "\@([a-z]+)" but not with both "\@([a-z]+)" and "\@([a-z]+)"/, func ($c) {
-	from_tagspec( $c, [ and => $1, [ not => [ and => $2, $3 ] ] ] );
+When qr/^Cucumber executes scenarios tagged with "\@([a-z]+)" but not with both "\@([a-z]+)" and "\@([a-z]+)"/, sub {
+	from_tagspec( shift(), [ and => $1, [ not => [ and => $2, $3 ] ] ] );
 };
 
-Then qr/only the (.+) scenario( is|s are) executed/, func ($c) {
+Then qr/only the (.+) scenario( is|s are) executed/, sub {
 	my $demands = $1;
 	my @translates_to;
 
@@ -84,7 +83,7 @@ Then qr/only the (.+) scenario( is|s are) executed/, func ($c) {
 	}
 
 	# Work out which were executed
-	my @executed = map { $_->name } @{ $c->stash->{'scenario'}->{'matched'} };
+	my @executed = map { $_->name } @{ S->{'matched'} };
 
 	is_deeply( \@executed, \@translates_to, "Right scenarios executed" );
 };
@@ -93,7 +92,7 @@ Then qr/only the (.+) scenario( is|s are) executed/, func ($c) {
 # underlying implementation the author wanted. I didn't implement that way, so
 # I'm just going to piggy-back on it, and use the way I've implemented feature
 # tags...
-Given 'a feature tagged with "@foo"', func ($c) {
+Given 'a feature tagged with "@foo"', sub {
 	my $feature = Test::BDD::Cucumber::Parser->parse_string(<<'HEREDOC'
 @foo
 Feature: Name
@@ -101,11 +100,11 @@ Feature: Name
 	  Given bla
 HEREDOC
 	);
-	$c->stash->{'scenario'}->{'scenarios'} = $feature->scenarios;
+	S->{'scenarios'} = $feature->scenarios;
 };
-Given 'a scenario without any tags', func ($c) {1};
-Then 'the scenario is executed', func ($c) {
-	ok( $c->stash->{'scenario'}->{'matched'}->[0],
+Given 'a scenario without any tags', sub {1};
+Then 'the scenario is executed', sub {
+	ok( S->{'matched'}->[0],
 		"Found an executed scenario" );
 }
 

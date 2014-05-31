@@ -5,15 +5,15 @@ use warnings;
 
 use Test::More;
 use Test::BDD::Cucumber::StepFile;
-use Method::Signatures;
 
 use lib 'examples/calculator/lib/';
 
-Before func( $c ) {
+Before sub {
     use_ok( 'Calculator' );
 };
 
-After func( $c ) {
+After sub {
+    my $c = shift;
     # a bit contrived, as garbage collection would clear it out
     delete $c->stash->{'scenario'}->{'Calculator'};
     ok( not exists $c->stash->{'scenario'}->{'Calculator'} );
@@ -32,36 +32,38 @@ sub map_word_to_number
 
     ok( $word );
     ok( exists $numbers_as_words{ $word } );
-    
+
     return $numbers_as_words{ $word };
 }
 
-Transform qr/^(__THE_NUMBER_\w+__)$/, func( $c ) { map_word_to_number( $1 ) };
+Transform qr/^(__THE_NUMBER_\w+__)$/, sub { map_word_to_number( $1 ) };
 
-Transform qr/^table:number as word$/, func( $c, $data ) {
-    for my $row ( @{ $data } )
-    {
+Transform qr/^table:number as word$/, sub {
+    my ( $c, $data ) = @_;
+
+    for my $row ( @{ $data } ) {
         $row->{'number'} = map_word_to_number( $row->{'number as word'} );
     }
 };
 
-Given 'a new Calculator object', func ($c) {
-    $c->stash->{'scenario'}->{'Calculator'} = Calculator->new() };
-
-Given qr/^having pressed (.+)/, func($c) {
-    $c->stash->{'scenario'}->{'Calculator'}->press( $_ ) for split(/(,| and) /, $1);
+Given 'a new Calculator object', sub {
+    S->{'Calculator'} = Calculator->new()
 };
 
-Given qr/^having keyed (.+)/, func($c) {
+Given qr/^having pressed (.+)/, sub {
+    S->{'Calculator'}->press( $_ ) for split(/(,| and) /, $1);
+};
+
+Given qr/^having keyed (.+)/, sub {
     # Make this call the having pressed
-    my ( $value ) = @{ $c->matches };
-    $c->stash->{'scenario'}->{'Calculator'}->key_in( $value );
+    my ( $value ) = @{ C->matches };
+    S->{'Calculator'}->key_in( $value );
 };
 
-Given 'having successfully performed the following calculations', func ($c) {
-    my $calculator = $c->stash->{'scenario'}->{'Calculator'};
+Given 'having successfully performed the following calculations', sub {
+    my $calculator = S->{'Calculator'};
 
-    for my $row ( @{ $c->data } ) {
+    for my $row ( @{ C->data } ) {
         $calculator->key_in( $row->{'first'}    );
         $calculator->key_in( $row->{'operator'} );
         $calculator->key_in( $row->{'second'}   );
@@ -73,20 +75,20 @@ Given 'having successfully performed the following calculations', func ($c) {
     }
 };
 
-Given 'having entered the following sequence', func ($c) {
-    $c->stash->{'scenario'}->{'Calculator'}->key_in( $c->data );
+Given 'having entered the following sequence', sub {
+    S->{'Calculator'}->key_in( C->data );
 };
 
-Given 'having added these numbers', func ($c) {
-    for my $row ( @{ $c->data } )
+Given 'having added these numbers', sub {
+    for my $row ( @{ C->data } )
     {
-        $c->stash->{'scenario'}->{'Calculator'}->key_in( $row->{number} );
-        $c->stash->{'scenario'}->{'Calculator'}->key_in( '+' );
+        S->{'Calculator'}->key_in( $row->{number} );
+        S->{'Calculator'}->key_in( '+' );
     }
 };
 
-Then qr/^the display should show (.+)/, func($c) {
-    my ( $value ) = @{ $c->matches };
-    is( $c->stash->{'scenario'}->{'Calculator'}->display, $value,
+Then qr/^the display should show (.+)/, sub {
+    my ( $value ) = @{ C->matches };
+    is( S->{'Calculator'}->display, $value,
         "Calculator display as expected" );
 };

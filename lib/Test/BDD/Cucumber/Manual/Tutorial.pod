@@ -63,7 +63,6 @@ C<features/step_definitions/basic_steps.pl> file in it:
 
  use Test::More;
  use Test::BDD::Cucumber::StepFile;
- use Method::Signatures;
 
  Given qr/a usable (\S+) class/, sub { use_ok( $1 ); };
  Given qr/a Digest (\S+) object/, sub {

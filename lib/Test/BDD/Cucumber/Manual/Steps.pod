@@ -21,7 +21,6 @@ Most of your step files will want to start something like:
 
  use Test::More;
  use Test::BDD::Cucumber::StepFile;
- use Method::Signatures;
 
 The fake shebang line gives some hints to syntax highlighters, and
 C<use strict;> and C<use warnings;> are hopefully fairly standard at this point.
@@ -36,9 +35,6 @@ C<Then()> and C<Step()>. These pass the step definitions to the class loading
 the step definitions, and specify which Step Verb should be used - C<Step()>
 matches any.
 
-L<Method::Signatures> allows us to use a small amount of syntactic sugar for the
-step definitions, and gives us the C<func()> keyword you'll see in a minute.
-
 =head1 STEP DEFINITIONS
 
  Given qr/I have (\d+)/, sub {
@@ -50,7 +46,7 @@ step definitions, and gives us the C<func()> keyword you'll see in a minute.
         int( S->{'count'} );
  }
 
- Then qr/The count should be (\d+)/, func ($c) {
+ Then qr/The count should be (\d+)/, sub {
     is( S->{'count'}, C->matches->[0], "Count matches" );
  }
 

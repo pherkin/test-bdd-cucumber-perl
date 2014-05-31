@@ -30,15 +30,14 @@ Defining steps:
  use strict; use warnings; use Test::More;
 
  use Test::BDD::Cucumber::StepFile;
- use Method::Signatures; # Allows short-hand func method
 
- Given     'something',          func ($c) { print "YEAH!" }
- When      qr/smooooth (\d+)/,   func ($c) { print "YEEEHAH $1" }
- Then      qr/something (else)/, func ($c) { print "Meh $1" }
- Step      qr/die now/,          func ($c) { die "now" }
- Transform qr/^(\d+)$/,          func ($c) { int $1 }
- Before                          func ($c) { setup_db() }
- After                           func ($c) { teardown() }
+ Given     'something',          sub { print "YEAH!" }
+ When      qr/smooooth (\d+)/,   sub { print "YEEEHAH $1" }
+ Then      qr/something (else)/, sub { S->{'match'} = $1 }
+ Step      qr/die now/,          sub { die "now" }
+ Transform qr/^(\d+)$/,          sub { int $1 }
+ Before                          sub { setup_db() }
+ After                           sub { teardown() }
 
 Loading steps, in a different file:
 
