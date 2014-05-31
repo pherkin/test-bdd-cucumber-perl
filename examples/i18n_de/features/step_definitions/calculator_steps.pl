@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use utf8; # Interpret funky German chars in regexes properly
 
 use Test::More;
 use Test::BDD::Cucumber::StepFile;
@@ -25,22 +26,22 @@ my %numbers_as_words = (
     __THE_NUMBER_TEN__  => 10,
 );
 
-sub map_word_to_number {
+sub map_word_to_number_i18n {
     my $word = shift;
 
     ok( $word );
     ok( exists $numbers_as_words{ $word } );
-    
+
     return $numbers_as_words{ $word };
 }
 
-Transform qr/^(__THE_NUMBER_\w+__)$/, sub { map_word_to_number( $1 ) };
+Transform qr/^(__THE_NUMBER_\w+__)$/, sub { map_word_to_number_i18n( $1 ) };
 
 Transform qr/^table:number as word$/, sub {
     my ($c, $data)=@_;
 
     for my $row ( @{ $data } ) {
-        $row->{'number'} = map_word_to_number( $row->{'number as word'} );
+        $row->{'number'} = map_word_to_number_i18n( $row->{'number as word'} );
     }
 };
 
