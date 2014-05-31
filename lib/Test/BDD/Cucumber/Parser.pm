@@ -292,7 +292,7 @@ sub _extract_multiline_string {
 
         if ( $line->content eq '"""' ) {
             $step->data($data);
-            return $self->_remove_next_blanks(@lines);
+            return @lines;
         }
 
         my $content = $line->content_remove_indentation($indent);
