@@ -15,24 +15,24 @@ use Test::BDD::Cucumber::Harness::Data;
 my $feature = Test::BDD::Cucumber::Parser->parse_string(
     <<HEREDOC
 Feature: Test Feature
-	Conditions of satisfaction
+        Conditions of satisfaction
 
-	Background:
-		Given a passing step called 'background-foo'
-		Given a background step that sometimes passes
+        Background:
+                Given a passing step called 'background-foo'
+                Given a background step that sometimes passes
 
-	Scenario:
-		Given a passing step called 'bar'
-		Given a passing step called 'baz'
+        Scenario:
+                Given a passing step called 'bar'
+                Given a passing step called 'baz'
 
-	Scenario:
-		Given a passing step called 'bar'
-		Given a passing step called '<name>'
-		Examples:
-		  | name |
-		  | bat  |
-		  | ban  |
-		  | fan  |
+        Scenario:
+                Given a passing step called 'bar'
+                Given a passing step called '<name>'
+                Examples:
+                  | name |
+                  | bat  |
+                  | ban  |
+                  | fan  |
 HEREDOC
 );
 

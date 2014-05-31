@@ -11,26 +11,26 @@ use Test::BDD::Cucumber::Parser;
 my $feature_with_background = <<'HEREDOC'
 @inherited1 @inherited2
 Feature: Test Feature
-	Conditions of satisfaction
+        Conditions of satisfaction
 
-	Background:
-		Given a passing step called 'background-foo'
-		Given a background step that sometimes passes
+        Background:
+                Given a passing step called 'background-foo'
+                Given a background step that sometimes passes
 
-	@foo @bar
-	Scenario: Two tags
-		Given a passing step called 'bar'
-		Given a passing step called 'baz'
+        @foo @bar
+        Scenario: Two tags
+                Given a passing step called 'bar'
+                Given a passing step called 'baz'
 
-	@baz
-	Scenario: One tag
-		Given a passing step called 'bar'
-		Given a passing step called '<name>'
-		Examples:
-		  | name |
-		  | bat  |
-		  | ban  |
-		  | fan  |
+        @baz
+        Scenario: One tag
+                Given a passing step called 'bar'
+                Given a passing step called '<name>'
+                Examples:
+                  | name |
+                  | bat  |
+                  | ban  |
+                  | fan  |
 HEREDOC
   ;
 

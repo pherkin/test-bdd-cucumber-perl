@@ -53,8 +53,8 @@ has 'current_step' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
 Feature hashref looks like:
 
  {
-	object    => Test::BDD::Cucumber::Model::Feature object
-	scenarios => []
+        object    => Test::BDD::Cucumber::Model::Feature object
+        scenarios => []
  }
 
 =cut
@@ -82,9 +82,9 @@ sub feature_done {
 Scenario hashref looks like:
 
  {
-	object  => Test::BDD::Cucumber::Model::Scenario object
-	dataset => Data hash the scenario was invoked with
-	steps   => [],
+        object  => Test::BDD::Cucumber::Model::Scenario object
+        dataset => Data hash the scenario was invoked with
+        steps   => [],
  }
 
 =cut
@@ -112,8 +112,8 @@ sub scenario_done {
 Step hashref looks like:
 
  {
- 	context => Test::BDD::Cucumber::StepContext object
- 	result  => Test::BDD::Cucumber::Model::Result object (after step_done)
+        context => Test::BDD::Cucumber::StepContext object
+        result  => Test::BDD::Cucumber::Model::Result object (after step_done)
  }
 
 =cut

@@ -47,7 +47,7 @@ Skipping both @todo and @wip tags: C<[ and => [ not => 'todo' ], [ not => 'wip' 
 An arrayref representing a structure like the above.
 
  TagSet->new({
-	tags => [ and => 'green', 'blue', [ or => 'red', 'yellow' ], [ not => 'white' ] ]
+        tags => [ and => 'green', 'blue', [ or => 'red', 'yellow' ], [ not => 'white' ] ]
  })
 
 =cut

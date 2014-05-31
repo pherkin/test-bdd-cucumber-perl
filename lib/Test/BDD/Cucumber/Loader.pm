@@ -50,9 +50,11 @@ sub load {
         my $file = $_;
         my $feature =
           Test::BDD::Cucumber::Parser->parse_file( $file, $tag_scheme );
-      } ( $file
+      } (
+        $file
         ? ( $file . '' )
-        : File::Find::Rule->file()->name('*.feature')->in($dir) );
+        : File::Find::Rule->file()->name('*.feature')->in($dir)
+      );
 
     return ( $executor, @features );
 }
