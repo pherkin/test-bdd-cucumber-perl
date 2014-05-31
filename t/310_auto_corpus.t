@@ -7,10 +7,15 @@ use FindBin::libs;
 use Test::More;
 use Test::Differences;
 use Test::DumpFeature;
+use Test::File::ShareDir
+  -share => {
+    -dist   => { 'My-Dist'    => 'share' }
+  };
 use Test::BDD::Cucumber::Parser;
 use YAML::Syck;
 use File::Slurp;
 use File::Find::Rule;
+
 
 my @files = @ARGV;
 @files = File::Find::Rule

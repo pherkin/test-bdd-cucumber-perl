@@ -4,6 +4,12 @@ use strict;
 use warnings;
 
 use Test::More;
+
+use Test::File::ShareDir
+  -share => {
+    -dist   => { 'My-Dist'    => 'share' }
+  };
+
 use Test::BDD::Cucumber::Parser;
 
 my $feature = Test::BDD::Cucumber::Parser->parse_file(

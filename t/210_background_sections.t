@@ -4,6 +4,12 @@ use strict;
 use warnings;
 
 use Test::More;
+
+use Test::File::ShareDir
+  -share => {
+    -dist   => { 'My-Dist'    => 'share' }
+  };
+
 use Test::BDD::Cucumber::Parser;
 use Test::BDD::Cucumber::Executor;
 use Test::BDD::Cucumber::Harness::Data;
