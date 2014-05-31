@@ -65,25 +65,25 @@ C<features/step_definitions/basic_steps.pl> file in it:
  use Test::BDD::Cucumber::StepFile;
  use Method::Signatures;
 
- Given qr/a usable (\S+) class/, func ($c) { use_ok( $1 ); };
- Given qr/a Digest (\S+) object/, func ($c) {
+ Given qr/a usable (\S+) class/, sub { use_ok( $1 ); };
+ Given qr/a Digest (\S+) object/, sub {
     my $object = Digest->new($1);
     ok( $object, "Object created" );
-    $c->stash->{'scenario'}->{'object'} = $object;
+    S->{'object'} = $object;
  };
 
- When qr/I've added "(.+)" to the object/, func ($c) {
-    $c->stash->{'scenario'}->{'object'}->add( $1 );
+ When qr/I've added "(.+)" to the object/, sub {
+    S->{'object'}->add( $1 );
  };
 
- When "I've added the following to the object", func ($c) {
-    $c->stash->{'scenario'}->{'object'}->add( $c->data );
+ When "I've added the following to the object", sub {
+    S->{'object'}->add( C->data );
  };
 
- Then qr/the (.+) output is "(.+)"/, func ($c) {
+ Then qr/the (.+) output is "(.+)"/, sub {
     my $method = {base64 => 'b64digest', 'hex' => 'hexdigest' }->{ $1 } ||
         do { fail("Unknown output type $1"); return };
-    is( $c->stash->{'scenario'}->{'object'}->$method, $2 );
+    is( S->{'object'}->$method, $2 );
  };
 
 When you run L<pherkin|App::Pherkin> or the Test::Builder-based test which does
@@ -124,20 +124,11 @@ separately, they'll just subsume the steps in to the other scenarios.
 
 This is matched by:
 
- Given qr/a usable (\S+) class/, func ($c) { use_ok( $1 ); };
+ Given qr/a usable (\S+) class/, sub { use_ok( $1 ); };
 
 C<Given()> is a function exported by L<Test::BDD::Cucumber::StepFile> that
 accepts two arguments: a regular expression (or a string when you don't need
-to do any smart matching) and a coderef. We use L<Method::Signatures> to save
-some typing here, so note that written longer hand, the above might be written:
-
- Given(
-     qr/a usable (\S+) class/,
-     sub {
-        my $c = shift;
-        use_ok( $1 );
-     };
- );
+to do any smart matching) and a coderef.
 
 If you're paying attention, you might notice that C<use_ok> comes from
 L<Test::More>. B<Each step is run, from a> L<Test::Builder> B<perspective, as
@@ -158,10 +149,13 @@ L<Test::BDD::Cucumber::Manual::Steps>.
 The first scenario is delimited from the previous steps by a blank line, and
 it's called I<Check MD5>. Scenarios are marked out using the C<Scenario:>
 keyword, and just like the Background section before, it's a series of steps.
+
 These steps rely on the step before, which means we can examine the
 L<Test::Builder::StepContext|context> object C<$c> a little more closely.
 
- Given qr/a Digest (\S+) object/, func ($c) {
+ Given qr/a Digest (\S+) object/, sub {
+    my $c = shift;
+
     my $object = Digest->new($1);
     ok( $object, "Object created" );
     $c->stash->{'scenario'}->{'object'} = $object;
@@ -179,6 +173,19 @@ The context is the single argument that gets passed to each step, and it
 contains evertything that step should need to execute. We'll be looking at some
 of the methods you can call against it as we look at other steps, and you can
 find complete documentation for it here: L<Test::Builder::StepContext>.
+
+You'll note that the code above differs from the very first example, where we
+made use of C<C> and C<S>. C<C> is a function which returns the current context,
+and C<S> is a function which returns the scenario stash. So the above can be
+written:
+
+ Given qr/a Digest (\S+) object/, sub {
+    my $c = shift;
+
+    my $object = Digest->new($1);
+    ok( $object, "Object created" );
+    S->{'object'} = $object;
+ };
 
 This scenario also introduce several ways of starting a step, I<Given>, I<When>,
 and I<Then>, as well as I<And>. These are used to organize steps by type, with
@@ -232,8 +239,8 @@ C<pystring>s, and conceptually similar to HEREDOCs. The contents of the string
 will be available to the step definition via the C<data()> method of the
 I<context>:
 
- When "I've added the following to the object", func ($c) {
-    $c->stash->{'scenario'}->{'object'}->add( $c->data );
+ When "I've added the following to the object", sub {
+    S->{'object'}->add( C->data );
  };
 
 While we don't have an example of it here, you can also provide tables to your

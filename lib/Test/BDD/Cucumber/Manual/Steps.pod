@@ -41,24 +41,32 @@ step definitions, and gives us the C<func()> keyword you'll see in a minute.
 
 =head1 STEP DEFINITIONS
 
- Given qr/I have (\d+)/, func ($c) {
-    $c->stash->{'scenario'}->{'count'} += $1;
+ Given qr/I have (\d+)/, sub {
+    S->{'count'} += $1;
  }
 
- When "The count is an integer", func ($c) {
-    $c->stash->{'scenario'}->{'count'} =
-        int( $c->stash->{'scenario'}->{'count'} );
+ When "The count is an integer", sub {
+    S->{'count'} =
+        int( S->{'count'} );
  }
 
  Then qr/The count should be (\d+)/, func ($c) {
-    is( $c->stash->{'scenario'}->{'count'}, $c->matches->[0], "Count matches" );
+    is( S->{'count'}, C->matches->[0], "Count matches" );
  }
 
 Each of the exported verb functions accept a regular expression (or a string
 that's used as one), and a coderef. The coderef is passed a single argument,
-the L<Test::BDD::Cucumber::StepContext> object. To make this a little prettier,
-we use L<Method::Signatures>'s C<func()> keyword so we're not continually
-typing: C<sub { my $c = shift; ... >.
+the L<Test::BDD::Cucumber::StepContext> object. Before the subref is executed,
+localized definitions of C<S> and C<C> are set, such that the lines below are
+equivalent:
+
+  # Access the first match
+  sub { my $context = shift; print $context->matches->[0] }
+  sub { C->matches->[0] }
+
+  # Set a value in the scenario-level stash
+  sub { my $context = shift; my $stash = $context->stash; $stash->{'count'} = 1 }
+  sub { S->{'count'} = 1 }
 
 We will evaluate the regex immediately before we execute the coderef, so you
 can use $1, $2, $etc, although these are also available via the StepContext.

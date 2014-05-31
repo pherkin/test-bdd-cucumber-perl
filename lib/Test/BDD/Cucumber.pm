@@ -14,17 +14,11 @@ L<Cucumber on Perl on MetaCPAN|https://metacpan.org/release/Test-BDD-Cucumber>
 
 =head1 WARNING
 
-This is beta software, at best. The interface is unlikely to undergo major
-incompatible changes, but it's certainly possible. Do have a read of the
-B<Bugs and Missing> section below so you're not surprised when these things
-don't work.
+Do have a read of the B<Bugs and Missing> section below so you're not surprised
+when things don't work.
 
 In almost all cases, where the behaviour of this module is different from
 the I<real> Cucumber, the plan is to move it to be more similar to that.
-
-The idea is that the first 1.0 release will be the first production release and
-before that, you're on your own. There are many things still to add, but B<I'm>
-using it to do Real Things already.
 
 =head1 NEXT STEPS
 
@@ -73,9 +67,11 @@ in the very near future:
 
 On Github, of course: L<https://github.com/sheriff/test-bdd-cucumber-perl>.
 
-=head1 AUTHOR
+=head1 AUTHORS
 
 Peter Sergeant C<pete@clueball.com>
+
+Ben Rodgers C<ben@bdr.org>
 
 =head1 LICENSE
 

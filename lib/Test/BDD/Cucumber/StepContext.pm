@@ -13,6 +13,15 @@ The coderefs in Step Definitions have a single argument passed to them, a
 C<Test::BDD::Cucumber::StepContext> object. This is an attribute-only class,
 populated by L<Test::BDD::Cucumber::Executor>.
 
+When steps are run normally, C<C()> is set directly before execution to return
+the context; this allows you to do:
+
+  sub { return C->columns }
+
+instead of:
+
+  sub { my $c = shift; return $c->columns; }
+
 =head1 ATTRIBUTES
 
 =head2 columns
@@ -41,6 +50,12 @@ A hash of hashes, containing three keys, C<feature>, C<scenario> and C<step>.
 The stash allows you to persist data across features, scenarios, or steps
 (although the latter is there for completeness, rather than having any useful
 function).
+
+The scenario-level stash is also available to steps by calling C<S()>, making
+the following two lines of code equivalent:
+
+ sub { my $context = shift; my $stash = $context->stash; $stash->{'count'} = 1 }
+ sub { S->{'count'} = 1 }
 
 =cut
 
@@ -180,7 +195,7 @@ sub transform
     my $value = shift;
 
     defined $value or return $value;
-        
+
     TRANSFORM:
     for my $transformer ( @{ $self->transformers } )
     {
