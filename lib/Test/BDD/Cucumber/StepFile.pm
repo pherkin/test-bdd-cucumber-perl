@@ -67,9 +67,10 @@ these are returned to it...
 
 =cut
 
-sub Given     { push( @definitions, [ Given     => @_ ] ) }
-sub When      { push( @definitions, [ When      => @_ ] ) }
-sub Then      { push( @definitions, [ Then      => @_ ] ) }
+# Mapped to Given, When, and Then as part of the i18n mapping below
+sub _Given     { push( @definitions, [ Given     => @_ ] ) }
+sub _When      { push( @definitions, [ When      => @_ ] ) }
+sub _Then      { push( @definitions, [ Then      => @_ ] ) }
 
 sub Step      { push( @definitions, [ Step      => @_ ] ) }
 
@@ -80,14 +81,11 @@ sub After     { push( @definitions, [ After     => @_ ] ) }
 my @SUBS;
 
 for my $language (languages()) {
-    # skip English since these are the function we alias
-    next if $language eq 'en';
-
     my $langdef=langdef($language);
 
-    _alias_function( $langdef->{given}, \&Given);
-    _alias_function( $langdef->{when}, \&When);
-    _alias_function( $langdef->{then}, \&Then);
+    _alias_function( $langdef->{given}, \&_Given);
+    _alias_function( $langdef->{when},  \&_When);
+    _alias_function( $langdef->{then},  \&_Then);
 
 # Hm ... in cucumber, all step definining keywords are the same.
 # Here, the parser replaces 'and' and 'but' with the last verb. Tricky ...
@@ -107,13 +105,14 @@ sub _alias_function {
 
     my $subname=keyword_to_subname($word);
 
-    no strict 'refs';
-    no warnings 'redefine';
-    *$subname=$f;
-    use warnings 'redefine';
+    {
+      no strict 'refs';
+      no warnings 'redefine';
+      no warnings 'once';
 
-    push @SUBS, $subname;
-    use strict 'refs';
+      *$subname=$f;
+      push @SUBS, $subname;
+    }
   }
 }
 

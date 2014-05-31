@@ -30,7 +30,7 @@ use strict;
 use warnings;
 
 use Encode qw(encode);
-use JSON::XS;
+use JSON::MaybeXS;
 use utf8;
 use Ouch;
 use File::ShareDir qw( dist_dir );
