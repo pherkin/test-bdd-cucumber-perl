@@ -47,17 +47,11 @@ in the very near future:
 
 =over 4
 
-=item * Localization
-
-=item * Step Argument Transforms
-
 =item * Quoting in tables is broken
 
 =item * Placeholders in pystrings is broken
 
 =item * Explicit Step Outline notation doesn't work (although step outlines are explicitly supported)
-
-=item * Unicode support is probably a bit ropey
 
 =item * Pherkin isn't really fit for purpose yet
 
