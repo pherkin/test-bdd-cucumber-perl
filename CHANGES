@@ -1,7 +1,9 @@
 -----
-0.19: 24 Apr 2014
+0.19: 31 May 2014
     - Removed all mentions of Method::Signatures
     - Added C and S step file shortcut subrefs
+    - Added Internationalization support, thanks to some sterling work
+        by Gregor Goldbach and Pablo Duboue
 0.18: 06 Apr 2014
     - Removed Find::File dependency in StepFile.pm
 0.17: 01 Dec 2013
