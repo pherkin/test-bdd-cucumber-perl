@@ -10,19 +10,20 @@ Internationalization of feature files and step definitions.
 
 =head1 SYNOPSIS
 
-use Test::BDD::Cucumber::I18N qw(languages has_language langdef);
+  use Test::BDD::Cucumber::I18N
+      qw(languages has_language langdef);
 
-# get codes of supported languages
-my @supported_languages = languages();
+  # get codes of supported languages
+  my @supported_languages = languages();
 
-# look up if a language is supported
-my $language_is_supported = has_language('de');
+  # look up if a language is supported
+  my $language_is_supported = has_language('de');
 
-# get definition of a language
-my $langdef = langdef('de');
+  # get definition of a language
+  my $langdef = langdef('de');
 
-# get readable keyword definitions
-my $string = readable_keywords
+  # get readable keyword definitions
+  my $string = readable_keywords
 
 =cut
 
