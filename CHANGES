@@ -1,6 +1,8 @@
 -----
-0.19: 31 May 2014
-    - Removed all mentions of Method::Signatures
+0.20: 03 Jun 2014
+    - Adding missed dependency from Paul Cochrane
+0.19: 24 Apr 2014
+    - Removed Method::Signatures dependency
     - Added C and S step file shortcut subrefs
     - Added Internationalization support, thanks to some sterling work
         by Gregor Goldbach and Pablo Duboue
