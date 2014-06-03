@@ -1,6 +1,6 @@
 package Test::BDD::Cucumber::StepContext;
-use Moose;
 
+use Moose;
 use List::Util qw( first );
 
 =head1 NAME
