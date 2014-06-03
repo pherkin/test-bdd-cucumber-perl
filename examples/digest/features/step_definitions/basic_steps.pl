@@ -25,7 +25,11 @@ When "I've added the following to the object", sub {
 };
 
 Then qr/the (.+) output is "(.+)"/, sub {
-    my $method = {base64 => 'b64digest', 'hex' => 'hexdigest' }->{ $1 } ||
-        do { fail("Unknown output type $1"); return };
-    is( S->{'object'}->$method, $2 );
+    my ( $type, $expected ) = @{ C->matches };
+    my $method = {
+        'base64' => 'b64digest',
+        'hex' => 'hexdigest'
+    }->{ $type };
+
+    is( S->{'object'}->$method, $expected );
 };
