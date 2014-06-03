@@ -47,12 +47,12 @@ Skipping both @todo and @wip tags: C<[ and => [ not => 'todo' ], [ not => 'wip' 
 An arrayref representing a structure like the above.
 
  TagSet->new({
-	tags => [ and => 'green', 'blue', [ or => 'red', 'yellow' ], [ not => 'white' ] ]
+        tags => [ and => 'green', 'blue', [ or => 'red', 'yellow' ], [ not => 'white' ] ]
  })
 
 =cut
 
-has 'tags' => ( is => 'rw', isa => 'ArrayRef', default => sub {[]} );
+has 'tags' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
 
 =head1 METHODS
 
@@ -67,55 +67,59 @@ If C<tags> is empty, no filtering is done.
 =cut
 
 sub filter {
-	my ( $self, @scenarios ) = @_;
-	my @tagset = @{ $self->tags };
-	return @scenarios unless @tagset;
+    my ( $self, @scenarios ) = @_;
+    my @tagset = @{ $self->tags };
+    return @scenarios unless @tagset;
 
-	my $mode = shift @tagset;
+    my $mode = shift @tagset;
 
-	return grep {
-		my @tags = @{ $_->tags };
-		my $scenario = { map { $_ => 1 } @tags };
+    return grep {
+        my @tags = @{ $_->tags };
+        my $scenario = { map { $_ => 1 } @tags };
 
-		_matches( $mode, $scenario, \@tagset );
-	} @scenarios;
+        _matches( $mode, $scenario, \@tagset );
+    } @scenarios;
 }
 
 # SCHEME ON THE BRAINZ
 sub _matches {
-	my ( $mode, $scenario, $tags ) = @_;
-	$tags = clone $tags;
+    my ( $mode, $scenario, $tags ) = @_;
+    $tags = clone $tags;
 
-	# If $tags is null, we have to do something...
-	if ( @$tags == 0 ) {
-		# True is the unit of conjunction
-		( $mode eq 'and' ) and return 1;
-		# False is the unit of disjunction
-		( $mode eq 'or'  ) and return 0;
-		# We should never get here for anything else
-		( $mode eq 'not' ) and
-			die "Doesn't make sense to ask for 'not' of empty list";
-		die "Don't recognize mode '$mode'";
-	}
+    # If $tags is null, we have to do something...
+    if ( @$tags == 0 ) {
 
-	# Get the head and tail of $tags. We'll split off the head, and leave the
-	# tail in $tags.
-	my $head = shift @$tags;
+        # True is the unit of conjunction
+        ( $mode eq 'and' ) and return 1;
 
-	# Get a result from the next tag. Recurse if it's complex
-	my $result =
-		ref( $head ) ? _matches( shift( @$head ), $scenario, $head ) :
-		$scenario->{ $head };
+        # False is the unit of disjunction
+        ( $mode eq 'or' ) and return 0;
 
-	if ( $mode eq 'and' ) {
-		$result ? return _matches( 'and', $scenario, $tags ) : return 0
-	} elsif ( $mode eq 'or' ) {
-		$result ? return 1 : return _matches( 'or', $scenario, $tags );
-	} elsif ( $mode eq 'not' ) {
-		return ! $result;
-	} else {
-		die "Don't recognize mode '$mode'";
-	}
+        # We should never get here for anything else
+        ( $mode eq 'not' )
+          and die "Doesn't make sense to ask for 'not' of empty list";
+        die "Don't recognize mode '$mode'";
+    }
+
+    # Get the head and tail of $tags. We'll split off the head, and leave the
+    # tail in $tags.
+    my $head = shift @$tags;
+
+    # Get a result from the next tag. Recurse if it's complex
+    my $result =
+      ref($head)
+      ? _matches( shift(@$head), $scenario, $head )
+      : $scenario->{$head};
+
+    if ( $mode eq 'and' ) {
+        $result ? return _matches( 'and', $scenario, $tags ) : return 0;
+    } elsif ( $mode eq 'or' ) {
+        $result ? return 1 : return _matches( 'or', $scenario, $tags );
+    } elsif ( $mode eq 'not' ) {
+        return !$result;
+    } else {
+        die "Don't recognize mode '$mode'";
+    }
 }
 
 1;

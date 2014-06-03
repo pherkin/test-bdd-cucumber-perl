@@ -1,0 +1,3 @@
+# find . -type f | grep -v '\.build' | grep -iE 'pm$|t$' | xargs -n1 perltidy -pro=perltidy -b
+-i=4 # Indent level is 4 cols
+-ce  # cuddled else

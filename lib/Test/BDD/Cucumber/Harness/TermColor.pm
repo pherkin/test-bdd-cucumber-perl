@@ -22,15 +22,18 @@ BEGIN {
     if (
         # We're apparently on Windows
         $^O =~ /MSWin32/i &&
+
         # We haven't disabled coloured output for Term::ANSIColor
-        ( ! $ENV{'ANSI_COLORS_DISABLED'} ) &&
+        ( !$ENV{'ANSI_COLORS_DISABLED'} ) &&
+
         # Here's a flag you can use if you really really need to turn this fall-
         # back behaviour off
-        (! $ENV{'DISABLE_WIN32_FALLBACK'} )
-    ) {
+        ( !$ENV{'DISABLE_WIN32_FALLBACK'} )
+      )
+    {
         # Try and load
         eval "require Win32::Console::ANSI";
-        if ( $@ ) {
+        if ($@) {
             print "# Install Win32::Console::ANSI to display colors properly\n";
         }
     }
@@ -52,41 +55,46 @@ my $current_feature;
 sub feature {
     my ( $self, $feature ) = @_;
     $current_feature = $feature;
-    $self->_display({
-        indent    => 0,
-        color     => 'bright_white',
-        text      => $feature->name,
-        follow_up => [ map { $_->content } @{ $feature->satisfaction || [] } ],
-        trailing  => 1
-    });
+    $self->_display(
+        {
+            indent => 0,
+            color  => 'bright_white',
+            text   => $feature->name,
+            follow_up =>
+              [ map { $_->content } @{ $feature->satisfaction || [] } ],
+            trailing => 1
+        }
+    );
 }
 
 sub feature_done { print "\n"; }
 
 sub scenario {
     my ( $self, $scenario, $dataset, $longest ) = @_;
-    my $text =
-        "Scenario: " . color('bright_blue') . ($scenario->name || '' );
+    my $text = "Scenario: " . color('bright_blue') . ( $scenario->name || '' );
 
-    $self->_display({
-        indent    => 2,
-        color     => 'bright_white',
-        text      => $text,
-        follow_up => [],
-        trailing  => 0,
-        longest_line => ($longest||0)
-    });
+    $self->_display(
+        {
+            indent       => 2,
+            color        => 'bright_white',
+            text         => $text,
+            follow_up    => [],
+            trailing     => 0,
+            longest_line => ( $longest || 0 )
+        }
+    );
 }
 
 sub scenario_done { print "\n"; }
 
-sub step {}
+sub step { }
+
 sub step_done {
-    my ($self, $context, $result ) = @_;
+    my ( $self, $context, $result ) = @_;
 
     my $color;
     my $follow_up = [];
-    my $status = $result->result;
+    my $status    = $result->result;
 
     if ( $status eq 'undefined' || $status eq 'pending' ) {
         $color = 'yellow';
@@ -94,40 +102,37 @@ sub step_done {
         $color = 'green';
     } else {
         $color = 'red';
-        $follow_up = [ split(/\n/, $result->{'output'} ) ];
+        $follow_up = [ split( /\n/, $result->{'output'} ) ];
 
-        if ( ! $context->is_hook )
-        {
-            unshift @{ $follow_up },
+        if ( !$context->is_hook ) {
+            unshift @{$follow_up},
                 'step defined at '
-                . $context->step->line->document->filename
-                . ' line '
-                .  $context->step->line->number
-                . '.';
+              . $context->step->line->document->filename
+              . ' line '
+              . $context->step->line->number . '.';
         }
     }
 
     my $text;
 
-    if ( $context->is_hook )
-    {
+    if ( $context->is_hook ) {
         $color eq 'red' or return;
         $text = 'In ' . ucfirst( $context->verb ) . ' Hook';
-    }
-    else
-    {
+    } else {
         $text = $context->step->verb_original . ' ' . $context->text;
     }
 
-    $self->_display({
-        indent    => 4,
-        color     => $color,
-        text      => $text,
-        highlight => 'bright_cyan',
-        trailing  => 0,
-        follow_up => $follow_up,
-        longest_line => $context->stash->{'scenario'}->{'longest_step_line'}
-    });
+    $self->_display(
+        {
+            indent       => 4,
+            color        => $color,
+            text         => $text,
+            highlight    => 'bright_cyan',
+            trailing     => 0,
+            follow_up    => $follow_up,
+            longest_line => $context->stash->{'scenario'}->{'longest_step_line'}
+        }
+    );
 
     $self->_note_step_data( $context->step );
 }
@@ -142,20 +147,22 @@ sub _note_step_data {
         my ( $text, $extra_indent ) = @_;
         $extra_indent ||= 0;
 
-        $self->_display({
-            indent   => 6 + $extra_indent,
-            color    => 'bright_cyan',
-            text      => $text
-        });
+        $self->_display(
+            {
+                indent => 6 + $extra_indent,
+                color  => 'bright_cyan',
+                text   => $text
+            }
+        );
     };
 
     if ( ref( $step->data ) eq 'ARRAY' ) {
-        for ( @step_data ) {
-            $note->( $_ );
+        for (@step_data) {
+            $note->($_);
         }
     } else {
         $note->('"""');
-        for ( @step_data ) {
+        for (@step_data) {
             $note->( $_, 2 );
         }
         $note->('"""');
@@ -179,11 +186,12 @@ sub _display {
         my $base  = color $options->{'color'};
         my $hl    = color $options->{'highlight'};
 
-        my $text = $base . Test::BDD::Cucumber::Util::bs_quote( $options->{'text'} );
+        my $text =
+          $base . Test::BDD::Cucumber::Util::bs_quote( $options->{'text'} );
         $text =~ s/("(.+?)"|[ ^](\d[-?\d\.]*))/$reset$hl$1$reset$base/g;
-        print Test::BDD::Cucumber::Util::bs_unquote( $text );
+        print Test::BDD::Cucumber::Util::bs_unquote($text);
 
-    # Normal output
+        # Normal output
     } else {
         print color $options->{'color'};
         print $options->{'text'};

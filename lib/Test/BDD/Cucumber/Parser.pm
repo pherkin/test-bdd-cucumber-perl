@@ -42,46 +42,57 @@ use Test::BDD::Cucumber::I18n qw(langdef);
 # https://github.com/cucumber/cucumber/wiki/Scenario-outlines
 
 sub parse_string {
-	my ( $class, $string, $tag_scheme ) = @_;
+    my ( $class, $string, $tag_scheme ) = @_;
 
-	return $class->_construct( Test::BDD::Cucumber::Model::Document->new({
-		content => $string
-	}), $tag_scheme );
+    return $class->_construct(
+        Test::BDD::Cucumber::Model::Document->new(
+            {
+                content => $string
+            }
+        ),
+        $tag_scheme
+    );
 }
 
-sub parse_file   {
-	my ( $class, $string, $tag_scheme) = @_;
-	return $class->_construct( Test::BDD::Cucumber::Model::Document->new({
-		content  => scalar( read_file( $string, { binmode => ':utf8' } ) ),
-		filename => $string
-	}), $tag_scheme );
+sub parse_file {
+    my ( $class, $string, $tag_scheme ) = @_;
+    return $class->_construct(
+        Test::BDD::Cucumber::Model::Document->new(
+            {
+                content =>
+                  scalar( read_file( $string, { binmode => ':utf8' } ) ),
+                filename => $string
+            }
+        ),
+        $tag_scheme
+    );
 }
 
 sub _construct {
-	my ( $class, $document, $tag_scheme ) = @_;
-	
-	my $feature = Test::BDD::Cucumber::Model::Feature->new({ document => $document });
-        my @lines = $class->_remove_next_blanks( @{ $document->lines } );
+    my ( $class, $document, $tag_scheme ) = @_;
 
-	$feature->language($class->_extract_language(\@lines));
+    my $feature =
+      Test::BDD::Cucumber::Model::Feature->new( { document => $document } );
+    my @lines = $class->_remove_next_blanks( @{ $document->lines } );
 
-	my $self = { langdef => 
-		     langdef($feature->language) };
-        bless $self, $class;
+    $feature->language( $class->_extract_language( \@lines ) );
 
-	$self->_extract_scenarios(
-	$self->_extract_conditions_of_satisfaction(
-	$self->_extract_feature_name(
-        $feature, @lines
-	)));
+    my $self = { langdef => langdef( $feature->language ) };
+    bless $self, $class;
 
-	return $feature;
+    $self->_extract_scenarios(
+        $self->_extract_conditions_of_satisfaction(
+            $self->_extract_feature_name( $feature, @lines )
+        )
+    );
+
+    return $feature;
 }
 
 sub _extract_language {
-    my ($self, $lines)=@_;
+    my ( $self, $lines ) = @_;
 
-    # return default language if we don't see the language directive on the first line
+# return default language if we don't see the language directive on the first line
     return 'en' unless $lines->[0]->raw_content =~ m{^\s*#\s*language:\s+(.+)$};
 
     # remove the language directive if we saw it ...
@@ -93,38 +104,38 @@ sub _extract_language {
 
 sub _remove_next_blanks {
     my ( $self, @lines ) = @_;
-    while ($lines[0] && $lines[0]->is_blank) {
-        shift( @lines );
+    while ( $lines[0] && $lines[0]->is_blank ) {
+        shift(@lines);
     }
     return @lines;
 }
 
 sub _extract_feature_name {
-	my ( $self, $feature, @lines ) = @_;
-	my @feature_tags = ();
+    my ( $self, $feature, @lines ) = @_;
+    my @feature_tags = ();
 
-	while ( my $line = shift( @lines ) ) {
-		next if $line->is_comment;
-		last if $line->is_blank;
+    while ( my $line = shift(@lines) ) {
+        next if $line->is_comment;
+        last if $line->is_blank;
 
-		if ( $line->content =~ m/^(?:$self->{langdef}->{feature}): (.+)/ ) {
-			$feature->name( $1 );
-			$feature->name_line( $line );
-			$feature->tags( \@feature_tags );
+        if ( $line->content =~ m/^(?:$self->{langdef}->{feature}): (.+)/ ) {
+            $feature->name($1);
+            $feature->name_line($line);
+            $feature->tags( \@feature_tags );
 
-			last;
+            last;
 
-		# Feature-level tags
-		} elsif ( $line->content =~ m/^\s*\@\w/ ) {
-			my @tags = $line->content =~ m/\@([^\s]+)/g;
-			push( @feature_tags, @tags );
+            # Feature-level tags
+        } elsif ( $line->content =~ m/^\s*\@\w/ ) {
+            my @tags = $line->content =~ m/\@([^\s]+)/g;
+            push( @feature_tags, @tags );
 
-		} else {
-			ouch 'parse_error', "Malformed feature line", $line;
-		}
-	}
+        } else {
+            ouch 'parse_error', "Malformed feature line", $line;
+        }
+    }
 
-	return $feature, $self->_remove_next_blanks( @lines );
+    return $feature, $self->_remove_next_blanks(@lines);
 }
 
 sub _extract_conditions_of_satisfaction {
@@ -134,7 +145,9 @@ sub _extract_conditions_of_satisfaction {
         next if $line->is_comment || $line->is_blank;
 
         my $langdef = $self->{langdef};
-        if ( $line->content =~ m/^((?:$langdef->{background}):|(?:$langdef->{scenario}):|@)/) {
+        if ( $line->content =~
+            m/^((?:$langdef->{background}):|(?:$langdef->{scenario}):|@)/ )
+        {
             unshift( @lines, $line );
             last;
         } else {
@@ -154,7 +167,10 @@ sub _extract_scenarios {
         next if $line->is_comment || $line->is_blank;
 
         my $langdef = $self->{langdef};
-        if ( $line->content =~ m/^((?:$langdef->{background})|(?:$langdef->{scenario}))(?: Outline)?: ?(.+)?/) {
+        if ( $line->content =~
+m/^((?:$langdef->{background})|(?:$langdef->{scenario}))(?: Outline)?: ?(.+)?/
+          )
+        {
             my ( $type, $name ) = ( $1, $2 );
 
             # Only one background section, and it must be the first
@@ -250,12 +266,12 @@ m/^((?:$langdef->{given})|(?:$langdef->{and})|(?:$langdef->{when})|(?:$langdef->
 }
 
 sub _extract_step_data {
-	my ( $self, $feature, $scenario, $step, @lines ) = @_;
+    my ( $self, $feature, $scenario, $step, @lines ) = @_;
     return unless @lines;
 
     if ( $lines[0]->content eq '"""' ) {
-		return $self->_extract_multiline_string(
-		    $feature, $scenario, $step, @lines );
+        return $self->_extract_multiline_string( $feature, $scenario, $step,
+            @lines );
     } elsif ( $lines[0]->content =~ m/^\s*\|/ ) {
         return $self->_extract_table( 6, $step, @lines );
     } else {
@@ -265,69 +281,70 @@ sub _extract_step_data {
 }
 
 sub _extract_multiline_string {
-	my ( $self, $feature, $scenario, $step, @lines ) = @_;
+    my ( $self, $feature, $scenario, $step, @lines ) = @_;
 
-	my $data = '';
-    my $start = shift( @lines );
+    my $data   = '';
+    my $start  = shift(@lines);
     my $indent = $start->indent;
 
-	# Check we still have the minimum indentation
-	while ( my $line = shift( @lines ) ) {
+    # Check we still have the minimum indentation
+    while ( my $line = shift(@lines) ) {
 
-		if ( $line->content eq '"""' ) {
-			$step->data( $data );
-			return $self->_remove_next_blanks( @lines );
-		}
+        if ( $line->content eq '"""' ) {
+            $step->data($data);
+            return @lines;
+        }
 
-		my $content = $line->content_remove_indentation( $indent );
-		# Unescape it
-		$content =~ s/\\(.)/$1/g;
-		push( @{ $step->data_as_strings }, $content );
-		$content .= "\n";
-		$data .= $content;
-	}
+        my $content = $line->content_remove_indentation($indent);
 
-	return;
+        # Unescape it
+        $content =~ s/\\(.)/$1/g;
+        push( @{ $step->data_as_strings }, $content );
+        $content .= "\n";
+        $data .= $content;
+    }
+
+    return;
 }
 
 sub _extract_table {
-	my ( $self, $indent, $target, @lines ) = @_;
-	my @columns;
+    my ( $self, $indent, $target, @lines ) = @_;
+    my @columns;
 
     my $data = [];
     $target->data($data);
 
-	while ( my $line = shift( @lines ) ) {
-		next if $line->is_comment;
-		return ($line, @lines) if index( $line->content, '|' );
+    while ( my $line = shift(@lines) ) {
+        next if $line->is_comment;
+        return ( $line, @lines ) if index( $line->content, '|' );
 
-		my @rows = $self->_pipe_array( $line->content );
-		if ( $target->can('data_as_strings') ) {
-			my $t_content = $line->content;
-			$t_content =~ s/^\s+//;
-			push( @{ $target->data_as_strings }, $t_content );
-		}
+        my @rows = $self->_pipe_array( $line->content );
+        if ( $target->can('data_as_strings') ) {
+            my $t_content = $line->content;
+            $t_content =~ s/^\s+//;
+            push( @{ $target->data_as_strings }, $t_content );
+        }
 
-		if ( @columns ) {
-			ouch 'parse_error', "Inconsistent number of rows in table", $line
-				unless @rows == @columns;
-            $target->columns( [ @columns ] ) if $target->can('columns');
-			my $i = 0;
-			my %data_hash = map { $columns[$i++] => $_ } @rows;
-			push( @$data, \%data_hash );
-		} else {
-			@columns = @rows;
-		}
-	}
+        if (@columns) {
+            ouch 'parse_error', "Inconsistent number of rows in table", $line
+              unless @rows == @columns;
+            $target->columns( [@columns] ) if $target->can('columns');
+            my $i = 0;
+            my %data_hash = map { $columns[ $i++ ] => $_ } @rows;
+            push( @$data, \%data_hash );
+        } else {
+            @columns = @rows;
+        }
+    }
 
-	return;
+    return;
 }
 
 sub _pipe_array {
-	my ( $self, $string ) = @_;
-	my @atoms = split(/\|/, $string);
-	shift( @atoms );
-	return map { $_ =~ s/^\s+//; $_ =~ s/\s+$//; $_ } @atoms;
+    my ( $self, $string ) = @_;
+    my @atoms = split( /\|/, $string );
+    shift(@atoms);
+    return map { $_ =~ s/^\s+//; $_ =~ s/\s+$//; $_ } @atoms;
 }
 
 1;

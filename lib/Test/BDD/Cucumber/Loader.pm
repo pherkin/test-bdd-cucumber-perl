@@ -35,28 +35,26 @@ sub load {
     # Either load a feature or a directory...
     my ( $dir, $file );
     if ( -f $path ) {
-        $file = file( $path );
+        $file = file($path);
         $dir  = $file->dir;
     } else {
-        $dir = dir( $path );
+        $dir = dir($path);
     }
 
     # Load up the steps
-    $executor->add_steps(
-        Test::BDD::Cucumber::StepFile->load( $_ )
-    ) for File::Find::Rule
-        ->file()
-        ->name( '*_steps.pl' )
-        ->in( $dir );
+    $executor->add_steps( Test::BDD::Cucumber::StepFile->load($_) )
+      for File::Find::Rule->file()->name('*_steps.pl')->in($dir);
 
     # Grab the feature files
     my @features = map {
         my $file = $_;
-        my $feature = Test::BDD::Cucumber::Parser->parse_file( $file, $tag_scheme );
-    } ( $file ? ($file.'') : File::Find::Rule
-        ->file()
-        ->name( '*.feature' )
-        ->in( $dir ) );
+        my $feature =
+          Test::BDD::Cucumber::Parser->parse_file( $file, $tag_scheme );
+      } (
+        $file
+        ? ( $file . '' )
+        : File::Find::Rule->file()->name('*.feature')->in($dir)
+      );
 
     return ( $executor, @features );
 }

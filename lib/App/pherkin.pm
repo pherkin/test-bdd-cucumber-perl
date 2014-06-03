@@ -5,11 +5,12 @@ use warnings;
 
 use FindBin::libs;
 use Getopt::Long;
-use Test::BDD::Cucumber::I18n qw(languages langdef readable_keywords keyword_to_subname);
+use Test::BDD::Cucumber::I18n
+  qw(languages langdef readable_keywords keyword_to_subname);
 use List::Util qw(max);
 
 use Moose;
-has 'tags' => ( is => 'rw', isa => 'ArrayRef', required => 0 );
+has 'tags'       => ( is => 'rw', isa => 'ArrayRef', required => 0 );
 has 'tag_scheme' => ( is => 'rw', isa => 'ArrayRef', required => 0 );
 
 =head1 NAME
@@ -51,23 +52,24 @@ Returns a L<Test::BDD::Cucumber::Model::Result> object for all steps run.
 sub run {
     my ( $self, @arguments ) = @_;
 
-    # localized features will have utf8 in them and options may output utf8 as well
+ # localized features will have utf8 in them and options may output utf8 as well
     binmode STDOUT, ':utf8';
 
-    my ($options, @feature_files) = $self->_process_arguments(@arguments);
+    my ( $options, @feature_files ) = $self->_process_arguments(@arguments);
 
-    my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load(
-        $feature_files[0] || './features/', $self->tag_scheme
-    );
+    my ( $executor, @features ) =
+      Test::BDD::Cucumber::Loader->load( $feature_files[0] || './features/',
+        $self->tag_scheme );
     die "No feature files found" unless @features;
 
     eval "require $options->{'harness'}" || die $@;
-    my $harness  = $options->{'harness'}->new();
+    my $harness = $options->{'harness'}->new();
     $harness->startup();
 
     my $tag_spec;
-    if ($self->tag_scheme) {
-        $tag_spec = Test::BDD::Cucumber::Model::TagSpec->new({ tags => $self->tag_scheme });
+    if ( $self->tag_scheme ) {
+        $tag_spec = Test::BDD::Cucumber::Model::TagSpec->new(
+            { tags => $self->tag_scheme } );
     }
 
     $executor->execute( $_, $harness, $tag_spec ) for @features;
@@ -84,35 +86,35 @@ sub _process_arguments {
     Getopt::Long::Configure('bundling');
 
     my $includes = [];
-    my $tags = [];
+    my $tags     = [];
     GetOptions(
         'I=s@'       => \$includes,
-        'l|lib'      => \(my $add_lib),
-        'b|blib'     => \(my $add_blib),
-        'o|output=s' => \(my $harness),
-	't|tags=s@'  => \$tags,
-	'i18n=s'     => \(my $i18n)
+        'l|lib'      => \( my $add_lib ),
+        'b|blib'     => \( my $add_blib ),
+        'o|output=s' => \( my $harness ),
+        't|tags=s@'  => \$tags,
+        'i18n=s'     => \( my $i18n )
     );
 
     if ($i18n) {
         _print_langdef($i18n) unless $i18n eq 'help';
         _print_languages();
-    };
+    }
 
-    unshift @$includes, 'lib'                   if $add_lib;
+    unshift @$includes, 'lib' if $add_lib;
     unshift @$includes, 'blib/lib', 'blib/arch' if $add_blib;
 
     # Munge the output harness
     $harness //= "TermColor";
-    $harness = "Test::BDD::Cucumber::Harness::$harness" unless
-        $harness =~ m/\:\:/;
+    $harness = "Test::BDD::Cucumber::Harness::$harness"
+      unless $harness =~ m/\:\:/;
 
     lib->import(@$includes) if @$includes;
 
     # Store our TagSpecScheme
     $self->tag_scheme( $self->_process_tags( @{$tags} ) );
 
-    return ({ harness => $harness }, @ARGV);
+    return ( { harness => $harness }, @ARGV );
 }
 
 sub _process_tags {
@@ -120,18 +122,19 @@ sub _process_tags {
 
     # This is a bit faffy and possibly suboptimal.
     my $tag_scheme = [];
-    my @ands = ();
+    my @ands       = ();
 
     # Iterate over our commandline tag strings.
     foreach my $tag (@tags) {
         my @parts = ();
 
-        foreach my $part (split(',', $tag)) {
+        foreach my $part ( split( ',', $tag ) ) {
+
             # Trim any @ or ~@ from the front of the tag
             $part =~ s/^(~?)@//;
 
             # ~@tag => "NOT tag" => [ not => tag ]
-            if (defined $1 and $1 eq '~') {
+            if ( defined $1 and $1 eq '~' ) {
                 push @parts, [ not => $part ];
             } else {
                 push @parts, $part;
@@ -142,6 +145,7 @@ sub _process_tags {
         # (It's simpler to always stick an 'or' on the front.)
         push @ands, [ or => @parts ];
     }
+
     # -t @tag -t @cow => "@tag AND @cow" => [ and => tag, cow ]
     # (It's simpler to always stick an 'and' on the front.)
     $tag_scheme = [ and => @ands ];
@@ -151,40 +155,46 @@ sub _process_tags {
 
 sub _print_languages {
 
-    my @languages=languages();
+    my @languages = languages();
 
-    my $max_code_length   = max map { length } @languages;
-    my $max_name_length   = max map { length(langdef($_)->{name}) } @languages;
-    my $max_native_length = max map { length(langdef($_)->{native}) } @languages;
+    my $max_code_length = max map { length } @languages;
+    my $max_name_length = max map { length( langdef($_)->{name} ) } @languages;
+    my $max_native_length =
+      max map { length( langdef($_)->{native} ) } @languages;
 
-    my $format= "| %-${max_code_length}s | %-${max_name_length}s | %-${max_native_length}s |\n";
+    my $format =
+"| %-${max_code_length}s | %-${max_name_length}s | %-${max_native_length}s |\n";
 
-    for my $language (sort @languages) {
-        my $langdef=langdef($language);
-	printf $format, $language, $langdef->{name}, $langdef->{native};
+    for my $language ( sort @languages ) {
+        my $langdef = langdef($language);
+        printf $format, $language, $langdef->{name}, $langdef->{native};
     }
     exit;
 }
 
 sub _print_langdef {
-    my ($language)=@_;
+    my ($language) = @_;
 
-    my $langdef=langdef($language);
+    my $langdef = langdef($language);
 
-    my @keywords= qw(feature background scenario scenario_outline examples
-		     given when then and but);
-    my $max_length = max map { length readable_keywords ($langdef->{$_}) } @keywords;
+    my @keywords = qw(feature background scenario scenario_outline examples
+      given when then and but);
+    my $max_length =
+      max map { length readable_keywords( $langdef->{$_} ) } @keywords;
 
-    my $format= "| %-16s | %-${max_length}s |\n";
-    for my $keyword (qw(feature background scenario scenario_outline
-			examples given when then and but )) {
-        printf $format, $keyword, readable_keywords($langdef->{$keyword});
+    my $format = "| %-16s | %-${max_length}s |\n";
+    for my $keyword (
+        qw(feature background scenario scenario_outline
+        examples given when then and but )
+      )
+    {
+        printf $format, $keyword, readable_keywords( $langdef->{$keyword} );
     }
 
-    my $codeformat= "| %-16s | %-${max_length}s |\n";
+    my $codeformat = "| %-16s | %-${max_length}s |\n";
     for my $keyword (qw(given when then )) {
-        printf $codeformat, $keyword.' (code)',
-          readable_keywords($langdef->{$keyword}, \&keyword_to_subname);
+        printf $codeformat, $keyword . ' (code)',
+          readable_keywords( $langdef->{$keyword}, \&keyword_to_subname );
     }
 
     exit;
