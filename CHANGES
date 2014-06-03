@@ -1,4 +1,6 @@
 -----
+0.21: 03 Jun 2014
+    - Now works with 5.10.0 again
 0.20: 03 Jun 2014
     - Adding missed dependency from Paul Cochrane
 0.19: 24 Apr 2014

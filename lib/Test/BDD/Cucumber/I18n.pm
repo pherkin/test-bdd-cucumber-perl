@@ -69,7 +69,7 @@ sub _initialize_language_definitions_from_shared_json_file {
 }
 
 sub languages {
-    return keys $langdefs;
+    return keys %$langdefs;
 }
 
 sub has_language {
