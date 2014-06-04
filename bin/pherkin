@@ -60,9 +60,10 @@ use strict;
 use warnings;
 use FindBin::libs;
 use App::pherkin;
+use IO::Interactive qw( is_interactive );
 
 BEGIN {
-    if ( not -t STDOUT ) {
+    if ( is_interactive() ) {
         $ENV{'ANSI_COLORS_DISABLED'} = 1;
     }
 }
