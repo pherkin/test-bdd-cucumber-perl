@@ -9,13 +9,13 @@ use Test::BDD::Cucumber::StepFile;
 
 Given qr/a usable "(\w+)" class/, sub { use_ok( $1 ); };
 Given qr/a Digest (\S+) object/, sub {
-    my $object = Digest->new($1);
+    my $object = Digest->new( C->matches->[0] );
     ok( $object, "Object created" );
     S->{'object'} = $object;
 };
 
 When qr/I've added "(.+)" to the object/, sub {
-    S->{'object'}->add( $1 );
+    S->{'object'}->add( C->matches->[0] );
 };
 
 When "I've added the following to the object", sub {

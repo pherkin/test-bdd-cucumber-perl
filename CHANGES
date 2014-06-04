@@ -1,4 +1,11 @@
 -----
+0.22: 04 Jun 2014
+    - Some PerlCritic-ish fixes from Paul Cochrane
+    - Updated copyrights, again from Paul Cochrane
+    - There's some weird-ass bug with $1 not getting set properly, sometimes,
+      on perl's older than 5.14. I can't reproduce, and virtually identical
+      examples act differently. Also I can't reproduce it. Rewritten the test
+      itself to go via ->matches
 0.21: 03 Jun 2014
     - Now works with 5.10.0 again
 0.20: 03 Jun 2014
