@@ -52,7 +52,7 @@ sub parse_string {
 sub parse_file   {
 	my ( $class, $string, $tag_scheme) = @_;
 	return $class->_construct( Test::BDD::Cucumber::Model::Document->new({
-		content  => scalar( read_file( $string, { binmode => ':utf8' } ) ),
+		content  => scalar( read_file( $string, { binmode => ':encoding(UTF-8)' } ) ),
 		filename => $string
 	}), $tag_scheme );
 }
@@ -327,7 +327,7 @@ sub _pipe_array {
 	my ( $self, $string ) = @_;
 	my @atoms = split(/\|/, $string);
 	shift( @atoms );
-	return map { $_ =~ s/^\s+//; $_ =~ s/\s+$//; $_ } @atoms;
+	return map { my $atom = $_; $atom =~ s/^\s+//; $atom =~ s/\s+$//; $atom } @atoms;
 }
 
 1;

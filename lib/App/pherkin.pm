@@ -52,7 +52,7 @@ sub run {
     my ( $self, @arguments ) = @_;
 
     # localized features will have utf8 in them and options may output utf8 as well
-    binmode STDOUT, ':utf8';
+    binmode STDOUT, ':encoding(UTF-8)';
 
     my ($options, @feature_files) = $self->_process_arguments(@arguments);
 
@@ -61,7 +61,7 @@ sub run {
     );
     die "No feature files found" unless @features;
 
-    eval "require $options->{'harness'}" || die $@;
+    eval { "require $options->{'harness'}" } || die $@;
     my $harness  = $options->{'harness'}->new();
     $harness->startup();
 

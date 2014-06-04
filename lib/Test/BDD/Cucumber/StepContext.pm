@@ -244,7 +244,10 @@ sub _build_transformed_matches
     if ( $self->verb ne 'transform'
         and $self->has_transformers )
     {
-        @transformed_matches = map { $_ = $self->transform( $_ ) } @transformed_matches;
+	@transformed_matches = map {
+				    my $match = $_;
+				    $match = $self->transform( $match );
+				    } @transformed_matches;
     }
 
     return \@transformed_matches;
