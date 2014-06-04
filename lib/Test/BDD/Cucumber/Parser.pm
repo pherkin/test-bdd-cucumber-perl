@@ -52,7 +52,7 @@ sub parse_string {
 sub parse_file   {
 	my ( $class, $string, $tag_scheme) = @_;
 	return $class->_construct( Test::BDD::Cucumber::Model::Document->new({
-		content  => scalar( read_file( $string, { binmode => ':utf8' } ) ),
+		content  => scalar( read_file( $string, { binmode => ':encoding(UTF-8)' } ) ),
 		filename => $string
 	}), $tag_scheme );
 }

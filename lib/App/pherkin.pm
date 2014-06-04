@@ -52,7 +52,7 @@ sub run {
     my ( $self, @arguments ) = @_;
 
     # localized features will have utf8 in them and options may output utf8 as well
-    binmode STDOUT, ':utf8';
+    binmode STDOUT, ':encoding(UTF-8)';
 
     my ($options, @feature_files) = $self->_process_arguments(@arguments);
 
