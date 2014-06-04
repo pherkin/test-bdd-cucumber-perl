@@ -61,7 +61,7 @@ sub run {
     );
     die "No feature files found" unless @features;
 
-    eval "require $options->{'harness'}" || die $@;
+    eval { "require $options->{'harness'}" } || die $@;
     my $harness  = $options->{'harness'}->new();
     $harness->startup();
 

@@ -29,7 +29,7 @@ BEGIN {
         (! $ENV{'DISABLE_WIN32_FALLBACK'} )
     ) {
         # Try and load
-        eval "require Win32::Console::ANSI";
+        eval { "require Win32::Console::ANSI" };
         if ( $@ ) {
             print "# Install Win32::Console::ANSI to display colors properly\n";
         }
