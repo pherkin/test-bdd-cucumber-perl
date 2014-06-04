@@ -327,7 +327,7 @@ sub _pipe_array {
 	my ( $self, $string ) = @_;
 	my @atoms = split(/\|/, $string);
 	shift( @atoms );
-	return map { $_ =~ s/^\s+//; $_ =~ s/\s+$//; $_ } @atoms;
+	return map { my $atom = $_; $atom =~ s/^\s+//; $atom =~ s/\s+$//; $atom } @atoms;
 }
 
 1;
