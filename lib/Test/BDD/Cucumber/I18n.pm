@@ -1,5 +1,7 @@
 package Test::BDD::Cucumber::I18n;
 
+=encoding utf8
+
 =head1 NAME
 
 Test::BDD::Cucumber::I18N - Internationalization
