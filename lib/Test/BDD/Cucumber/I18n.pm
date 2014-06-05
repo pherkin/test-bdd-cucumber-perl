@@ -1,5 +1,7 @@
 package Test::BDD::Cucumber::I18n;
 
+=encoding utf8
+
 =head1 NAME
 
 Test::BDD::Cucumber::I18N - Internationalization
@@ -54,14 +56,36 @@ sub _initialize_language_definitions_from_shared_json_file {
     return $langdefs;
 }
 
+=head1 METHODS
+
+=head2 languages
+
+Get codes of supported languages.
+
+=cut
+
 sub languages {
     return keys %$langdefs;
 }
+
+=head2 has_language($language)
+
+Check if a language is supported.  Takes as argument the language
+abbreviation defined in C<share/i18n.json>.
+
+=cut
 
 sub has_language {
     my ($language) = @_;
     exists $langdefs->{$language};
 }
+
+=head2 langdef($language)
+
+Get definition of a language.  Takes as argument the language abbreviation
+defined in C<share/i18n.json>.
+
+=cut
 
 sub langdef {
     my ($language) = @_;
@@ -69,6 +93,12 @@ sub langdef {
     return unless has_language($language);
     return $langdefs->{$language};
 }
+
+=head2 readable_keywords($string, $transform)
+
+Get readable keyword definitions.
+
+=cut
 
 sub readable_keywords {
     my ( $string, $transform ) = @_;
@@ -79,6 +109,12 @@ sub readable_keywords {
 
     return join( ', ', map { '"' . $_ . '"' } @keywords );
 }
+
+=head2 keyword_to_subname
+
+Return a keyword into a subname with non-word characters removed.
+
+=cut
 
 sub keyword_to_subname {
     my ($word) = @_;
