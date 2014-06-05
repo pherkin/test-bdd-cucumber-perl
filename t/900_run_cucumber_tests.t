@@ -5,12 +5,6 @@ use warnings;
 
 use FindBin::libs;
 use Test::More;
-
-use Test::File::ShareDir
-  -share => {
-    -dist   => { 'Test-BDD-Cucumber' => 'share' }
-  };
-
 use Test::BDD::Cucumber::Loader;
 use Test::BDD::Cucumber::Harness::TestBuilder;
 

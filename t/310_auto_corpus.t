@@ -7,10 +7,6 @@ use FindBin::libs;
 use Test::More;
 use Test::Differences;
 use Test::DumpFeature;
-use Test::File::ShareDir
-  -share => {
-    -dist   => { 'Test-BDD-Cucumber'    => 'share' }
-  };
 use Test::BDD::Cucumber::Parser;
 use YAML::Syck;
 use File::Slurp;

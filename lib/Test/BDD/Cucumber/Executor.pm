@@ -366,8 +366,6 @@ sub dispatch {
     {
         # Localize test builder
         local $Test::Builder::Test = $tb_return->{'builder'};
-        # Guarantee the $<digits> :-/
-        $context->matches([ $context->text =~ $regular_expression ]);
 
         # Execute!
         eval {
@@ -378,6 +376,11 @@ sub dispatch {
             local *Test::BDD::Cucumber::StepFile::C = sub {
                 return $context
             };
+
+            # Rematch the regex, setting $1, $2, and friends correctly
+            $context->matches([ $context->text =~ $regular_expression ]);
+
+            # OK, actually execute
             $coderef->( $context )
         };
         if ( $@ ) {

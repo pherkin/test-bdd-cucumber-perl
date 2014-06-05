@@ -1,4 +1,7 @@
 -----
+0.23: 05 Jun 2014
+    - Another attempt to fix up the weird regex test bug
+    - Remove our experiment with ShareDir
 0.22: 04 Jun 2014
     - Some PerlCritic-ish fixes from Paul Cochrane
     - Updated copyrights, again from Paul Cochrane
