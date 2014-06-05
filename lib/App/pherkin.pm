@@ -35,6 +35,7 @@ using the default output harness.
 =cut
 
 use Test::BDD::Cucumber::Loader;
+use Module::Runtime qw(use_module);
 
 =head1 METHODS
 
@@ -61,7 +62,7 @@ sub run {
     );
     die "No feature files found" unless @features;
 
-    eval "require $options->{'harness'}" || die $@;
+    eval { use_module($options->{'harness'}) } || die $@;
     my $harness  = $options->{'harness'}->new();
     $harness->startup();
 
