@@ -5,8 +5,11 @@ use warnings;
 
 use FindBin::libs;
 use Getopt::Long;
-use Test::BDD::Cucumber::I18n qw(languages langdef readable_keywords keyword_to_subname);
+use Module::Runtime qw(use_module);
 use List::Util qw(max);
+
+use Test::BDD::Cucumber::I18n qw(languages langdef readable_keywords keyword_to_subname);
+use Test::BDD::Cucumber::Loader;
 
 use Moose;
 has 'tags' => ( is => 'rw', isa => 'ArrayRef', required => 0 );
@@ -31,11 +34,6 @@ the features.
 Steps that pass will be printed in green, those that fail in red, and those
 for which there is no step definition as yellow (for TODO), assuming you're
 using the default output harness.
-
-=cut
-
-use Test::BDD::Cucumber::Loader;
-use Module::Runtime qw(use_module);
 
 =head1 METHODS
 
@@ -62,9 +60,7 @@ sub run {
     );
     die "No feature files found" unless @features;
 
-    eval { use_module($options->{'harness'}) } || die $@;
-    my $harness  = $options->{'harness'}->new();
-    $harness->startup();
+    my $harness = $self->_load_harness( $options->{'harness'} );
 
     my $tag_spec;
     if ($self->tag_scheme) {
@@ -75,6 +71,22 @@ sub run {
 
     $harness->shutdown();
     return $harness->result;
+}
+
+sub _load_harness {
+    my ( $self, $harness_module ) = @_;
+
+    unless ( $harness_module =~ m/::/ ) {
+        $harness_module = "Test::BDD::Cucumber::Harness::" . $harness_module;
+    }
+
+    eval { use_module( $harness_module ) } ||
+        die "Unable to load harness [$harness_module]: $@";
+
+    my $harness = $harness_module->new();
+    $harness->startup();
+
+    return $harness;
 }
 
 sub _process_arguments {
@@ -105,8 +117,6 @@ sub _process_arguments {
 
     # Munge the output harness
     $harness //= "TermColor";
-    $harness = "Test::BDD::Cucumber::Harness::$harness" unless
-        $harness =~ m/\:\:/;
 
     lib->import(@$includes) if @$includes;
 
