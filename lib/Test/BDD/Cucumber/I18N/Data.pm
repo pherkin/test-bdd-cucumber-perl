@@ -5,6 +5,7 @@ use warnings;
 
 use JSON::MaybeXS qw/decode_json/;
 
+=encoding utf8
 
 =head1 NAME
 
