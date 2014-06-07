@@ -1,4 +1,10 @@
 -----
+0.24: 07 Jun 2014
+    - Replacing string `eval` with block `eval` for requiring test harnesses -
+      thanks Paul Cochrane
+    - Module metadata now points to repository and bug tracker - thanks Peter
+      Rabbitson
+    - Removed Ouch
 0.23: 05 Jun 2014
     - Another attempt to fix up the weird regex test bug
     - Remove our experiment with ShareDir

@@ -28,7 +28,6 @@ L<Test::BDD::Cucumber::Model::Feature> object on success.
 use strict;
 use warnings;
 
-use Ouch;
 use File::Slurp;
 
 use Test::BDD::Cucumber::Model::Document;
@@ -37,9 +36,12 @@ use Test::BDD::Cucumber::Model::Scenario;
 use Test::BDD::Cucumber::Model::Step;
 use Test::BDD::Cucumber::Model::TagSpec;
 use Test::BDD::Cucumber::I18n qw(langdef);
+use Test::BDD::Cucumber::Errors qw/parse_error_from_line/;
 
 # https://github.com/cucumber/cucumber/wiki/Multiline-Step-Arguments
 # https://github.com/cucumber/cucumber/wiki/Scenario-outlines
+
+
 
 sub parse_string {
 	my ( $class, $string, $tag_scheme ) = @_;
@@ -59,13 +61,13 @@ sub parse_file   {
 
 sub _construct {
 	my ( $class, $document, $tag_scheme ) = @_;
-	
+
 	my $feature = Test::BDD::Cucumber::Model::Feature->new({ document => $document });
         my @lines = $class->_remove_next_blanks( @{ $document->lines } );
 
 	$feature->language($class->_extract_language(\@lines));
 
-	my $self = { langdef => 
+	my $self = { langdef =>
 		     langdef($feature->language) };
         bless $self, $class;
 
@@ -120,7 +122,7 @@ sub _extract_feature_name {
 			push( @feature_tags, @tags );
 
 		} else {
-			ouch 'parse_error', "Malformed feature line", $line;
+			die parse_error_from_line( "Malformed feature line", $line );
 		}
 	}
 
@@ -159,8 +161,8 @@ sub _extract_scenarios {
 
             # Only one background section, and it must be the first
             if ( $scenarios++ && $type =~ m/^($langdef->{background})/ ) {
-                ouch 'parse_error', "Background not allowed after scenarios",
-                  $line;
+                die parse_error_from_line( "Background not allowed after scenarios",
+                  $line);
             }
 
             # Create the scenario
@@ -189,7 +191,7 @@ sub _extract_scenarios {
             push( @scenario_tags, @tags );
 
         } else {
-            ouch 'parse_error', "Malformed scenario line", $line;
+            die parse_error_from_line( "Malformed scenario line", $line );
         }
     }
 
@@ -241,8 +243,7 @@ m/^((?:$langdef->{given})|(?:$langdef->{and})|(?:$langdef->{when})|(?:$langdef->
             return $self->_extract_table( 6, $scenario,
                 $self->_remove_next_blanks(@lines) );
         } else {
-            warn $line->content;
-            ouch 'parse_error', "Malformed step line", $line;
+            die parse_error_from_line( "Malformed step line", $line );
         }
     }
 
@@ -309,7 +310,7 @@ sub _extract_table {
 		}
 
 		if ( @columns ) {
-			ouch 'parse_error', "Inconsistent number of rows in table", $line
+			die parse_error_from_line( "Inconsistent number of rows in table", $line )
 				unless @rows == @columns;
             $target->columns( [ @columns ] ) if $target->can('columns');
 			my $i = 0;
@@ -331,12 +332,6 @@ sub _pipe_array {
 }
 
 1;
-
-=head1 ERROR HANDLING
-
-L<Test::BDD::Cucumber> uses L<Ouch> for exception handling. Errors originating in this
-class tend to have a code of C<parse_error> and a L<Test::BDD::Cucumber::Model::Line>
-object for data.
 
 =head1 AUTHOR
 
