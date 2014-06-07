@@ -20,6 +20,7 @@ use Test::Builder;
 use Test::BDD::Cucumber::StepContext;
 use Test::BDD::Cucumber::Util;
 use Test::BDD::Cucumber::Model::Result;
+use Test::BDD::Cucumber::Errors qw/parse_error_from_line/;
 
 =head1 METHODS
 
@@ -228,7 +229,7 @@ sub execute_scenario {
         foreach my $step (@{ $outline->steps }) {
 
             # Multiply out any placeholders
-            my $text = $self->add_placeholders( $step->text, $dataset );
+            my $text = $self->add_placeholders( $step->text, $dataset, $step->line );
 
             # Set up a context
             my $context = Test::BDD::Cucumber::StepContext->new({
@@ -284,11 +285,11 @@ values in the hashref, returning a string.
 =cut
 
 sub add_placeholders {
-    my ( $self, $text, $dataset ) = @_;
+    my ( $self, $text, $dataset, $line ) = @_;
     my $quoted_text = Test::BDD::Cucumber::Util::bs_quote( $text );
     $quoted_text =~ s/(<([^>]+)>)/
         exists $dataset->{$2} ? $dataset->{$2} :
-            die "No mapping to placeholder $1 in: $text"
+            die parse_error_from_line( "No mapping to placeholder $1", $line )
     /eg;
     return Test::BDD::Cucumber::Util::bs_unquote( $quoted_text );
 }
