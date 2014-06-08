@@ -68,7 +68,10 @@ sub scenario_done { my ( $self, $scenario, $dataset ) = @_; }
 
 Called at the start and end of step execution respectively. Both methods
 accept a L<Test::BDD::Cucmber::StepContext> object. C<step_done> also accepts
-a L<Test::BDD::Cucumber::Model::Result> object.
+a L<Test::BDD::Cucumber::Model::Result> object and an arrayref of arrayrefs with
+locations of consolidated matches, for highlighting.
+
+ [ [2,5], [7,9] ]
 
 =cut
 

@@ -68,7 +68,7 @@ sub parse_error_from_line {
         _get_context_range( $line->document, $feature_line );
 
     my $formatted_lines;
-    for ( 0 .. 4 ) {
+    for ( 0 .. $#lines ) {
         my $actual_line = $start_line + $_;
         my $mark = ($feature_line == $actual_line) ? '*' : '|';
         $formatted_lines .=
@@ -112,6 +112,7 @@ sub _get_context_range {
 
     # Then cut it off
     @range = grep { $_ >= $min_range } @range;
+    @range = grep { $_ <= $max_range } @range;
 
     return( $range[0], map { $document->lines->[$_ - 1]->raw_content } @range );
 }

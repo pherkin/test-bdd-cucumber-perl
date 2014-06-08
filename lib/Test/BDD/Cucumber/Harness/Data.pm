@@ -124,9 +124,10 @@ sub step {
 }
 
 sub step_done {
-    my ($self, $context, $result) = @_;
+    my ($self, $context, $result, $highlights) = @_;
 
     $self->current_step->{'result'} = $result;
+    $self->current_step->{'highlights'} = $highlights;
     push( @{ $self->current_scenario->{'steps'} }, $self->current_step );
     $self->current_step({});
 }

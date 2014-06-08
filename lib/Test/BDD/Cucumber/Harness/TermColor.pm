@@ -37,7 +37,6 @@ BEGIN {
 }
 
 use Term::ANSIColor;
-use Test::BDD::Cucumber::Util;
 use Test::BDD::Cucumber::Model::Result;
 
 extends 'Test::BDD::Cucumber::Harness';
@@ -82,7 +81,7 @@ sub scenario_done { print "\n"; }
 
 sub step {}
 sub step_done {
-    my ($self, $context, $result ) = @_;
+    my ($self, $context, $result, $highlights ) = @_;
 
     my $color;
     my $follow_up = [];
@@ -109,20 +108,20 @@ sub step_done {
 
     my $text;
 
-    if ( $context->is_hook )
-    {
+    if ( $context->is_hook ) {
         $color eq 'red' or return;
         $text = 'In ' . ucfirst( $context->verb ) . ' Hook';
-    }
-    else
-    {
+        undef $highlights;
+    } else {
         $text = $context->step->verb_original . ' ' . $context->text;
+        $highlights = [[ 0, $context->step->verb_original . ' ' ], @$highlights];
     }
 
     $self->_display({
         indent    => 4,
         color     => $color,
         text      => $text,
+        highlights => $highlights,
         highlight => 'bright_cyan',
         trailing  => 0,
         follow_up => $follow_up,
@@ -174,14 +173,15 @@ sub _display {
 
     # Highlight as appropriate
     my $color = color $options->{'color'};
-    if ( $options->{'highlight'} ) {
+    if ( $options->{'highlight'} && $options->{'highlights'} ) {
         my $reset = color 'reset';
         my $base  = color $options->{'color'};
         my $hl    = color $options->{'highlight'};
 
-        my $text = $base . Test::BDD::Cucumber::Util::bs_quote( $options->{'text'} );
-        $text =~ s/("(.+?)"|[ ^](\d[-?\d\.]*))/$reset$hl$1$reset$base/g;
-        print Test::BDD::Cucumber::Util::bs_unquote( $text );
+        for ( @{$options->{'highlights'}} ) {
+            my ($flag, $text) = @$_;
+            print $reset . ( $flag ? $hl : $base ) . $text . $reset;
+        }
 
     # Normal output
     } else {
