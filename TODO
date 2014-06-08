@@ -1,19 +1,8 @@
 
-- [ ] Make TAP output for scenario outlines interpolate correctly
-- [ ] Get passing against Cucumber-Features
-	- [ ] comments.feature
-	- [X] core.feature
-	- [ ] data_tables.feature
-	- [ ] doc_strings.feature
-	- [ ] failing_steps.feature
-	- [ ] hooks.feature
-	- [X] tags.feature
-	- [ ] undefined_steps.feature
-	- [ ] world.feature
-- [ ] Add support for explicit outlines
+- [ ] Add support for explicit outlines (I don't remember what this means)
 - [ ] Simplify Parser
 - [ ] Add a jUnit outputer
-- [ ] Fix indentation
+- [ ] Add a JSON outputter
 - [ ] Quoting in tables is broken
 - [ ] Placeholders in Pystrings
 - [ ] Make Pherkin feature complete
