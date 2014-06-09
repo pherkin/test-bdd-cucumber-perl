@@ -82,7 +82,7 @@ sub format_feature {
     return {
         uri => $feature->name_line->filename,
         keyword => $self->get_keyword($feature->name_line),
-        id => int($feature),
+        id => "feature-".int($feature),
         name => $feature->name,
         line => $feature->name_line->number,
         description => $self->format_description($feature),
@@ -95,7 +95,7 @@ sub format_scenario {
     my ( $self, $scenario, $dataset ) = @_;
     return {
         keyword => $self->get_keyword($scenario->line),
-        id => int($scenario),
+        id => "scenario-".int($scenario),
         name => $scenario->name,
         line => $scenario->line->number,
         tags => $self->format_tags($scenario->tags),
