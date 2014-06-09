@@ -120,9 +120,7 @@ my %OUTPUT_STATUS = (
     passing => 'passed',
     failing => 'failed',
     pending => 'pending',
-    undefined => 'undefined',
-    # TODO 'skiped'
-    # TODO 'missing'
+    undefined => 'skipped',
 );
 
 sub format_result {
