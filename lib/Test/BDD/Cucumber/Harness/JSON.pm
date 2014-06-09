@@ -131,7 +131,7 @@ sub format_result {
     return {
         status => $OUTPUT_STATUS{$result->result},
         error_message => $result->output,
-        defined $duration ? (duration => int($duration * 1_000)) : (), # miliseconds
+        defined $duration ? (duration => int($duration * 1_000_000_000)) : (), # nanoseconds
     }
 }
 
