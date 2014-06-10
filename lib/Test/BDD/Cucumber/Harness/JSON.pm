@@ -14,13 +14,15 @@ L<"Publish pretty cucumber reports"|https://github.com/masterthought/cucumber-re
 =cut
 
 use Moose;
-use JSON::MaybeXS qw( encode_json );
+use JSON::MaybeXS;
 use Time::HiRes qw ( time );
 use autodie qw( open close );
 
 extends 'Test::BDD::Cucumber::Harness::Data';
 
 has output_filename  => ( is => 'ro', isa => 'Str', default => 'cucumber_tests.json' );
+has json_args        => ( is => 'ro', isa => 'HashRef',
+                          default => sub { { utf8 => 1, pretty => 1 } });
 has all_features     => ( is => 'ro', isa => 'ArrayRef', default => sub { [] } );
 has current_feature  => ( is => 'rw', isa => 'HashRef' );
 has current_scenario => ( is => 'rw', isa => 'HashRef' );
@@ -52,8 +54,9 @@ sub step_done {
 
 sub shutdown {
     my ( $self ) = @_;
+    my $json = JSON::MaybeXS->new(%{ $self->json_args });
     open my $FD, ">", $self->output_filename;
-    print $FD encode_json($self->all_features);
+    print $FD $json->encode($self->all_features);
     close $FD;
 }
 
@@ -69,12 +72,13 @@ sub get_keyword {
 
 sub format_tags {
     my ( $self, $tags_ref ) = @_;
-    return [ map { {name => $_} } @$tags_ref ];
+    return [ map { {name => '@'.$_} } @$tags_ref ];
 }
 
 sub format_description {
     my ( $self, $feature ) = @_;
-    return join "\n", map { $_->content_remove_indentation } @{$feature->satisfaction};
+    return join "\n", map { $_->content_remove_indentation($_->indent) }
+                          @{$feature->satisfaction};
 }
 
 sub format_feature {
@@ -111,7 +115,6 @@ sub format_step {
         keyword => $step ? $step->verb_original : $step_context->verb,
         name => $step_context->text,
         line => $step ? $step->line->number : 0,
-        matches => { location => 'test:123' }, # TODO matches => { location => "steps_file.pl:35" },
         result => $self->format_result($result, $duration)
     };
 }
