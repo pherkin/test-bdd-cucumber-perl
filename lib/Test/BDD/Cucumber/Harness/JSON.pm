@@ -77,8 +77,7 @@ sub format_tags {
 
 sub format_description {
     my ( $self, $feature ) = @_;
-    return join "\n", map { $_->content_remove_indentation($_->indent) }
-                          @{$feature->satisfaction};
+    return join "\n", map { $_->content } @{$feature->satisfaction};
 }
 
 sub format_feature {
