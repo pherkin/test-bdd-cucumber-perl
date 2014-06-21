@@ -11,7 +11,7 @@ Given qr/a Digest MD5 object/, sub {
 };
 
 When qr/I add "([^"]+)" to the object/, sub {
-    S->{digest}->add($1);
+    S->{digest}->add( C->matches->[0] );
 };
 
 Then qr/the results look like/, sub {

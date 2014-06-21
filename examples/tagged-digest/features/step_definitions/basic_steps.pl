@@ -7,7 +7,7 @@ use Digest;
 use Test::More;
 use Test::BDD::Cucumber::StepFile;
 
-Given qr/a usable "(\w+)" class/, sub { use_ok( $1 ); };
+Given qr/a usable "(\w+)" class/, sub { use_ok( C->matches->[0] ); };
 Given qr/a Digest (\S+) object/, sub {
     my $object = Digest->new( C->matches->[0] );
     ok( $object, "Object created" );

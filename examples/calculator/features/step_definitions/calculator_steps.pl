@@ -51,7 +51,7 @@ Given 'a new Calculator object', sub {
 };
 
 Given qr/^having pressed (.+)/, sub {
-    S->{'Calculator'}->press( $_ ) for split(/(,| and) /, $1);
+    S->{'Calculator'}->press( $_ ) for split(/(,| and) /, C->matches->[0]);
 };
 
 Given qr/^having keyed (.+)/, sub {

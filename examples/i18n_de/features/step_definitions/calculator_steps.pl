@@ -50,7 +50,7 @@ Gegebensei 'ein neues Objekt der Klasse Calculator', sub {
 };
 
 Wenn qr/^ich (.+) gedrückt habe/, sub {
-    S->{'Calculator'}->press( $_ ) for split(/(,| und) /, $1);
+    S->{'Calculator'}->press( $_ ) for split(/(,| und) /, C->matches->[0]);
 };
 
 Wenn qr/^die Tasten (.+) gedrückt wurden/, sub {
