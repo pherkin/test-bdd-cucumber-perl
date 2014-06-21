@@ -1,4 +1,8 @@
 -----
+0.26: 21 Jun 2014
+    - Fixed a bug relating to skipped steps in TermColor output
+      https://github.com/sheriff/test-bdd-cucumber-perl/issues/40
+    - Changed examples/ to use C->matches
 0.25: 08 Jun 2014
     - Highlight parameters properly in TermColor output using @+ and @-
       https://github.com/sheriff/test-bdd-cucumber-perl/issues/24
