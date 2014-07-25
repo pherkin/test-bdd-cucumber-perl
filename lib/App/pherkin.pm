@@ -7,6 +7,8 @@ use FindBin::libs;
 use Getopt::Long;
 use Module::Runtime qw(use_module);
 use List::Util qw(max);
+use Pod::Usage;
+use FindBin qw($RealBin $Script);
 
 use Test::BDD::Cucumber::I18n qw(languages langdef readable_keywords keyword_to_subname);
 use Test::BDD::Cucumber::Loader;
@@ -98,14 +100,21 @@ sub _process_arguments {
 
     my $includes = [];
     my $tags = [];
+    my $help = 0;
     GetOptions(
         'I=s@'       => \$includes,
         'l|lib'      => \(my $add_lib),
         'b|blib'     => \(my $add_blib),
         'o|output=s' => \(my $harness),
 	't|tags=s@'  => \$tags,
-	'i18n=s'     => \(my $i18n)
+	'i18n=s'     => \(my $i18n),
+	'h|help'     => \$help,
     );
+
+    pod2usage(
+	-verbose => 1,
+	-input => "$RealBin/$Script",
+    ) if ($help);
 
     if ($i18n) {
         _print_langdef($i18n) unless $i18n eq 'help';
