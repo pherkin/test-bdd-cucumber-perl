@@ -35,6 +35,7 @@ is considered to be failing.
  -t, --tags ~@tag       Run scenarios tagged without '@tag'
  --i18n LANG            List keywords for a particular language.
                         '--i18n help' lists all languages available.
+ -h, --help             Print usage information.
 
 =head1 OUTPUTS
 
