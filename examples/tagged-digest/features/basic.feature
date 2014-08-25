@@ -1,4 +1,5 @@
 # Somehow I don't see this replacing the other tests this module has...
+@digest
 Feature: Simple tests of Digest.pm
   As a developer planning to use Digest.pm
   I want to test the basic functionality of Digest.pm
