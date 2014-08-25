@@ -12,7 +12,7 @@ use Carp qw/croak/;
 
 use Test::BDD::Cucumber::I18n qw(languages langdef keyword_to_subname);
 require Exporter;
-our @ISA = qw(Exporter);
+our @ISA    = qw(Exporter);
 our @EXPORT = qw(Step Transform Before After C S);
 
 our @definitions;
@@ -68,11 +68,11 @@ these are returned to it...
 =cut
 
 # Mapped to Given, When, and Then as part of the i18n mapping below
-sub _Given     { push( @definitions, [ Given     => @_ ] ) }
-sub _When      { push( @definitions, [ When      => @_ ] ) }
-sub _Then      { push( @definitions, [ Then      => @_ ] ) }
+sub _Given { push( @definitions, [ Given => @_ ] ) }
+sub _When  { push( @definitions, [ When  => @_ ] ) }
+sub _Then  { push( @definitions, [ Then  => @_ ] ) }
 
-sub Step      { push( @definitions, [ Step      => @_ ] ) }
+sub Step { push( @definitions, [ Step => @_ ] ) }
 
 sub Transform { push( @definitions, [ Transform => @_ ] ) }
 sub Before    { push( @definitions, [ Before    => @_ ] ) }
@@ -80,40 +80,41 @@ sub After     { push( @definitions, [ After     => @_ ] ) }
 
 my @SUBS;
 
-for my $language (languages()) {
-    my $langdef=langdef($language);
+for my $language ( languages() ) {
+    my $langdef = langdef($language);
 
-    _alias_function( $langdef->{given}, \&_Given);
-    _alias_function( $langdef->{when},  \&_When);
-    _alias_function( $langdef->{then},  \&_Then);
+    _alias_function( $langdef->{given}, \&_Given );
+    _alias_function( $langdef->{when},  \&_When );
+    _alias_function( $langdef->{then},  \&_Then );
 
-# Hm ... in cucumber, all step definining keywords are the same.
-# Here, the parser replaces 'and' and 'but' with the last verb. Tricky ...
-#    _alias_function( $langdef->{and}, \&And);
-#    _alias_function( $langdef->{but}, \&But);
+    # Hm ... in cucumber, all step definining keywords are the same.
+    # Here, the parser replaces 'and' and 'but' with the last verb. Tricky ...
+    #    _alias_function( $langdef->{and}, \&And);
+    #    _alias_function( $langdef->{but}, \&But);
 }
 
 push @EXPORT, @SUBS;
 
 sub _alias_function {
-  my ($keywords, $f)=@_;
+    my ( $keywords, $f ) = @_;
 
-  my @keywords=split('\|', $keywords);
-  for my $word (@keywords) {
-    # asterisks won't be aliased to any sub
-    next if $word eq '*';
+    my @keywords = split( '\|', $keywords );
+    for my $word (@keywords) {
 
-    my $subname=keyword_to_subname($word);
+        # asterisks won't be aliased to any sub
+        next if $word eq '*';
 
-    {
-      no strict 'refs';
-      no warnings 'redefine';
-      no warnings 'once';
+        my $subname = keyword_to_subname($word);
 
-      *$subname=$f;
-      push @SUBS, $subname;
+        {
+            no strict 'refs';
+            no warnings 'redefine';
+            no warnings 'once';
+
+            *$subname = $f;
+            push @SUBS, $subname;
+        }
     }
-  }
 }
 
 =head2 C

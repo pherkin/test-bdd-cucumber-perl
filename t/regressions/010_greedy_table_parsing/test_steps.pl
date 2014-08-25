@@ -15,12 +15,12 @@ When qr/I add "([^"]+)" to the object/, sub {
 };
 
 Then qr/the results look like/, sub {
-	my $data   = C->data;
-	my $digest = S->{digest};
-    foreach my $row (@{$data}) {
-		my $func   = $row->{method};
-		my $expect = $row->{output};
-		my $got    = $digest->$func();
+    my $data   = C->data;
+    my $digest = S->{digest};
+    foreach my $row ( @{$data} ) {
+        my $func   = $row->{method};
+        my $expect = $row->{output};
+        my $got    = $digest->$func();
         is $got, $expect, "test: $func";
     }
 };

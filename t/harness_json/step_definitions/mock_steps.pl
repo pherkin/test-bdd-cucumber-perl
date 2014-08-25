@@ -11,11 +11,11 @@ Given qr/we have list of items="([^"]*)"/ => sub {
 };
 
 When 'calculate count' => sub {
-    S->{count} = scalar @{S->{items}};
+    S->{count} = scalar @{ S->{items} };
 };
 
 Then qr/number of items is "([^"]*)"/ => sub {
-    is(S->{count}, $1);
+    is( S->{count}, $1 );
 };
 
 Given qr/that we receive list of items from server/ => sub {

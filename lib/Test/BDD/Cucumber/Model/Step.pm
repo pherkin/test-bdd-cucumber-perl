@@ -29,7 +29,7 @@ that appeared in the physical file - this will sometimes be C<and>.
 
 =cut
 
-has 'verb' => ( is => 'rw', isa => 'Str' );
+has 'verb'          => ( is => 'rw', isa => 'Str' );
 has 'verb_original' => ( is => 'rw', isa => 'Str' );
 
 =head2 line
@@ -56,8 +56,11 @@ by harnesses
 
 =cut
 
-has 'data_as_strings' => ( is => 'rw', default => sub {[]},
-	isa => 'ArrayRef[Str]' );
+has 'data_as_strings' => (
+    is      => 'rw',
+    default => sub { [] },
+    isa     => 'ArrayRef[Str]'
+);
 
 =head2 columns
 

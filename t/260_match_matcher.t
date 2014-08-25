@@ -27,10 +27,7 @@ for (
         "Non-capture",
         "the quick brown fox",
         qr/the (?:quick) brown (fox)/,
-        [
-            [ 0 => 'the quick brown ' ],
-            [ 1 => 'fox' ],
-        ]
+        [ [ 0 => 'the quick brown ' ], [ 1 => 'fox' ], ]
     ],
     [
         "Nested-capture",
@@ -54,19 +51,17 @@ for (
             [ 1 => 'fox' ],
         ]
     ],
-) {
+  )
+{
     my ( $test_name, $step_text, $step_re, $expected ) = @$_;
 
     # Set up a feature
     my $feature = Test::BDD::Cucumber::Parser->parse_string(
-        "Feature: Foo\n\tScenario:\n\t\tGiven $step_text\n"
-    );
+        "Feature: Foo\n\tScenario:\n\t\tGiven $step_text\n");
 
     # Set up step definitions
     my $executor = Test::BDD::Cucumber::Executor->new();
-    $executor->add_steps(
-        [ Given => $step_re, sub { 1; } ],
-    );
+    $executor->add_steps( [ Given => $step_re, sub { 1; } ], );
 
     # Instantiate the harness, and run it
     my $harness = Test::BDD::Cucumber::Harness::Data->new();
@@ -76,9 +71,8 @@ for (
     my $step = $harness->features->[0]->{'scenarios'}->[0]->{'steps'}->[0];
     my $highlights = $step->{'highlights'};
 
-    is_deeply( $highlights, $expected, $test_name ) || eq_or_diff(
-        $highlights, $expected
-    );
+    is_deeply( $highlights, $expected, $test_name )
+      || eq_or_diff( $highlights, $expected );
 }
 
 done_testing();

@@ -16,11 +16,9 @@ use Test::BDD::Cucumber::Harness::TermColor;
 # https://github.com/sheriff/test-bdd-cucumber-perl/issues/40
 # Incorrect TermColor output for skipped tests
 
-my $feature  = Test::BDD::Cucumber::Parser->parse_string( join '', (<DATA>) );
+my $feature = Test::BDD::Cucumber::Parser->parse_string( join '', (<DATA>) );
 my $executor = Test::BDD::Cucumber::Executor->new();
-$executor->add_steps(
-    [ Given => qr/(a) f(o)o b(a)r (baz)/, sub { 1; } ],
-);
+$executor->add_steps( [ Given => qr/(a) f(o)o b(a)r (baz)/, sub { 1; } ], );
 
 my $expected = <<END;
 
@@ -36,11 +34,13 @@ my $e = "\x{1b}";
 $expected =~ s/\[(\d+)\]/${e}[$1m/g;
 
 # Setup to capture the output
-my $actual = "";
-my $fh = new IO::Scalar \$actual;
-my $harness = Test::BDD::Cucumber::Harness::TermColor->new({
-    fh => $fh
-});
+my $actual  = "";
+my $fh      = new IO::Scalar \$actual;
+my $harness = Test::BDD::Cucumber::Harness::TermColor->new(
+    {
+        fh => $fh
+    }
+);
 
 # Run the step
 $executor->execute( $feature, $harness );

@@ -2,6 +2,7 @@
 0.27: 25 Aug 2014
     - Added JSON output support, courtesy of Tomas Zemres
     - Some useful minor patched via Paul Cochrane
+    - Ran the whole thing through perltidy
 0.26: 21 Jun 2014
     - Fixed a bug relating to skipped steps in TermColor output
       https://github.com/sheriff/test-bdd-cucumber-perl/issues/40

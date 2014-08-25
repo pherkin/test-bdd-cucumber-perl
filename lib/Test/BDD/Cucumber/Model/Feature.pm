@@ -18,7 +18,7 @@ The text after the C<Feature:> keyword
 
 =cut
 
-has 'name'         => ( is => 'rw', isa => 'Str' );
+has 'name' => ( is => 'rw', isa => 'Str' );
 
 =head2 name_line
 
@@ -27,7 +27,7 @@ C<Feature> keyword was found on
 
 =cut
 
-has 'name_line'    => ( is => 'rw', isa => 'Test::BDD::Cucumber::Model::Line' );
+has 'name_line' => ( is => 'rw', isa => 'Test::BDD::Cucumber::Model::Line' );
 
 =head2 satisfaction
 
@@ -35,8 +35,11 @@ An arrayref of strings of the Conditions of Satisfaction
 
 =cut
 
-has 'satisfaction' => ( is => 'rw', isa => 'ArrayRef[Test::BDD::Cucumber::Model::Line]',
-	default => sub {[]});
+has 'satisfaction' => (
+    is      => 'rw',
+    isa     => 'ArrayRef[Test::BDD::Cucumber::Model::Line]',
+    default => sub { [] }
+);
 
 =head2 document
 
@@ -44,7 +47,7 @@ The corresponding L<Test::BDD::Cucumber::Model::Document> object
 
 =cut
 
-has 'document'   => ( is => 'rw', isa => 'Test::BDD::Cucumber::Model::Document' );
+has 'document' => ( is => 'rw', isa => 'Test::BDD::Cucumber::Model::Document' );
 
 =head2 background
 
@@ -53,7 +56,8 @@ background section.
 
 =cut
 
-has 'background' => ( is => 'rw', isa => 'Test::BDD::Cucumber::Model::Scenario' );
+has 'background' =>
+  ( is => 'rw', isa => 'Test::BDD::Cucumber::Model::Scenario' );
 
 =head2 scenarios
 
@@ -62,8 +66,11 @@ constitute the test.
 
 =cut
 
-has 'scenarios' => ( is => 'rw', isa => 'ArrayRef[Test::BDD::Cucumber::Model::Scenario]',
-	default => sub {[]} );
+has 'scenarios' => (
+    is      => 'rw',
+    isa     => 'ArrayRef[Test::BDD::Cucumber::Model::Scenario]',
+    default => sub { [] }
+);
 
 =head2 tags
 
@@ -72,7 +79,7 @@ Scenarios.
 
 =cut
 
-has 'tags' => ( is => 'rw', isa => 'ArrayRef[Str]', default => sub {[]} );
+has 'tags' => ( is => 'rw', isa => 'ArrayRef[Str]', default => sub { [] } );
 
 =head2 language
 
@@ -80,8 +87,11 @@ Language the feature is written in. Defaults to 'en'.
 
 =cut
 
-has 'language' => ( is => 'rw', isa => 'Str',
-	default => sub { 'en' });
+has 'language' => (
+    is      => 'rw',
+    isa     => 'Str',
+    default => sub { 'en' }
+);
 
 =head1 AUTHOR
 

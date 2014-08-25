@@ -28,8 +28,8 @@ Then qr/the (.+) output is "(.+)"/, sub {
     my ( $type, $expected ) = @{ C->matches };
     my $method = {
         'base64' => 'b64digest',
-        'hex' => 'hexdigest'
-    }->{ $type };
+        'hex'    => 'hexdigest'
+    }->{$type};
 
     is( S->{'object'}->$method, $expected );
 };

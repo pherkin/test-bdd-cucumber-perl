@@ -22,7 +22,7 @@ use strict;
 use warnings;
 use Moose;
 
-has 'results' => ( is => 'ro', default => sub {[]}, isa => 'ArrayRef' );
+has 'results' => ( is => 'ro', default => sub { [] }, isa => 'ArrayRef' );
 
 =head2 feature
 
@@ -75,8 +75,8 @@ locations of consolidated matches, for highlighting.
 
 =cut
 
-sub step      { my ( $self, $context ) = @_; }
-sub step_done { my ($self, $context, $result) = @_; }
+sub step { my ( $self, $context ) = @_; }
+sub step_done { my ( $self, $context, $result ) = @_; }
 
 =head2 startup
 
@@ -111,13 +111,13 @@ be fine for all your needs.
 
 sub add_result {
     my $self = shift;
-    push( @{$self->results}, shift() );
+    push( @{ $self->results }, shift() );
 }
 
 sub result {
     my $self = shift;
     return Test::BDD::Cucumber::Model::Result->from_children(
-        @{$self->results} );
+        @{ $self->results } );
 }
 
 =head1 AUTHOR

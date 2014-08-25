@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 require Exporter;
-our @ISA = qw(Exporter);
+our @ISA       = qw(Exporter);
 our @EXPORT_OK = qw(parse_error_from_line);
 
 =head1 NAME
@@ -49,15 +49,15 @@ error reason:
 sub parse_error_from_line {
     my ( $message, $line ) = @_;
 
-    my $error  = "-- Parse Error --\n\n $message\n";
-       $error .= "  at [%s] line %d\n";
-       $error .= "  thrown by: [%s] line %d\n\n";
-       $error .= "-- [%s] --\n\n";
-       $error .= "%s";
-       $error .= "\n%s\n";
+    my $error = "-- Parse Error --\n\n $message\n";
+    $error .= "  at [%s] line %d\n";
+    $error .= "  thrown by: [%s] line %d\n\n";
+    $error .= "-- [%s] --\n\n";
+    $error .= "%s";
+    $error .= "\n%s\n";
 
     # Get the caller data
-    my ( $caller_filename, $caller_line ) = (caller())[1,2];
+    my ( $caller_filename, $caller_line ) = ( caller() )[ 1, 2 ];
 
     # Get the simplistic filename and line number it occured on
     my $feature_filename = $line->document->filename || "(no filename)";
@@ -65,25 +65,22 @@ sub parse_error_from_line {
 
     # Get the context lines
     my ( $start_line, @lines ) =
-        _get_context_range( $line->document, $feature_line );
+      _get_context_range( $line->document, $feature_line );
 
     my $formatted_lines;
     for ( 0 .. $#lines ) {
         my $actual_line = $start_line + $_;
-        my $mark = ($feature_line == $actual_line) ? '*' : '|';
+        my $mark = ( $feature_line == $actual_line ) ? '*' : '|';
         $formatted_lines .=
-            sprintf("% 3d%s    %s\n",
-                $actual_line, $mark, $lines[$_]
-            );
+          sprintf( "% 3d%s    %s\n", $actual_line, $mark, $lines[$_] );
     }
 
-    return(
+    return (
         sprintf( $error,
             $feature_filename, $feature_line,
-            $caller_filename, $caller_line,
+            $caller_filename,  $caller_line,
             $feature_filename, $formatted_lines,
-            ('-' x ((length $feature_filename) + 8))
-        )
+            ( '-' x ( ( length $feature_filename ) + 8 ) ) )
     );
 }
 
@@ -92,29 +89,26 @@ sub _get_context_range {
 
     # Context range
     my $min_range = 1;
-    my $max_range = (scalar @{$document->lines});
+    my $max_range = ( scalar @{ $document->lines } );
 
-    my @range = (
-        $number - 2, $number - 1,
-        $number,
-        $number + 1, $number + 2
-    );
+    my @range = ( $number - 2, $number - 1, $number, $number + 1, $number + 2 );
 
     # Push the range higher if needed
     while ( $range[0] < $min_range ) {
-        @range = map { $_+1 } @range;
+        @range = map { $_ + 1 } @range;
     }
 
     # Push the range lower if needed
     while ( $range[4] > $max_range ) {
-        @range = map { $_-1 } @range;
+        @range = map { $_ - 1 } @range;
     }
 
     # Then cut it off
     @range = grep { $_ >= $min_range } @range;
     @range = grep { $_ <= $max_range } @range;
 
-    return( $range[0], map { $document->lines->[$_ - 1]->raw_content } @range );
+    return ( $range[0],
+        map { $document->lines->[ $_ - 1 ]->raw_content } @range );
 }
 
 =head1 AUTHOR
