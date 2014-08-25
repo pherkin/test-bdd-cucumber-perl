@@ -3,23 +3,13 @@
 use strict;
 use warnings;
 
-use FindBin::libs;
-use File::Temp 'tempdir';
 use Test::More;
+use IO::Scalar;
 use IO::Handle;
 use JSON::MaybeXS 'decode_json';
-use autodie;
-
-use Test::File::ShareDir
-  -share => {
-    -dist   => { 'Test-BDD-Cucumber' => 'share' }
-  };
 
 use Test::BDD::Cucumber::Harness::JSON;
 use Test::BDD::Cucumber::Loader;
-
-my $tmpdir = tempdir( CLEANUP => 1 );
-my $output_filename = "$tmpdir/cucumber_tests.json";
 
 my $DIGEST_DIR = "examples/tagged-digest";
 my $DIGEST_FEATURE_FILE = "$DIGEST_DIR/features/basic.feature";
@@ -33,11 +23,12 @@ sub get_line_number {
     }
 }
 
+my $json_data = "";
+my $fh = new IO::Scalar \$json_data;
+
 # Run tests
 {
-    my $harness = Test::BDD::Cucumber::Harness::JSON->new(
-        output_filename => $output_filename
-    );
+    my $harness = Test::BDD::Cucumber::Harness::JSON->new( fh => $fh );
     for my $directory ($DIGEST_DIR, 't/harness_json') {
         my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load( $directory );
         die "No features found in $directory" unless @features;
@@ -46,10 +37,10 @@ sub get_line_number {
     $harness->shutdown();
 }
 
+$fh->close;
+
 # Load & Check JSON output
-open FD, "<", $output_filename;
-my $parsed_json = decode_json(join "", <FD>);
-close FD;
+my $parsed_json = decode_json( $json_data );
 
 is(ref($parsed_json), 'ARRAY', 'json file contains list of features');
 

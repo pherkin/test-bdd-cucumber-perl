@@ -8,7 +8,8 @@ use Test::More;
 my @known_harnesses = (
     "Data", # Short form
     "Test::BDD::Cucumber::Harness::TermColor", # Long form
-    "Test::BDD::Cucumber::Harness::TestBuilder"
+    "Test::BDD::Cucumber::Harness::TestBuilder",
+    "Test::BDD::Cucumber::Harness::JSON"
 );
 
 use_ok("App::pherkin");

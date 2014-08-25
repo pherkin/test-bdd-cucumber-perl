@@ -9,7 +9,12 @@ Test::BDD::Cucumber::Harness::TermColor - Prints colorized text to the screen
 A L<Test::BDD::Cucumber::Harness> subclass that prints test output, colorized,
 to the terminal.
 
-=head1 METHODS
+=head1 CONFIGURABLE ENV
+
+=head2 ANSI_COLORS_DISABLED
+
+You can use L<Term::ANSIColor>'s C<ANSI_COLORS_DISABLED> to turn off colors
+in the output.
 
 =cut
 
@@ -40,6 +45,14 @@ use Term::ANSIColor;
 use Test::BDD::Cucumber::Model::Result;
 
 extends 'Test::BDD::Cucumber::Harness';
+
+=head1 CONFIGURABLE ATTRIBUTES
+
+=head2 fh
+
+A filehandle to write output to; defaults to C<STDOUT>
+
+=cut
 
 has 'fh' => ( is => 'rw', isa => 'FileHandle', default => sub { \*STDOUT } );
 

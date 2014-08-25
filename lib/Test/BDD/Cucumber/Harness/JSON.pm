@@ -16,13 +16,30 @@ L<"Publish pretty cucumber reports"|https://github.com/masterthought/cucumber-re
 use Moose;
 use JSON::MaybeXS;
 use Time::HiRes qw ( time );
-use autodie qw( open close );
 
 extends 'Test::BDD::Cucumber::Harness::Data';
 
-has output_filename  => ( is => 'ro', isa => 'Str', default => 'cucumber_tests.json' );
+=head1 CONFIGURABLE ATTRIBUTES
+
+=head2 fh
+
+A filehandle to write output to; defaults to C<STDOUT>
+
+=cut
+
+has 'fh' => ( is => 'rw', isa => 'FileHandle', default => sub { \*STDOUT } );
+
+=head2 json_args
+
+List of options to be passed to L<JSON::MaybeXS>'s C<new()> method
+
+=cut
+
 has json_args        => ( is => 'ro', isa => 'HashRef',
                           default => sub { { utf8 => 1, pretty => 1 } });
+
+#
+
 has all_features     => ( is => 'ro', isa => 'ArrayRef', default => sub { [] } );
 has current_feature  => ( is => 'rw', isa => 'HashRef' );
 has current_scenario => ( is => 'rw', isa => 'HashRef' );
@@ -55,9 +72,8 @@ sub step_done {
 sub shutdown {
     my ( $self ) = @_;
     my $json = JSON::MaybeXS->new(%{ $self->json_args });
-    open my $FD, ">", $self->output_filename;
-    print $FD $json->encode($self->all_features);
-    close $FD;
+    my $fh = $self->fh;
+    print $fh $json->encode($self->all_features);
 }
 
 ##################################

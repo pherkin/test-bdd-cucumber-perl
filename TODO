@@ -2,7 +2,10 @@
 - [ ] Add support for explicit outlines (I don't remember what this means)
 - [ ] Simplify Parser
 - [ ] Add a jUnit outputer
-- [ ] Add a JSON outputter
 - [ ] Quoting in tables is broken
 - [ ] Placeholders in Pystrings
 - [ ] Make Pherkin feature complete
+
+
+- Don't need both Storable and Clone, I reckon - both being used for cloning in one place
+- YAML::Syck usage could just be using JSON::MaybeXS
