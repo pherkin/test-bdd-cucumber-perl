@@ -6,13 +6,14 @@ use warnings;
 use Test::More;
 use IO::Scalar;
 use IO::Handle;
+use Path::Class;
 use JSON::MaybeXS 'decode_json';
 
 use Test::BDD::Cucumber::Harness::JSON;
 use Test::BDD::Cucumber::Loader;
 
-my $DIGEST_DIR          = "examples/tagged-digest";
-my $DIGEST_FEATURE_FILE = "$DIGEST_DIR/features/basic.feature";
+my $DIGEST_DIR          = dir(qw/ examples tagged-digest /);
+my $DIGEST_FEATURE_FILE = $DIGEST_DIR->file(qw/ features basic.feature /);
 
 sub get_line_number {
     my ( $filename, $regexp ) = @_;

@@ -1,4 +1,6 @@
 -----
+0.28: ???
+    - Fixed the JSON outputter test on Win32 to use Path::Class
 0.27: 25 Aug 2014
     - Added JSON output support, courtesy of Tomas Zemres
     - Some useful minor patched via Paul Cochrane
