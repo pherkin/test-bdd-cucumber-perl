@@ -47,7 +47,7 @@ sub load {
 
     # Grab the feature files
     my @features = map {
-        my $file = $_;
+        my $file = file( $_ );
         my $feature =
           Test::BDD::Cucumber::Parser->parse_file( $file, $tag_scheme );
       } (

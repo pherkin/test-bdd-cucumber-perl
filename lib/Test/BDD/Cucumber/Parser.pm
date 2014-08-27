@@ -61,7 +61,7 @@ sub parse_file {
             {
                 content =>
                   scalar( read_file( $string, { binmode => ':utf8' } ) ),
-                filename => $string
+                filename => '' . $string
             }
         ),
         $tag_scheme
