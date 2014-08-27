@@ -3,7 +3,6 @@ package App::pherkin;
 use strict;
 use warnings;
 
-use FindBin::libs;
 use Getopt::Long;
 use Module::Runtime qw(use_module);
 use List::Util qw(max);
@@ -127,7 +126,7 @@ sub _process_arguments {
     unshift @$includes, 'blib/lib', 'blib/arch' if $add_blib;
 
     # Munge the output harness
-    $harness //= "TermColor";
+    $harness = "TermColor" unless defined $harness;
 
     lib->import(@$includes) if @$includes;
 

@@ -19,7 +19,6 @@ test-suite. Luckily, this is SUPER easy.
 
  use strict;
  use warnings;
- use FindBin::libs;
 
  # This will find step definitions and feature files in the directory you point
  # it at below

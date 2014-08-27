@@ -12,7 +12,6 @@ Definitions, and reporting on progress through the passed-in harness.
 =cut
 
 use Moose;
-use FindBin::libs;
 use Storable qw(dclone);
 use List::Util qw/first/;
 use List::MoreUtils qw/pairwise/;

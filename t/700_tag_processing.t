@@ -4,7 +4,6 @@ use strict;
 use warnings;
 
 use Test::More;
-use FindBin::libs;
 use App::pherkin;
 use Data::Dumper;
 

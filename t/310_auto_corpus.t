@@ -2,7 +2,8 @@
 
 use strict;
 use warnings;
-use FindBin::libs;
+
+use lib 't/lib/';
 
 use Test::More;
 use Test::Differences;
