@@ -1,4 +1,8 @@
 -----
+0.29: 26 Apr 2014
+    - Tried to fix Win32 issue again
+    - Remove FindBin::libs
+    - Installs cleanly on 5.8 again
 0.28: 26 Apr 2014
     - Fixed the JSON outputter test on Win32 to use Path::Class
 0.27: 25 Aug 2014
