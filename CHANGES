@@ -1,4 +1,7 @@
 -----
+0.30: 27 Apr 2014
+    - Use core module Digest::SHA instead of Digest::SHA1
+        https://github.com/sheriff/test-bdd-cucumber-perl/issues/45
 0.29: 26 Apr 2014
     - Tried to fix Win32 issue again
     - Remove FindBin::libs
