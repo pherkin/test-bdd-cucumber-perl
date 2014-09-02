@@ -12,7 +12,7 @@ Internationalization of feature files and step definitions.
 
 =head1 SYNOPSIS
 
-  use Test::BDD::Cucumber::I18N
+  use Test::BDD::Cucumber::I18n
       qw(languages has_language langdef);
 
   # get codes of supported languages
