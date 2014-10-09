@@ -1,4 +1,7 @@
 -----
+0.31: 09 Oct 2014
+    - Specified a minimum version of File::Slurp in response to a
+      private bug report
 0.30: 27 Apr 2014
     - Use core module Digest::SHA instead of Digest::SHA1
         https://github.com/sheriff/test-bdd-cucumber-perl/issues/45
