@@ -22,6 +22,8 @@ use strict;
 use warnings;
 use Moose;
 
+use Getopt::Long;
+
 # Try and make the colors just work on Windows...
 BEGIN {
     if (
@@ -59,6 +61,42 @@ A filehandle to write output to; defaults to C<STDOUT>
 
 has 'fh' => ( is => 'rw', isa => 'FileHandle', default => sub { \*STDOUT } );
 
+has theme => ( 'is' => 'ro', isa => 'Str', lazy => 1, default => sub {
+	my $theme = 'dark';
+	Getopt::Long::Configure('pass_through');
+	GetOptions ("c|theme=s" => \$theme);
+	return($theme);
+} );
+
+has _themes => ( is => 'ro', isa => 'HashRef[HashRef]', lazy => 1, default => sub {{
+	dark => {
+		'feature' => 'bright_white',
+		'scenario' => 'bright_white',
+		'scenario_name' => 'bright_blue',
+		'pending' => 'yellow',
+		'passing' => 'green',
+		'failed' => 'red',
+		'step_data' => 'bright_cyan',
+	},
+	light => {
+		'feature' => 'reset',
+		'scenario' => 'black',
+		'scenario_name' => 'blue',
+		'pending' => 'yellow',
+		'passing' => 'green',
+		'failed' => 'red',
+		'step_data' => 'cyan',
+	},
+}} );
+
+has _colors => ( is => 'ro', isa => 'HashRef', lazy => 1, default => sub {
+	my $self = shift;
+	if( ! defined $self->_themes->{$self->theme} ) {
+		die('unknown color theme '.$self->theme.'!');
+	}
+	return( $self->_themes->{$self->theme} );
+} );
+
 my $margin = 2;
 
 sub BUILD {
@@ -80,7 +118,7 @@ sub feature {
     $self->_display(
         {
             indent => 0,
-            color  => 'bright_white',
+            color  => $self->_colors->{'feature'},
             text   => $feature->name,
             follow_up =>
               [ map { $_->content } @{ $feature->satisfaction || [] } ],
@@ -97,12 +135,13 @@ sub feature_done {
 
 sub scenario {
     my ( $self, $scenario, $dataset, $longest ) = @_;
-    my $text = "Scenario: " . color('bright_blue') . ( $scenario->name || '' );
+    my $text = "Scenario: " . color($self->_colors->{'scenario_name'})
+        .( $scenario->name || '' );
 
     $self->_display(
         {
             indent       => 2,
-            color        => 'bright_white',
+            color        => $self->_colors->{'scenario'},
             text         => $text,
             follow_up    => [],
             trailing     => 0,
@@ -125,13 +164,15 @@ sub step_done {
     my $color;
     my $follow_up = [];
     my $status    = $result->result;
+    my $failed    = 0;
 
     if ( $status eq 'undefined' || $status eq 'pending' ) {
-        $color = 'yellow';
+        $color = $self->_colors->{'pending'};
     } elsif ( $status eq 'passing' ) {
-        $color = 'green';
+        $color = $self->_colors->{'passing'};
     } else {
-        $color = 'red';
+	$failed = 1;
+        $color = $self->_colors->{'failed'};
         $follow_up = [ split( /\n/, $result->{'output'} ) ];
 
         if ( !$context->is_hook ) {
@@ -146,7 +187,7 @@ sub step_done {
     my $text;
 
     if ( $context->is_hook ) {
-        $color eq 'red' or return;
+        $failed or return;
         $text = 'In ' . ucfirst( $context->verb ) . ' Hook';
         undef $highlights;
     } elsif ($highlights) {
@@ -187,7 +228,7 @@ sub _note_step_data {
         $self->_display(
             {
                 indent => 6 + $extra_indent,
-                color  => 'bright_cyan',
+                color  => $self->_colors->{'step_data'},
                 text   => $text
             }
         );
