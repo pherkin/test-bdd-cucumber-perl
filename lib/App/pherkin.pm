@@ -57,10 +57,10 @@ sub run {
 
     my ( $options, @feature_files ) = $self->_process_arguments(@arguments);
 
+    my $features_path = $feature_files[0] || './features/';
     my ( $executor, @features ) =
-      Test::BDD::Cucumber::Loader->load( $feature_files[0] || './features/',
-        $self->tag_scheme );
-    die "No feature files found" unless @features;
+      Test::BDD::Cucumber::Loader->load( $features_path, $self->tag_scheme );
+    die "No feature files found in $features_path" unless @features;
 
     my $harness = $self->_load_harness( $options->{'harness'} );
 
@@ -133,7 +133,7 @@ sub _process_arguments {
     # Store our TagSpecScheme
     $self->tag_scheme( $self->_process_tags( @{$tags} ) );
 
-    return ( { harness => $harness }, @ARGV );
+    return ( { harness => $harness }, pop @ARGV );
 }
 
 sub _process_tags {
