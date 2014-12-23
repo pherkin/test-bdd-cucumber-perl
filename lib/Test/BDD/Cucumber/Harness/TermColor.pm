@@ -61,6 +61,13 @@ A filehandle to write output to; defaults to C<STDOUT>
 
 has 'fh' => ( is => 'rw', isa => 'FileHandle', default => sub { \*STDOUT } );
 
+=head2 theme
+
+Name of the theme to use for colours. Defaults to `dark`. Themes are defined
+in the private attribute C<_themes>, and currently include `light` and `dark`
+
+=cut
+
 has theme => ( 'is' => 'ro', isa => 'Str', lazy => 1, default => sub {
 	my $theme = 'dark';
 	Getopt::Long::Configure('pass_through');
@@ -85,17 +92,15 @@ has _themes => ( is => 'ro', isa => 'HashRef[HashRef]', lazy => 1, default => su
 		'pending' => 'yellow',
 		'passing' => 'green',
 		'failed' => 'red',
-		'step_data' => 'cyan',
+		'step_data' => 'magenta',
 	},
 }} );
 
-has _colors => ( is => 'ro', isa => 'HashRef', lazy => 1, default => sub {
-	my $self = shift;
-	if( ! defined $self->_themes->{$self->theme} ) {
-		die('unknown color theme '.$self->theme.'!');
-	}
-	return( $self->_themes->{$self->theme} );
-} );
+sub _colors {
+    my $self = shift;
+    return $self->_themes->{ $self->theme } ||
+        die('Unknown color theme [' . $self->theme . ']');
+}
 
 my $margin = 2;
 
@@ -205,7 +210,7 @@ sub step_done {
             color        => $color,
             text         => $text,
             highlights   => $highlights,
-            highlight    => 'bright_cyan',
+            highlight    => $self->_colors->{'step_data'},
             trailing     => 0,
             follow_up    => $follow_up,
             longest_line => $context->stash->{'scenario'}->{'longest_step_line'}

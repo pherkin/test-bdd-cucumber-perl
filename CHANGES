@@ -1,4 +1,10 @@
 -----
+0.32: 23 Dec 2014
+    - Colour themes for TermColor harness, fixes
+        https://github.com/sheriff/test-bdd-cucumber-perl/issues/35
+    - Command-line options are now passed through
+        https://github.com/sheriff/test-bdd-cucumber-perl/pull/49/files
+    - Both of these are based on a patch from benningm
 0.31: 09 Oct 2014
     - Specified a minimum version of File::Slurp in response to a
       private bug report

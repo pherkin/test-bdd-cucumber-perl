@@ -26,16 +26,28 @@ is considered to be failing.
 
 =head1 OPTIONS
 
+Controlling @INC
+
  -l, --lib              Add 'lib' to @INC
  -b, --blib             Add 'blib/lib' and 'blib/arch' to @INC
  -I [dir]               Add given directory to @INC
+
+Output formatting
+
  -o, --output           Output harness to use. Default to 'TermColor'. See 'Outputs'
+ -c, --theme            Colour theme for 'TermColor'. `light` or `dark`. Defaults to `dark`
+
+Tag specifications
+
  -t, --tags @tag        Run scenarios tagged with '@tag'
  -t, --tags @tag1,@tag2 Run scenarios tagged with '@tag1' and '@tag2'
  -t, --tags ~@tag       Run scenarios tagged without '@tag'
+
+Help
+
+ -h, --help             Print usage information.
  --i18n LANG            List keywords for a particular language.
                         '--i18n help' lists all languages available.
- -h, --help             Print usage information.
 
 =head1 OUTPUTS
 
@@ -67,6 +79,6 @@ BEGIN {
     }
 }
 
-my $result = App::pherkin->new()->run( @ARGV );
+my $result = App::pherkin->new()->run(@ARGV);
 
 exit( $result->result eq 'failing' );

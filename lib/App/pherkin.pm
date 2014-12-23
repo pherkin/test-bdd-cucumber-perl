@@ -97,7 +97,7 @@ sub _process_arguments {
     local @ARGV = @args;
 
     # Allow -Ilib, -bl
-    Getopt::Long::Configure('bundling', 'pass_through');
+    Getopt::Long::Configure( 'bundling', 'pass_through' );
 
     my $includes = [];
     my $tags     = [];
