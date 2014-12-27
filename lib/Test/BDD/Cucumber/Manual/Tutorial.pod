@@ -93,7 +93,7 @@ we look for a C<features/> directory, and search for step definitions files
 (matched by C<*_steps.pl>) and feature files (matched by C<*.feature>).
 
 The step matchers (the code that starts with C<Given>, C<When> and C<Then>) are
-all loaded, and then we execture the feature files one by one. Let's step
+all loaded, and then we execute the feature files one by one. Let's step
 through the feature file, and look at how it matches up to the step definitions
 file.
 
@@ -168,7 +168,7 @@ I<stash> for other steps to use. There are three stashes documented in
 L<Test::Builder::StepContext>, C<feature>, C<scenario> and C<step>. As you might
 expect, C<feature> is available to all step definitions that are being executed
 as part of a feature, and C<scenario> is available to all steps that are being
-executed as part of a feature.
+executed as part of a scenario.
 
 The context is the single argument that gets passed to each step, and it
 contains evertything that step should need to execute. We'll be looking at some
