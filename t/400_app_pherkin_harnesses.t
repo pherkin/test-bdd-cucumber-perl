@@ -16,12 +16,13 @@ use_ok("App::pherkin");
 
 for my $harness (@known_harnesses) {
     my $app    = App::pherkin->new();
-    my $object = $app->_load_harness($harness);
+    my $object = $app->_initialize_harness($harness);
     isa_ok(
         $object,
         "Test::BDD::Cucumber::Harness",
         "Loaded harness by name: [$harness] -> [" . ( ref $object ) . "]"
     );
+    is($app->harness, $object, "It is set to app->harness [$harness]");
 }
 
 done_testing();

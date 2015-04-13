@@ -17,6 +17,8 @@ use Moose;
 has 'tags'       => ( is => 'rw', isa => 'ArrayRef', required => 0 );
 has 'tag_scheme' => ( is => 'rw', isa => 'ArrayRef', required => 0 );
 
+has 'harness'    => ( is => 'rw' );
+
 =head1 NAME
 
 App::pherkin - Run Cucumber tests from the command line
@@ -55,14 +57,15 @@ sub run {
  # localized features will have utf8 in them and options may output utf8 as well
     binmode STDOUT, ':utf8';
 
-    my ( $options, @feature_files ) = $self->_process_arguments(@arguments);
+    my ( $features_path ) = $self->_process_arguments(@arguments);
+    $features_path ||= './features/';
 
-    my $features_path = $feature_files[0] || './features/';
     my ( $executor, @features ) =
       Test::BDD::Cucumber::Loader->load( $features_path, $self->tag_scheme );
     die "No feature files found in $features_path" unless @features;
 
-    my $harness = $self->_load_harness( $options->{'harness'} );
+    my $harness = $self->harness;
+    $harness->startup();
 
     my $tag_spec;
     if ( $self->tag_scheme ) {
@@ -76,7 +79,7 @@ sub run {
     return $harness->result;
 }
 
-sub _load_harness {
+sub _initialize_harness {
     my ( $self, $harness_module ) = @_;
 
     unless ( $harness_module =~ m/::/ ) {
@@ -86,10 +89,7 @@ sub _load_harness {
     eval { use_module($harness_module) }
       || die "Unable to load harness [$harness_module]: $@";
 
-    my $harness = $harness_module->new();
-    $harness->startup();
-
-    return $harness;
+    $self->harness( $harness_module->new() );
 }
 
 sub _process_arguments {
@@ -126,14 +126,14 @@ sub _process_arguments {
     unshift @$includes, 'blib/lib', 'blib/arch' if $add_blib;
 
     # Munge the output harness
-    $harness = "TermColor" unless defined $harness;
+    $self->_initialize_harness($harness || "TermColor");
 
     lib->import(@$includes) if @$includes;
 
     # Store our TagSpecScheme
     $self->tag_scheme( $self->_process_tags( @{$tags} ) );
 
-    return ( { harness => $harness }, pop @ARGV );
+    return ( pop @ARGV );
 }
 
 sub _process_tags {
