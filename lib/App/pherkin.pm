@@ -64,6 +64,12 @@ sub run {
       Test::BDD::Cucumber::Loader->load( $features_path, $self->tag_scheme );
     die "No feature files found in $features_path" unless @features;
 
+    return $self->_run_tests($executor, @features);
+}
+
+sub _run_tests {
+    my ( $self, $executor, @features ) = @_;
+
     my $harness = $self->harness;
     $harness->startup();
 
