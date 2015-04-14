@@ -74,7 +74,7 @@ use warnings;
 use App::pherkin;
 
 BEGIN {
-    if ( not -t STDOUT ) {
+    if ( not -t STDOUT and not defined $ENV{'ANSI_COLORS_DISABLED'} ) {
         $ENV{'ANSI_COLORS_DISABLED'} = 1;
     }
 }
