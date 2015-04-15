@@ -24,11 +24,11 @@ sub get_line_number {
     }
 }
 
-my $json_data = "";
-my $fh        = new IO::Scalar \$json_data;
-
 # Run tests
-{
+sub run_tests {
+    my $json_data = "";
+    my $fh        = new IO::Scalar \$json_data;
+
     my $harness = Test::BDD::Cucumber::Harness::JSON->new( fh => $fh );
     for my $directory ( $DIGEST_DIR, 't/harness_json' ) {
         my ( $executor, @features ) =
@@ -37,14 +37,20 @@ my $fh        = new IO::Scalar \$json_data;
         $executor->execute( $_, $harness ) for @features;
     }
     $harness->shutdown();
+
+    $fh->close;
+    return $json_data;
 }
 
-$fh->close;
+my $json_data = run_tests();
 
 # Load & Check JSON output
 my $parsed_json = decode_json($json_data);
 
 is( ref($parsed_json), 'ARRAY', 'json file contains list of features' );
+
+# Second run results
+my $second_run_json = decode_json( run_tests() );
 
 # Test list of features
 my @json_features = @$parsed_json;
@@ -59,7 +65,11 @@ is_deeply(
 my %json_feature = %{ $parsed_json->[0] };
 is( $json_feature{keyword}, 'Feature', 'feature keyword' );
 is( $json_feature{name}, 'Simple tests of Digest.pm', 'feature name' );
-like( $json_feature{id}, qr/^feature-\d+$/, 'feature id' );
+like( $json_feature{id},
+    qr{^.*examples/tagged-digest/features/basic\.feature:\d+$},
+    'feature id'
+);
+is( $json_feature{id}, $second_run_json->[0]{id}, "Feature ID is stable" );
 is( $json_feature{uri}, $DIGEST_FEATURE_FILE, 'feature uri' );
 is(
     $json_feature{line},
@@ -92,7 +102,14 @@ is_deeply(
 my %json_scenario = %{ $json_feature{elements}[2] };
 is( $json_scenario{keyword}, 'Scenario',    'scenario keyword' );
 is( $json_scenario{name},    'Check SHA-1', 'scenario name' );
-like( $json_scenario{id}, qr/^scenario-\d+$/, 'scenario id' );
+like( $json_scenario{id},
+    qr{^.*examples/tagged-digest/features/basic.feature:\d+$},
+    'scenario id'
+);
+is( $json_scenario{id},
+    $second_run_json->[0]{elements}[2]{id},
+    "Scenario ID is stable"
+);
 is(
     $json_scenario{line},
     get_line_number( $json_feature{uri}, 'Scenario: Check SHA-1' ),

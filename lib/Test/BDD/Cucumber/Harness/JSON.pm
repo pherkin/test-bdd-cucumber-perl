@@ -104,7 +104,7 @@ sub format_feature {
     return {
         uri         => $feature->name_line->filename,
         keyword     => $self->get_keyword( $feature->name_line ),
-        id          => "feature-" . int($feature),
+        id          => $self->_generate_stable_id( $feature->name_line ),
         name        => $feature->name,
         line        => $feature->name_line->number,
         description => $self->format_description($feature),
@@ -117,13 +117,18 @@ sub format_scenario {
     my ( $self, $scenario, $dataset ) = @_;
     return {
         keyword => $self->get_keyword( $scenario->line ),
-        id      => "scenario-" . int($scenario),
+        id      => $self->_generate_stable_id( $scenario->line ),
         name    => $scenario->name,
         line    => $scenario->line->number,
         tags    => $self->format_tags( $scenario->tags ),
         type    => $scenario->background ? 'background' : 'scenario',
         steps   => []
     };
+}
+
+sub _generate_stable_id {
+    my ( $self, $line ) = @_;
+    return $line->filename . ":" . $line->number;
 }
 
 sub format_step {
