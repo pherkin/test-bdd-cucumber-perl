@@ -1,4 +1,12 @@
 -----
+0.33: 20 Apr 2014
+    - JSON formatter uses filename/line based IDs rather than memory-location
+        ones, thanks Tomas Pokorny
+    - Minor App::pherkin refactor to make harness an attribute, thanks Tomas
+        Pokorny
+    - $ENV{ANSI_COLOR_DISABLED} checked for definedness, not truth in deciding
+        whether to colourize output in some situations; thanks Tomas Pokorny
+    - Minor typo fixes, thanks 'poum', 'Chylli'
 0.32: 23 Dec 2014
     - Colour themes for TermColor harness, fixes
         https://github.com/sheriff/test-bdd-cucumber-perl/issues/35
