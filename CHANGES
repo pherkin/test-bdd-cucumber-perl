@@ -1,5 +1,7 @@
 -----
-0.33: 20 Apr 2014
+0.34: 21 Apr 2015
+    - JSON formatter tests now Win32 compatible
+0.33: 20 Apr 2015
     - JSON formatter uses filename/line based IDs rather than memory-location
         ones, thanks Tomas Pokorny
     - Minor App::pherkin refactor to make harness an attribute, thanks Tomas
