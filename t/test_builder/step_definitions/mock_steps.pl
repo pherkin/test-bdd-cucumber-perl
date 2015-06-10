@@ -7,16 +7,19 @@ use Test::BDD::Cucumber::StepFile;
 use Test::Builder;
 
 # Test global builder used in some Test::* packages
-my $Tester = Test::Builder->new();
+my $Tester;
+sub get_tester {
+    return $Tester //= Test::Builder->new();
+}
 
 sub is_odd {
     my ($number) = @_;
-    $Tester->ok($number % 2, "Number $number is odd");
+    get_tester()->ok($number % 2, "Number $number is odd");
 }
 
 sub is_even {
     my ($number) = @_;
-    $Tester->ok(!($number % 2), "Number $number is even");
+    get_tester()->ok(!($number % 2), "Number $number is even");
 }
 
 Step qr/the number (\d+) is odd/ => sub {

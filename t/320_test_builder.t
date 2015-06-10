@@ -47,7 +47,7 @@ ok 1 - Starting to execute step: the number 11 is even
 not ok 2 - Number 11 is even
 
 #   Failed test 'Number 11 is even'
-#   at $TEST_DIRECTORY/step_definitions/mock_steps.pl line 27.
+#   at $TEST_DIRECTORY/step_definitions/mock_steps.pl line 30.
 1..2
 EOF
 
@@ -58,7 +58,7 @@ ok 1 - Starting to execute step: the number 12 is odd
 not ok 2 - Number 12 is odd
 
 #   Failed test 'Number 12 is odd'
-#   at $TEST_DIRECTORY/step_definitions/mock_steps.pl line 23.
+#   at $TEST_DIRECTORY/step_definitions/mock_steps.pl line 26.
 1..2
 EOF
 

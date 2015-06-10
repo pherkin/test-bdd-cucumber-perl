@@ -386,7 +386,6 @@ sub dispatch {
     my $result;
     {
         # Localize test builder
-        local $Test::Builder::Test = $tb_return->{'builder'};
         local $tester_delegator->{Object} = $tb_return->{'builder'};
 
         # Execute!
