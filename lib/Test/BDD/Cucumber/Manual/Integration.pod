@@ -39,7 +39,9 @@ test-suite. Luckily, this is SUPER easy.
 
  # For each feature found, execute it, using the Harness to print results
  $executor->execute( $_, $harness ) for @features;
- done_testing;
+ 
+ # Shutdown gracefully
+ $harness->shutdown();
 
 =cut
 
