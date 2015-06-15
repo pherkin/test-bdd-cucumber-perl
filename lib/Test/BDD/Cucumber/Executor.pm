@@ -18,10 +18,16 @@ use List::MoreUtils qw/pairwise/;
 use Test::Builder;
 use Number::Range;
 
+use Test::BDD::Cucumber::TestBuilderDelegator;
 use Test::BDD::Cucumber::StepContext;
 use Test::BDD::Cucumber::Util;
 use Test::BDD::Cucumber::Model::Result;
 use Test::BDD::Cucumber::Errors qw/parse_error_from_line/;
+
+my $original_tester = Test::Builder->new();
+my $tester_delegator = Test::BDD::Cucumber::TestBuilderDelegator->new();
+$tester_delegator->{Object} = $original_tester;
+$Test::Builder::Test = $tester_delegator;
 
 =head1 METHODS
 
@@ -380,7 +386,7 @@ sub dispatch {
     my $result;
     {
         # Localize test builder
-        local $Test::Builder::Test = $tb_return->{'builder'};
+        local $tester_delegator->{Object} = $tb_return->{'builder'};
 
         # Execute!
         eval {
