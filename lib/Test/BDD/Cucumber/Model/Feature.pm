@@ -4,7 +4,7 @@ use Moose;
 
 =head1 NAME
 
-Test::BDD::Cucumber::Model::Document - Model to represent a feature file, parsed
+Test::BDD::Cucumber::Model::Feature - Model to represent a feature file, parsed
 
 =head1 DESCRIPTION
 
