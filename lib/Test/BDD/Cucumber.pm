@@ -65,7 +65,7 @@ in the very near future:
 
 =head1 CODE
 
-On Github, of course: L<https://github.com/sheriff/test-bdd-cucumber-perl>.
+On Github, of course: L<https://github.com/pjlsergeant/test-bdd-cucumber-perl>.
 
 =head1 AUTHORS
 

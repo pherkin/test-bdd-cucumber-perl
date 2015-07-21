@@ -13,7 +13,7 @@ use Test::BDD::Cucumber::Parser;
 use Test::BDD::Cucumber::Executor;
 use Test::BDD::Cucumber::Harness::TermColor;
 
-# https://github.com/sheriff/test-bdd-cucumber-perl/issues/40
+# https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/40
 # Incorrect TermColor output for skipped tests
 
 my $feature = Test::BDD::Cucumber::Parser->parse_string( join '', (<DATA>) );
