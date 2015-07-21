@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 
+use Test::BDD::Cucumber::Executor;
 use Test::More;
 
 my @known_harnesses = (

@@ -1,5 +1,8 @@
 -----
-0.35: ??????
+0.35: 21 Jul 2015
+    - Fixed the Test::Builder wrapping issue discussed at:
+        https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/61
+      Output from Test::Exception should now be properly captured.
     - Updated git repository all over the places
 0.34: 21 Apr 2015
     - JSON formatter tests now Win32 compatible

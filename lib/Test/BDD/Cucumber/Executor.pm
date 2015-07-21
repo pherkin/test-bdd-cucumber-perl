@@ -15,8 +15,41 @@ use Moose;
 use Storable qw(dclone);
 use List::Util qw/first/;
 use List::MoreUtils qw/pairwise/;
-use Test::Builder;
 use Number::Range;
+use Carp qw/croak/;
+
+use Test::Builder;
+
+# Setup wrapping for Test::Builder
+use Test::BDD::Cucumber::TestBuilderDelegator;
+use Devel::Refcount qw/refcount/;
+use Devel::FindRef;
+if ( ( !$ENV{'TEST_BDD_CUCUMBER_NO_TB_WRAP_TEST'} )
+    && refcount($Test::Builder::Test) > 1 )
+{
+    my $message =
+      sprintf( <<'END', Devel::FindRef::track($Test::Builder::Test) );
+!!! HEY YOU !!!
+Test::BDD::Cucumber needs to be able to wrap $Test::Builder::Test in order to
+properly capture testing output. However, something else has already taken a
+reference to that module. You need to `use` Test::BDD::Cucumber::Executor
+before the other testing modules are used. Modules that appear to already have a
+reference are:
+-----
+%s
+-----
+You can safetly ignore the global $Test::Builder::Test. In almost all cases, the
+simple fix is the move the line that says `use Test::BDD::Cucumber::Executor`
+above all other `use Test::*` lines. You can also supress this check by setting:
+
+  TEST_BDD_CUCUMBER_NO_TB_WRAP_TEST=1
+END
+
+    croak $message;
+}
+
+$Test::Builder::Test =
+  Test::BDD::Cucumber::TestBuilderDelegator->new( Test::Builder->new() );
 
 use Test::BDD::Cucumber::StepContext;
 use Test::BDD::Cucumber::Util;
@@ -380,7 +413,7 @@ sub dispatch {
     my $result;
     {
         # Localize test builder
-        local $Test::Builder::Test = $tb_return->{'builder'};
+        local $Test::Builder::Test->{'_wraps'} = $tb_return->{'builder'};
 
         # Execute!
         eval {
