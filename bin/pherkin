@@ -34,8 +34,13 @@ Controlling @INC
 
 Output formatting
 
- -o, --output           Output harness to use. Default to 'TermColor'. See 'Outputs'
- -c, --theme            Colour theme for 'TermColor'. `light` or `dark`. Defaults to `dark`
+ -o, --output           Output harness. Defaults to 'TermColor'. See 'Outputs'
+ -c, --theme            Theme for 'TermColor'. `light` or `dark` (default)
+
+Extra Steps
+
+  -s, --steps [path]    Include an extra step file, or directory of step files
+                        (as identified by *_steps.pl; multiple use accepted)
 
 Tag specifications
 
@@ -45,7 +50,7 @@ Tag specifications
 
 Help
 
- -h, --help             Print usage information.
+ -h, -?, --help         Print usage information.
  --i18n LANG            List keywords for a particular language.
                         '--i18n help' lists all languages available.
 

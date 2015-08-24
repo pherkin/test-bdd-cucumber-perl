@@ -15,6 +15,13 @@ Makes loading Step Definition files and Feature files a breeze...
 Accepts a path, and returns a L<Test::BDD::Executor> object with the Step
 Definition files loaded, and a list of L<Test::BDD::Model::Feature> objects.
 
+=head2 load_steps
+
+Accepts an L<Test::BDD::Executor> object and a string representing either a
+step file, or a directory containing zero or more C<*_steps.pl> files, and loads
+the steps in to the executor; if you've used C<load> we'll have already scanned
+the feature directory for C<*_steps.pl> files.
+
 =cut
 
 use strict;
@@ -42,21 +49,33 @@ sub load {
     }
 
     # Load up the steps
-    $executor->add_steps( Test::BDD::Cucumber::StepFile->load($_) )
-      for File::Find::Rule->file()->name('*_steps.pl')->in($dir);
+    $class->load_steps( $executor, $dir );
 
     # Grab the feature files
     my @features = map {
-        my $file = file( $_ );
-        my $feature =
-          Test::BDD::Cucumber::Parser->parse_file( $file, $tag_scheme );
-      } (
+        my $file = file($_);
+        my $feature
+            = Test::BDD::Cucumber::Parser->parse_file( $file, $tag_scheme );
+        } (
         $file
         ? ( $file . '' )
         : File::Find::Rule->file()->name('*.feature')->in($dir)
-      );
+        );
 
     return ( $executor, @features );
+}
+
+sub load_steps {
+    my ( $class, $executor, $path ) = @_;
+
+    if ( -f $path ) {
+        $executor->add_steps( Test::BDD::Cucumber::StepFile->load($path) );
+    } else {
+        $executor->add_steps( Test::BDD::Cucumber::StepFile->load($_) )
+            for File::Find::Rule->file()->name('*_steps.pl')->in($path);
+    }
+
+    return $class;
 }
 
 =head1 AUTHOR

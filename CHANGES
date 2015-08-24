@@ -1,4 +1,6 @@
 -----
+0.37: 24 Aug 2015
+    - Allow specification of extra step files and directories in `pherkin`
 0.36: 24 Aug 2015
     - Don't require Devel::FindRef
 0.35: 21 Jul 2015

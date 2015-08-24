@@ -10,14 +10,15 @@ use Pod::Usage;
 use FindBin qw($RealBin $Script);
 
 use Test::BDD::Cucumber::I18n
-  qw(languages langdef readable_keywords keyword_to_subname);
+    qw(languages langdef readable_keywords keyword_to_subname);
 use Test::BDD::Cucumber::Loader;
 
 use Moose;
+has 'step_paths' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
 has 'tags'       => ( is => 'rw', isa => 'ArrayRef', required => 0 );
 has 'tag_scheme' => ( is => 'rw', isa => 'ArrayRef', required => 0 );
 
-has 'harness'    => ( is => 'rw' );
+has 'harness' => ( is => 'rw' );
 
 =head1 NAME
 
@@ -54,17 +55,21 @@ Returns a L<Test::BDD::Cucumber::Model::Result> object for all steps run.
 sub run {
     my ( $self, @arguments ) = @_;
 
- # localized features will have utf8 in them and options may output utf8 as well
+# localized features will have utf8 in them and options may output utf8 as well
     binmode STDOUT, ':utf8';
 
-    my ( $features_path ) = $self->_process_arguments(@arguments);
+    my ($features_path) = $self->_process_arguments(@arguments);
     $features_path ||= './features/';
 
-    my ( $executor, @features ) =
-      Test::BDD::Cucumber::Loader->load( $features_path, $self->tag_scheme );
+    my ( $executor, @features )
+        = Test::BDD::Cucumber::Loader->load( $features_path,
+        $self->tag_scheme );
     die "No feature files found in $features_path" unless @features;
 
-    return $self->_run_tests($executor, @features);
+    Test::BDD::Cucumber::Loader->load_steps( $executor, $_ )
+        for @{ $self->step_paths };
+
+    return $self->_run_tests( $executor, @features );
 }
 
 sub _run_tests {
@@ -93,7 +98,7 @@ sub _initialize_harness {
     }
 
     eval { use_module($harness_module) }
-      || die "Unable to load harness [$harness_module]: $@";
+        || die "Unable to load harness [$harness_module]: $@";
 
     $self->harness( $harness_module->new() );
 }
@@ -105,17 +110,19 @@ sub _process_arguments {
     # Allow -Ilib, -bl
     Getopt::Long::Configure( 'bundling', 'pass_through' );
 
-    my $includes = [];
-    my $tags     = [];
-    my $help     = 0;
+    my $includes   = [];
+    my $step_paths = [];
+    my $tags       = [];
+    my $help       = 0;
     GetOptions(
         'I=s@'       => \$includes,
         'l|lib'      => \( my $add_lib ),
         'b|blib'     => \( my $add_blib ),
         'o|output=s' => \( my $harness ),
+        's|steps=s@' => \$step_paths,
         't|tags=s@'  => \$tags,
         'i18n=s'     => \( my $i18n ),
-        'h|help'     => \$help,
+        'h|help|?'   => \$help,
     );
 
     pod2usage(
@@ -132,9 +139,12 @@ sub _process_arguments {
     unshift @$includes, 'blib/lib', 'blib/arch' if $add_blib;
 
     # Munge the output harness
-    $self->_initialize_harness($harness || "TermColor");
+    $self->_initialize_harness( $harness || "TermColor" );
 
     lib->import(@$includes) if @$includes;
+
+    # Store any extra step paths
+    $self->step_paths($step_paths);
 
     # Store our TagSpecScheme
     $self->tag_scheme( $self->_process_tags( @{$tags} ) );
@@ -182,13 +192,14 @@ sub _print_languages {
 
     my @languages = languages();
 
-    my $max_code_length = max map { length } @languages;
-    my $max_name_length = max map { length( langdef($_)->{name} ) } @languages;
-    my $max_native_length =
-      max map { length( langdef($_)->{native} ) } @languages;
+    my $max_code_length = max map {length} @languages;
+    my $max_name_length
+        = max map { length( langdef($_)->{name} ) } @languages;
+    my $max_native_length
+        = max map { length( langdef($_)->{native} ) } @languages;
 
-    my $format =
-"| %-${max_code_length}s | %-${max_name_length}s | %-${max_native_length}s |\n";
+    my $format
+        = "| %-${max_code_length}s | %-${max_name_length}s | %-${max_native_length}s |\n";
 
     for my $language ( sort @languages ) {
         my $langdef = langdef($language);
@@ -203,15 +214,15 @@ sub _print_langdef {
     my $langdef = langdef($language);
 
     my @keywords = qw(feature background scenario scenario_outline examples
-      given when then and but);
-    my $max_length =
-      max map { length readable_keywords( $langdef->{$_} ) } @keywords;
+        given when then and but);
+    my $max_length
+        = max map { length readable_keywords( $langdef->{$_} ) } @keywords;
 
     my $format = "| %-16s | %-${max_length}s |\n";
     for my $keyword (
         qw(feature background scenario scenario_outline
         examples given when then and but )
-      )
+        )
     {
         printf $format, $keyword, readable_keywords( $langdef->{$keyword} );
     }
@@ -219,7 +230,7 @@ sub _print_langdef {
     my $codeformat = "| %-16s | %-${max_length}s |\n";
     for my $keyword (qw(given when then )) {
         printf $codeformat, $keyword . ' (code)',
-          readable_keywords( $langdef->{$keyword}, \&keyword_to_subname );
+            readable_keywords( $langdef->{$keyword}, \&keyword_to_subname );
     }
 
     exit;
