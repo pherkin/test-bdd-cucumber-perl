@@ -1,4 +1,6 @@
 -----
+0.36: 24 Aug 2015
+    - Don't require Devel::FindRef
 0.35: 21 Jul 2015
     - Fixed the Test::Builder wrapping issue discussed at:
         https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/61

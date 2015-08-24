@@ -15,6 +15,7 @@ use Moose;
 use Storable qw(dclone);
 use List::Util qw/first/;
 use List::MoreUtils qw/pairwise/;
+use Module::Runtime qw/use_module/;
 use Number::Range;
 use Carp qw/croak/;
 
@@ -23,12 +24,17 @@ use Test::Builder;
 # Setup wrapping for Test::Builder
 use Test::BDD::Cucumber::TestBuilderDelegator;
 use Devel::Refcount qw/refcount/;
-use Devel::FindRef;
 if ( ( !$ENV{'TEST_BDD_CUCUMBER_NO_TB_WRAP_TEST'} )
     && refcount($Test::Builder::Test) > 1 )
 {
+
+    my $ref_trace = "[Install Devel::FindRef to see these diagnostics]";
+    if ( eval { use_module "Devel::FindRef" } ) {
+        $ref_trace = Devel::FindRef::track($Test::Builder::Test);
+    }
+
     my $message =
-      sprintf( <<'END', Devel::FindRef::track($Test::Builder::Test) );
+      sprintf( <<'END', $ref_trace );
 !!! HEY YOU !!!
 Test::BDD::Cucumber needs to be able to wrap $Test::Builder::Test in order to
 properly capture testing output. However, something else has already taken a
