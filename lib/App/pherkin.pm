@@ -141,7 +141,7 @@ sub _process_arguments {
     # Munge the output harness
     $self->_initialize_harness( $harness || "TermColor" );
 
-    lib->import(@$includes) if @$includes;
+    use_module('lib')->import(@$includes) if @$includes;
 
     # Store any extra step paths
     $self->step_paths($step_paths);
