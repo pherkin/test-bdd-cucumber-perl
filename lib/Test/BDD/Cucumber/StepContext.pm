@@ -280,7 +280,7 @@ I<StepContext>, using the C<dispatch()> method. For example:
 
   Given qr/I have entered (\d+)/, sub {
         C->dispatch( 'Given', "I have pressed $1");
-        C->dispatch( 'Given', "I have pressed enter");
+        C->dispatch( 'Given', "I have pressed enter", { some => 'data' } );
   };
 
 You redispatch step will have its own, new step context with almost everything
@@ -297,12 +297,9 @@ If the step you dispatch to doesn't pass for any reason (can't be found, dies,
 fails, whatever), it'll throw an exception. This will get caught by the parent
 step, which will then fail, and show debugging output.
 
-B<You must use the English names for the step verb, and you have no access to
-
-
-, and remember to quote them
-as if you're in a step file, there may be a subroutine defined with the same
-name. This>.
+B<You must use the English names for the step verb, because we have no access to
+the parser. Also, remember to quote them as if you're in a step file, there may
+be a subroutine defined with the same name.>
 
 =head2 dispatch
 
