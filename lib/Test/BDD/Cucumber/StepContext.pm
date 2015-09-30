@@ -74,10 +74,16 @@ objects respectively.
 
 =cut
 
-has 'feature' =>
-  ( is => 'ro', required => 1, isa => 'Test::BDD::Cucumber::Model::Feature' );
-has 'scenario' =>
-  ( is => 'ro', required => 1, isa => 'Test::BDD::Cucumber::Model::Scenario' );
+has 'feature' => (
+    is       => 'ro',
+    required => 1,
+    isa      => 'Test::BDD::Cucumber::Model::Feature'
+);
+has 'scenario' => (
+    is       => 'ro',
+    required => 1,
+    isa      => 'Test::BDD::Cucumber::Model::Scenario'
+);
 has 'step' =>
   ( is => 'ro', required => 0, isa => 'Test::BDD::Cucumber::Model::Step' );
 
