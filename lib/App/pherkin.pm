@@ -11,7 +11,7 @@ use Pod::Usage;
 use FindBin qw($RealBin $Script);
 
 use Test::BDD::Cucumber::I18n
-    qw(languages langdef readable_keywords keyword_to_subname);
+  qw(languages langdef readable_keywords keyword_to_subname);
 use Test::BDD::Cucumber::Loader;
 
 use Moose;
@@ -56,19 +56,18 @@ Returns a L<Test::BDD::Cucumber::Model::Result> object for all steps run.
 sub run {
     my ( $self, @arguments ) = @_;
 
-# localized features will have utf8 in them and options may output utf8 as well
+ # localized features will have utf8 in them and options may output utf8 as well
     binmode STDOUT, ':utf8';
 
     my ($features_path) = $self->_process_arguments(@arguments);
     $features_path ||= './features/';
 
-    my ( $executor, @features )
-        = Test::BDD::Cucumber::Loader->load( $features_path,
-        $self->tag_scheme );
+    my ( $executor, @features ) =
+      Test::BDD::Cucumber::Loader->load( $features_path, $self->tag_scheme );
     die "No feature files found in $features_path" unless @features;
 
     Test::BDD::Cucumber::Loader->load_steps( $executor, $_ )
-        for @{ $self->step_paths };
+      for @{ $self->step_paths };
 
     return $self->_run_tests( $executor, @features );
 }
@@ -99,7 +98,7 @@ sub _initialize_harness {
     }
 
     eval { use_module($harness_module) }
-        || die "Unable to load harness [$harness_module]: $@";
+      || die "Unable to load harness [$harness_module]: $@";
 
     $self->harness( $harness_module->new() );
 }
@@ -192,14 +191,14 @@ sub _print_languages {
 
     my @languages = languages();
 
-    my $max_code_length = max map {length} @languages;
-    my $max_name_length
-        = max map { length( langdef($_)->{name} ) } @languages;
-    my $max_native_length
-        = max map { length( langdef($_)->{native} ) } @languages;
+    my $max_code_length = max map { length } @languages;
+    my $max_name_length =
+      max map { length( langdef($_)->{name} ) } @languages;
+    my $max_native_length =
+      max map { length( langdef($_)->{native} ) } @languages;
 
-    my $format
-        = "| %-${max_code_length}s | %-${max_name_length}s | %-${max_native_length}s |\n";
+    my $format =
+"| %-${max_code_length}s | %-${max_name_length}s | %-${max_native_length}s |\n";
 
     for my $language ( sort @languages ) {
         my $langdef = langdef($language);
@@ -214,15 +213,15 @@ sub _print_langdef {
     my $langdef = langdef($language);
 
     my @keywords = qw(feature background scenario scenario_outline examples
-        given when then and but);
-    my $max_length
-        = max map { length readable_keywords( $langdef->{$_} ) } @keywords;
+      given when then and but);
+    my $max_length =
+      max map { length readable_keywords( $langdef->{$_} ) } @keywords;
 
     my $format = "| %-16s | %-${max_length}s |\n";
     for my $keyword (
         qw(feature background scenario scenario_outline
         examples given when then and but )
-        )
+      )
     {
         printf $format, $keyword, readable_keywords( $langdef->{$keyword} );
     }
@@ -230,7 +229,7 @@ sub _print_langdef {
     my $codeformat = "| %-16s | %-${max_length}s |\n";
     for my $keyword (qw(given when then )) {
         printf $codeformat, $keyword . ' (code)',
-            readable_keywords( $langdef->{$keyword}, \&keyword_to_subname );
+          readable_keywords( $langdef->{$keyword}, \&keyword_to_subname );
     }
 
     exit;

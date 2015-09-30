@@ -78,6 +78,20 @@ locations of consolidated matches, for highlighting.
 sub step { my ( $self, $context ) = @_; }
 sub step_done { my ( $self, $context, $result ) = @_; }
 
+=head2 sub_step
+
+=head2 sub_step_done
+
+As per C<step> and C<step_done>, but for steps that have been called from other
+steps. None of the included harnesses respond to these methods, because
+generally the whole thing should be transparent, and the parent step handles
+passes, failures, etc.
+
+=cut
+
+sub sub_step { my ( $self, $context ) = @_; }
+sub sub_step_done { my ( $self, $context, $result ) = @_; }
+
 =head2 startup
 
 =head2 shutdown

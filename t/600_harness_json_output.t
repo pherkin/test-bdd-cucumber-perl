@@ -12,9 +12,9 @@ use JSON::MaybeXS 'decode_json';
 use Test::BDD::Cucumber::Harness::JSON;
 use Test::BDD::Cucumber::Loader;
 
-my $DIGEST_DIR          = dir(qw/ examples tagged-digest /);
-my $DIGEST_FEATURE_FILE = $DIGEST_DIR->file(qw/ features basic.feature /);
-my $DIGEST_FEATURE_FILE_RE = quotemeta( $DIGEST_FEATURE_FILE );
+my $DIGEST_DIR             = dir(qw/ examples tagged-digest /);
+my $DIGEST_FEATURE_FILE    = $DIGEST_DIR->file(qw/ features basic.feature /);
+my $DIGEST_FEATURE_FILE_RE = quotemeta($DIGEST_FEATURE_FILE);
 
 sub get_line_number {
     my ( $filename, $regexp ) = @_;
@@ -66,12 +66,13 @@ is_deeply(
 my %json_feature = %{ $parsed_json->[0] };
 is( $json_feature{keyword}, 'Feature', 'feature keyword' );
 is( $json_feature{name}, 'Simple tests of Digest.pm', 'feature name' );
-like( $json_feature{id},
+like(
+    $json_feature{id},
     qr{$DIGEST_FEATURE_FILE_RE:\d+$},
     'feature id matches a line in ' . $DIGEST_FEATURE_FILE
 );
-is( $json_feature{id}, $second_run_json->[0]{id}, "Feature ID is stable" );
-is( $json_feature{uri}, $DIGEST_FEATURE_FILE, 'feature uri' );
+is( $json_feature{id},  $second_run_json->[0]{id}, "Feature ID is stable" );
+is( $json_feature{uri}, $DIGEST_FEATURE_FILE,      'feature uri' );
 is(
     $json_feature{line},
     get_line_number( $json_feature{uri}, 'Feature: Simple tests of Digest.pm' ),
@@ -103,11 +104,13 @@ is_deeply(
 my %json_scenario = %{ $json_feature{elements}[2] };
 is( $json_scenario{keyword}, 'Scenario',    'scenario keyword' );
 is( $json_scenario{name},    'Check SHA-1', 'scenario name' );
-like( $json_scenario{id},
+like(
+    $json_scenario{id},
     qr{^$DIGEST_FEATURE_FILE_RE:\d+$},
     'scenario id matches a line in ' . $DIGEST_FEATURE_FILE
 );
-is( $json_scenario{id},
+is(
+    $json_scenario{id},
     $second_run_json->[0]{elements}[2]{id},
     "Scenario ID is stable"
 );

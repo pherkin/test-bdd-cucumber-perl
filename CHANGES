@@ -1,4 +1,6 @@
 -----
+0.40: 02 Jan 2016
+    - Step redispatching
 0.39: 25 Oct 2015
     - Proper support for Test::Builder's BAIL_OUT() added
 0.38: 25 Oct 2015

@@ -68,38 +68,50 @@ in the private attribute C<_themes>, and currently include `light` and `dark`
 
 =cut
 
-has theme => ( 'is' => 'ro', isa => 'Str', lazy => 1, default => sub {
-	my $theme = 'dark';
-	Getopt::Long::Configure('pass_through');
-	GetOptions ("c|theme=s" => \$theme);
-	return($theme);
-} );
+has theme => (
+    'is'    => 'ro',
+    isa     => 'Str',
+    lazy    => 1,
+    default => sub {
+        my $theme = 'dark';
+        Getopt::Long::Configure('pass_through');
+        GetOptions( "c|theme=s" => \$theme );
+        return ($theme);
+    }
+);
 
-has _themes => ( is => 'ro', isa => 'HashRef[HashRef]', lazy => 1, default => sub {{
-	dark => {
-		'feature' => 'bright_white',
-		'scenario' => 'bright_white',
-		'scenario_name' => 'bright_blue',
-		'pending' => 'yellow',
-		'passing' => 'green',
-		'failed' => 'red',
-		'step_data' => 'bright_cyan',
-	},
-	light => {
-		'feature' => 'reset',
-		'scenario' => 'black',
-		'scenario_name' => 'blue',
-		'pending' => 'yellow',
-		'passing' => 'green',
-		'failed' => 'red',
-		'step_data' => 'magenta',
-	},
-}} );
+has _themes => (
+    is      => 'ro',
+    isa     => 'HashRef[HashRef]',
+    lazy    => 1,
+    default => sub {
+        {
+            dark => {
+                'feature'       => 'bright_white',
+                'scenario'      => 'bright_white',
+                'scenario_name' => 'bright_blue',
+                'pending'       => 'yellow',
+                'passing'       => 'green',
+                'failed'        => 'red',
+                'step_data'     => 'bright_cyan',
+            },
+            light => {
+                'feature'       => 'reset',
+                'scenario'      => 'black',
+                'scenario_name' => 'blue',
+                'pending'       => 'yellow',
+                'passing'       => 'green',
+                'failed'        => 'red',
+                'step_data'     => 'magenta',
+            },
+        };
+    }
+);
 
 sub _colors {
     my $self = shift;
-    return $self->_themes->{ $self->theme } ||
-        die('Unknown color theme [' . $self->theme . ']');
+    return $self->_themes->{ $self->theme }
+      || die( 'Unknown color theme [' . $self->theme . ']' );
 }
 
 my $margin = 2;
@@ -140,8 +152,10 @@ sub feature_done {
 
 sub scenario {
     my ( $self, $scenario, $dataset, $longest ) = @_;
-    my $text = "Scenario: " . color($self->_colors->{'scenario_name'})
-        .( $scenario->name || '' );
+    my $text =
+        "Scenario: "
+      . color( $self->_colors->{'scenario_name'} )
+      . ( $scenario->name || '' );
 
     $self->_display(
         {
@@ -176,8 +190,8 @@ sub step_done {
     } elsif ( $status eq 'passing' ) {
         $color = $self->_colors->{'passing'};
     } else {
-	$failed = 1;
-        $color = $self->_colors->{'failed'};
+        $failed    = 1;
+        $color     = $self->_colors->{'failed'};
         $follow_up = [ split( /\n/, $result->{'output'} ) ];
 
         if ( !$context->is_hook ) {

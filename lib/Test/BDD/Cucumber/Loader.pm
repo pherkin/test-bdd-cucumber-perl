@@ -54,13 +54,13 @@ sub load {
     # Grab the feature files
     my @features = map {
         my $file = file($_);
-        my $feature
-            = Test::BDD::Cucumber::Parser->parse_file( $file, $tag_scheme );
-        } (
+        my $feature =
+          Test::BDD::Cucumber::Parser->parse_file( $file, $tag_scheme );
+      } (
         $file
         ? ( $file . '' )
         : File::Find::Rule->file()->name('*.feature')->in($dir)
-        );
+      );
 
     return ( $executor, @features );
 }
@@ -72,7 +72,7 @@ sub load_steps {
         $executor->add_steps( Test::BDD::Cucumber::StepFile->load($path) );
     } else {
         $executor->add_steps( Test::BDD::Cucumber::StepFile->load($_) )
-            for File::Find::Rule->file()->name('*_steps.pl')->in($path);
+          for File::Find::Rule->file()->name('*_steps.pl')->in($path);
     }
 
     return $class;
