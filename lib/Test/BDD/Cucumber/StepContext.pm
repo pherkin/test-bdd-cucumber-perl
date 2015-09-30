@@ -43,7 +43,7 @@ See the C<data> method below.
 =cut
 
 has '_data' =>
-  ( is => 'ro', isa => 'Str|ArrayRef', init_arg => 'data', default => '' );
+    ( is => 'ro', isa => 'Str|ArrayRef', init_arg => 'data', default => '' );
 
 =head2 stash
 
@@ -85,7 +85,7 @@ has 'scenario' => (
     isa      => 'Test::BDD::Cucumber::Model::Scenario'
 );
 has 'step' =>
-  ( is => 'ro', required => 0, isa => 'Test::BDD::Cucumber::Model::Step' );
+    ( is => 'ro', required => 0, isa => 'Test::BDD::Cucumber::Model::Step' );
 
 =head2 verb
 
@@ -111,7 +111,21 @@ The L<Test::BDD::Cucumber::Harness> harness being used by the executor.
 =cut
 
 has 'harness' =>
-  ( is => 'ro', required => 1, isa => 'Test::BDD::Cucumber::Harness' );
+    ( is => 'ro', required => 1, isa => 'Test::BDD::Cucumber::Harness' );
+
+=head2 executor
+
+Weak reference to the L<Test::BDD::Cucumber::Executor> being used - this allows
+for step redispatch.
+
+=cut
+
+has 'executor' => (
+    is       => 'ro',
+    required => 1,
+    isa      => 'Test::BDD::Cucumber::Executor',
+    weak_ref => 1
+);
 
 =head2 matches
 
@@ -128,7 +142,7 @@ has '_matches' => (
 );
 
 has 'transformers' =>
-  ( is => 'ro', isa => 'ArrayRef', predicate => 'has_transformers', );
+    ( is => 'ro', isa => 'ArrayRef', predicate => 'has_transformers', );
 
 has '_transformed_matches' => (
     is      => 'ro',
@@ -154,7 +168,16 @@ this step which is actually an internal hook, i.e. a Before or After step
 =cut
 
 has 'is_hook' =>
-  ( is => 'ro', isa => 'Bool', lazy => 1, builder => '_build_is_hook' );
+    ( is => 'ro', isa => 'Bool', lazy => 1, builder => '_build_is_hook' );
+
+=head2 parent
+
+If a step redispatches to another step, the child step will have a link back to
+its parent step here; otherwise undef. See L</Redispatching>.
+
+=cut
+
+has 'parent' => ( is => 'ro', isa => 'Test::BDD::Cucumber::StepContext' );
 
 =head1 METHODS
 
@@ -221,7 +244,7 @@ sub transform {
 
     defined $value or return $value;
 
-  TRANSFORM:
+TRANSFORM:
     for my $transformer ( @{ $self->transformers } ) {
 
         # turn off this warning so undef can be set in the following regex
@@ -231,16 +254,15 @@ sub transform {
         # and puts any matches into $1, $2, etc.
         # and calls the Transform step
 
-        # also, if the transformer code ref returns undef, this will be coerced
-        # into an empty string, so need to mark it as something else
-        # and then turn it into proper undef
+       # also, if the transformer code ref returns undef, this will be coerced
+       # into an empty string, so need to mark it as something else
+       # and then turn it into proper undef
 
-        if (
-            $value =~ s/$transformer->[0]/
+        if ($value =~ s/$transformer->[0]/
                 my $value = $transformer->[1]->( $self );
                 defined $value ? $value : '__UNDEF__'
             /e
-          )
+            )
         {
             # if we matched then stop processing this match
             return $value eq '__UNDEF__' ? undef : $value;
@@ -249,6 +271,101 @@ sub transform {
 
     # if we're here, the value will be returned unchanged
     return $value;
+}
+
+=head1 Redispatching
+
+Sometimes you want to call one step from another step. You can do this via the
+I<StepContext>, using the C<dispatch()> method. For example:
+
+  Given qr/I have entered (\d+)/, sub {
+        C->dispatch( 'Given', "I have pressed $1");
+        C->dispatch( 'Given', "I have pressed enter");
+  };
+
+You redispatch step will have its own, new step context with almost everything
+copied from the parent step context. However, specifically not copied are:
+C<columns>, C<data>, the C<step> object, and of course the C<verb> and the
+C<text>.
+
+If you want to pass data to your child step, you should IDEALLY do it via the
+text of the step itself, or failing that, through the scenario-level stash.
+Otherwise it'd make more sense just to be calling some subroutine... But you
+B<can> pass in a third argument - a hashref which will be used as C<data>.
+
+If the step you dispatch to doesn't pass for any reason (can't be found, dies,
+fails, whatever), it'll throw an exception. This will get caught by the parent
+step, which will then fail, and show debugging output.
+
+B<You must use the English names for the step verb, and you have no access to
+
+
+, and remember to quote them
+as if you're in a step file, there may be a subroutine defined with the same
+name. This>.
+
+=head2 dispatch
+
+    C->dispatch( 'Then', "the page has loaded successfully");
+
+See the paragraphs immediately above this
+
+=cut
+
+sub dispatch {
+    my ( $self, $verb, $text, $data ) = @_;
+
+    my $step = Test::BDD::Cucumber::Model::Step->new(
+        {   text => $text,
+            verb => $verb,
+            line => Test::BDD::Cucumber::Model::Line->new(
+                {   number      => $self->step->line->number,
+                    raw_content => "[Redispatched step: $verb $text]",
+                    document    => $self->step->line->document,
+                }
+            ),
+        }
+    );
+
+    my $columns;
+    if ($data) {
+        if ( ref $data eq 'HASH' ) {
+            $columns = [ sort keys %$data ];
+        }
+    }
+
+    my $new_context = $self->new(
+        {   executor => $self->executor,
+            ( $data    ? ( _data   => $data )    : () ),
+            ( $columns ? ( columns => $columns ) : () ),
+            stash => {
+                feature  => $self->stash->{'feature'},
+                scenario => $self->stash->{'scenario'},
+                step     => {},
+            },
+            feature      => $self->feature,
+            scenario     => $self->scenario,
+            harness      => $self->harness,
+            transformers => $self->transformers,
+
+            step => $step,
+            verb => lc($verb),
+            text => $text,
+        }
+    );
+
+    my $result = $self->executor->find_and_dispatch( $new_context, 0, 1 );
+
+    # If it didn't pass, short-circuit the rest
+    unless ( $result->result eq 'passing' ) {
+        my $error = "Redispatched step didn't pass:\n";
+        $error .= "\tStatus: " . $result->result . "\n";
+        $error .= "\tOutput: " . $result->output . "\n";
+        $error .= "Failure to redispatch a step causes the parent to fail\n";
+        die $error;
+    }
+
+    return $result;
 }
 
 # the builder for the is_hook attribute
@@ -295,8 +412,8 @@ sub _build_transformed_data {
         # table:column1,column2,column3
         my $table_text = 'table:' . join( ',', @{ $self->columns } );
 
-        if ( my $transformer =
-            first { $table_text =~ $_->[0] } @{ $self->transformers } )
+        if ( my $transformer
+            = first { $table_text =~ $_->[0] } @{ $self->transformers } )
         {
             # call the Transform step
             $transformer->[1]->( $self, $transformed_data );

@@ -17,7 +17,8 @@ After sub {
 
     # a bit contrived, as garbage collection would clear it out
     delete $c->stash->{'scenario'}->{'Calculator'};
-    ok( not exists $c->stash->{'scenario'}->{'Calculator'} );
+    ok( ( not exists $c->stash->{'scenario'}->{'Calculator'} ),
+        "Calculator cleaned up" );
 };
 
 my %numbers_as_words = (
@@ -30,8 +31,8 @@ my %numbers_as_words = (
 sub map_word_to_number {
     my $word = shift;
 
-    ok($word);
-    ok( exists $numbers_as_words{$word} );
+    ok( $word,                           "Passed in a word to map [$word]" );
+    ok( exists $numbers_as_words{$word}, "Mapping found" );
 
     return $numbers_as_words{$word};
 }
@@ -65,15 +66,15 @@ Given 'having successfully performed the following calculations', sub {
     my $calculator = S->{'Calculator'};
 
     for my $row ( @{ C->data } ) {
-        $calculator->key_in( $row->{'first'} );
-        $calculator->key_in( $row->{'operator'} );
-        $calculator->key_in( $row->{'second'} );
-        $calculator->press('=');
+        C->dispatch( 'Given', 'having keyed ' . $row->{'first'} );
+        C->dispatch( 'Given', 'having keyed ' . $row->{'operator'} );
+        C->dispatch( 'Given', 'having keyed ' . $row->{'second'} );
+        C->dispatch( 'Given', 'having pressed =' );
 
         is( $calculator->display, $row->{'result'},
-                $row->{'first'} . ' '
-              . $row->{'operator'} . ' '
-              . $row->{'second'} );
+                  $row->{'first'} . ' '
+                . $row->{'operator'} . ' '
+                . $row->{'second'} );
     }
 };
 
@@ -90,5 +91,6 @@ Given 'having added these numbers', sub {
 
 Then qr/^the display should show (.+)/, sub {
     my ($value) = @{ C->matches };
-    is( S->{'Calculator'}->display, $value, "Calculator display as expected" );
+    is( S->{'Calculator'}->display, $value,
+        "Calculator display as expected" );
 };
