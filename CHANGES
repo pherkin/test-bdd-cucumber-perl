@@ -1,4 +1,6 @@
 -----
+0.39: 25 Oct 2015
+    - Proper support for Test::Builder's BAIL_OUT() added
 0.38: 25 Oct 2015
     - Fixed error message when fail_skip is set on Test::Builder harness
     - Made pherkin -I work again
