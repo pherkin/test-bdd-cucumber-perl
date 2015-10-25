@@ -1,4 +1,7 @@
 -----
+0.38: 25 Oct 2015
+    - Fixed error message when fail_skip is set on Test::Builder harness
+    - Made pherkin -I work again
 0.37: 24 Aug 2015
     - Allow specification of extra step files and directories in `pherkin`
 0.36: 24 Aug 2015

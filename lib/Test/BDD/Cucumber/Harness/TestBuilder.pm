@@ -9,6 +9,12 @@ Test::BDD::Cucumber::Harness::TestBuilder - Pipes step output via Test::Builder
 A L<Test::BDD::Cucumber::Harness> subclass whose output is sent to
 L<Test::Builder>.
 
+=head1 OPTIONS
+
+=head2 fail_skip
+
+Boolean - makes tests with no matcher fail
+
 =cut
 
 use strict;
@@ -60,7 +66,11 @@ sub step_done {
 
     if ( $status eq 'undefined' || $status eq 'pending' ) {
         if ( $self->fail_skip ) {
-            fail("No matcher for: $step_name");
+            if ( $status eq 'undefined' ) {
+                fail("No matcher for: $step_name");
+            } else {
+                fail("Test skipped due to failure in previous step");
+            }
             $self->_note_step_data($step);
         } else {
           TODO: { todo_skip $step_name, 1 }

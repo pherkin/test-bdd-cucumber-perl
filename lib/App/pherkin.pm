@@ -3,6 +3,7 @@ package App::pherkin;
 use strict;
 use warnings;
 
+use lib;
 use Getopt::Long;
 use Module::Runtime qw(use_module);
 use List::Util qw(max);
@@ -140,8 +141,7 @@ sub _process_arguments {
 
     # Munge the output harness
     $self->_initialize_harness( $harness || "TermColor" );
-
-    lib->import(@$includes) if @$includes;
+    lib->import( @$includes );
 
     # Store any extra step paths
     $self->step_paths($step_paths);
