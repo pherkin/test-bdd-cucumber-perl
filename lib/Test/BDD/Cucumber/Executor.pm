@@ -205,6 +205,7 @@ sub execute_scenario {
     my $scenario_stash = $incoming_scenario_stash || {};
 
     my %context_defaults = (
+        executor => $self,    # Held weakly by StepContext
 
         # Data portion
         data  => '',
@@ -239,7 +240,7 @@ sub execute_scenario {
                     { %context_defaults, verb => 'before', } );
 
                 my $result = $self->dispatch( $context, $before_step,
-                    $outline_stash->{'short_circuit'} );
+                    $outline_stash->{'short_circuit'}, 0 );
 
                 # If it didn't pass, short-circuit the rest
                 unless ( $result->result eq 'passing' ) {
@@ -287,7 +288,7 @@ sub execute_scenario {
             );
 
             my $result = $self->find_and_dispatch( $context,
-                $outline_stash->{'short_circuit'} );
+                $outline_stash->{'short_circuit'}, 0 );
 
             # If it didn't pass, short-circuit the rest
             unless ( $result->result eq 'passing' ) {
@@ -304,7 +305,7 @@ sub execute_scenario {
                     { %context_defaults, verb => 'after', } );
 
                 # All After steps should happen, to ensure cleanup
-                my $result = $self->dispatch( $context, $after_step, 0 );
+                my $result = $self->dispatch( $context, $after_step, 0, 0 );
             }
         }
 
@@ -338,16 +339,17 @@ the steps that have been added to the executor object, executing against the
 first matching one.
 
 You can also pass in a boolean 'short-circuit' flag if the Scenario's remaining
-steps should be skipped.
+steps should be skipped, and a boolean flag to denote if it's a redispatched
+step.
 
 =cut
 
 sub find_and_dispatch {
-    my ( $self, $context, $short_circuit ) = @_;
+    my ( $self, $context, $short_circuit, $redispatch ) = @_;
 
     # Short-circuit if we need to
     return $self->skip_step( $context, 'pending',
-        "Short-circuited from previous tests" )
+        "Short-circuited from previous tests", 0 )
         if $short_circuit;
 
     # Try and find a matching step
@@ -356,13 +358,17 @@ sub find_and_dispatch {
         @{ $self->{'steps'}->{'step'} || [] };
 
     # Deal with the simple case of no-match first of all
-    return $self->skip_step( $context, 'undefined',
-              "No matching step definition for: "
+    unless ($step) {
+        my $message
+            = "No matching step definition for: "
             . $context->verb . ' '
-            . $context->text )
-        unless $step;
+            . $context->text;
+        my $result = $self->skip_step( $context, 'undefined',
+            $message, $redispatch );
+        return $result;
+    }
 
-    return $self->dispatch( $context, $step, 0 );
+    return $self->dispatch( $context, $step, 0, $redispatch );
 }
 
 =head2 dispatch
@@ -376,16 +382,17 @@ steps should be skipped.
 =cut
 
 sub dispatch {
-    my ( $self, $context, $step, $short_circuit ) = @_;
+    my ( $self, $context, $step, $short_circuit, $redispatch ) = @_;
 
     return $self->skip_step( $context, 'pending',
-        "Short-circuited from previous tests" )
+        "Short-circuited from previous tests", $redispatch )
         if $short_circuit;
 
     # Execute the step definition
     my ( $regular_expression, $coderef ) = @$step;
 
-  # Setup what we'll pass to step_done, with out localized Test::Builder stuff
+    # Setup what we'll pass to step_done, with out localized Test::Builder
+    # stuff
     my $output    = '';
     my $tb_return = {
         output  => \$output,
@@ -401,8 +408,11 @@ sub dispatch {
     $tb_return->{'builder'}
         ->ok( 1, "Starting to execute step: " . $context->text );
 
+    my $step_name = $redispatch ? 'sub_step' : 'step';
+    my $step_done_name = $step_name . '_done';
+
     # Say we're about to start it up
-    $context->harness->step($context);
+    $context->harness->$step_name($context);
 
     # Store the string position of matches for highlighting
     my @match_locations;
@@ -471,8 +481,8 @@ sub dispatch {
     # Say the step is done, and return the result. Happens outside
     # the above block so that we don't have the localized harness
     # anymore...
-    $context->harness->add_result($result);
-    $context->harness->step_done( $context, $result, \@clean_matches );
+    $context->harness->add_result($result) unless $redispatch;
+    $context->harness->$step_done_name( $context, $result, \@clean_matches );
     return $result;
 }
 
@@ -575,10 +585,13 @@ Harness's step start and step_done methods, and returns a skipped-test result.
 =cut
 
 sub skip_step {
-    my ( $self, $context, $type, $reason ) = @_;
+    my ( $self, $context, $type, $reason, $redispatch ) = @_;
+
+    my $step_name = $redispatch ? 'sub_step' : 'step';
+    my $step_done_name = $step_name . '_done';
 
     # Pretend to start step execution
-    $context->harness->step($context);
+    $context->harness->$step_name($context);
 
     # Create a result object
     my $result = Test::BDD::Cucumber::Model::Result->new(
@@ -588,8 +601,8 @@ sub skip_step {
     );
 
     # Pretend we executed it
-    $context->harness->add_result($result);
-    $context->harness->step_done( $context, $result );
+    $context->harness->add_result($result) unless $redispatch;
+    $context->harness->$step_done_name( $context, $result );
     return $result;
 }
 
