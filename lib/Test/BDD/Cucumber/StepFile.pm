@@ -87,7 +87,7 @@ for my $language ( languages() ) {
     _alias_function( $langdef->{when},  \&_When );
     _alias_function( $langdef->{then},  \&_Then );
 
-    # Hm ... in cucumber, all step definining keywords are the same.
+    # Hm ... in cucumber, all step defining keywords are the same.
     # Here, the parser replaces 'and' and 'but' with the last verb. Tricky ...
     #    _alias_function( $langdef->{and}, \&And);
     #    _alias_function( $langdef->{but}, \&But);

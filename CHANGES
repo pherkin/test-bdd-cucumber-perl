@@ -86,7 +86,7 @@
     - The scenario stash wasn't being reset between each Outline Scenario
         execution.
 0.16: 01 Dec 2013
-    - Default behaviour from pherkin is to supress colours when outputting
+    - Default behaviour from pherkin is to suppress colours when outputting
         to not a tty; thanks (for this, and much of the stuff in 0.15) to
         rjp: https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/11
     - Try and use Win32::Console::ANSI if on Windows
