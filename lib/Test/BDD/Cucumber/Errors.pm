@@ -59,7 +59,7 @@ sub parse_error_from_line {
     # Get the caller data
     my ( $caller_filename, $caller_line ) = ( caller() )[ 1, 2 ];
 
-    # Get the simplistic filename and line number it occured on
+    # Get the simplistic filename and line number it occurred on
     my $feature_filename = $line->document->filename || "(no filename)";
     my $feature_line = $line->number;
 

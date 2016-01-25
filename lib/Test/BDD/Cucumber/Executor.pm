@@ -46,7 +46,7 @@ reference are:
 -----
 You can safetly ignore the global $Test::Builder::Test. In almost all cases, the
 simple fix is the move the line that says `use Test::BDD::Cucumber::Executor`
-above all other `use Test::*` lines. You can also supress this check by setting:
+above all other `use Test::*` lines. You can also suppress this check by setting:
 
   TEST_BDD_CUCUMBER_NO_TB_WRAP_TEST=1
 END
@@ -404,7 +404,7 @@ sub dispatch {
     $tb_return->{'builder'}->failure_output( \$output );
     $tb_return->{'builder'}->todo_output( \$output );
 
-    # Make a minumum pass
+    # Make a minimum pass
     $tb_return->{'builder'}
         ->ok( 1, "Starting to execute step: " . $context->text );
 
@@ -442,7 +442,7 @@ sub dispatch {
         };
 
         # Take a copy of this. Turns out actually matching against it
-        # directly causes all sorts of weird-ass eisenbugs which mst has
+        # directly causes all sorts of weird-ass heisenbugs which mst has
         # promised to investigate.
         my $text = $context->text;
 
