@@ -103,11 +103,11 @@ sub post_step { return; }
 
 =head1 AUTHOR
 
-Peter Sergeant C<pete@clueball.com>
+Erik Huelsmann C<ehuels@gmail.com>
 
 =head1 LICENSE
 
-Copyright 2016, Peter Sergeant; Licensed under the same terms as Perl
+Copyright 2016, Erik Huelsmann; Licensed under the same terms as Perl
 
 =cut
 
