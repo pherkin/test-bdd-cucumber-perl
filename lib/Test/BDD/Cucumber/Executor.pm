@@ -173,7 +173,8 @@ sub execute {
             }
         );
     }
-    $_->post_feature($feature, $feature_stash, 'no') for @{ $self->extensions };
+    $_->post_feature($feature, $feature_stash, 'no')
+        for reverse @{ $self->extensions };
 
     $harness->feature_done($feature);
 }
@@ -335,7 +336,7 @@ sub execute_scenario {
             }
             $_->post_scenario($outline, $feature_stash, $scenario_stash,
                               $outline_stash->{'short_circuit'})
-                for @{ $self->extensions };
+                for reverse @{ $self->extensions };
             
         }
 
@@ -402,7 +403,7 @@ sub find_and_dispatch {
         for @{ $self->extensions };
     my $result = $self->dispatch( $context, $step, 0, $redispatch );
     $_->post_step($step, $context, $result eq 'passing')
-        for @{ $self->extensions };
+        for reverse @{ $self->extensions };
     return $result;
 }
 
