@@ -1,6 +1,6 @@
 #!perl
 
-package Test::CucumberExtension;
+package Test::CucumberExtensionCount;
 
 use Moose;
 use Test::BDD::Cucumber::Extension;

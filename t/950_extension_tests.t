@@ -10,7 +10,8 @@ use Test::BDD::Cucumber::Parser;
 use Test::BDD::Cucumber::Executor;
 use Test::BDD::Cucumber::Harness::Data;
 
-use Test::CucumberExtension;
+use Test::CucumberExtensionCount;
+use Test::CucumberExtensionPush;
 
 
 my $executor = Test::BDD::Cucumber::Executor->new();
@@ -39,7 +40,7 @@ Feature: Test Feature
 HEREDOC
 );
 
-my $extension = Test::CucumberExtension->new();
+my $extension = Test::CucumberExtensionCount->new();
 $executor = Test::BDD::Cucumber::Executor->new();
 $executor->add_steps(
     [ Given => qr/a passing step called '(.+)'/, sub { 1; } ],
@@ -59,5 +60,34 @@ is_deeply($extension->counts,
               pre_step => 2, # background step and scenario step
               post_step => 2,
           }, "Hooks called the expected number of times");
+
+
+# test nesting/unrolling of multiple extensions
+
+my $hash = {};
+
+$executor = Test::BDD::Cucumber::Executor->new();
+$executor->add_steps(
+    [ Given => qr/a passing step called '(.+)'/, sub { 1; } ],
+);
+$executor->add_extensions(
+    Test::CucumberExtensionPush->new(id => 1, hash => $hash),
+    Test::CucumberExtensionPush->new(id => 2, hash => $hash)
+);
+
+
+$harness = Test::BDD::Cucumber::Harness::Data->new();
+$executor->execute( $feature, $harness );
+
+is_deeply($hash,
+          {
+              pre_feature => [1, 2],
+              post_feature => [2, 1],
+              pre_scenario => [1, 2],
+              post_scenario => [2, 1],
+              pre_step => [1, 2, 1, 2], # background step and scenario step
+              post_step => [2, 1, 2, 1],
+          }, "Hooks called the expected number of times");
+
 
 done_testing();
