@@ -8,7 +8,6 @@
 
 - Could method signatures be used to stop you needing 'sub {' for step defs?
 - Don't need both Storable and Clone, I reckon - both being used for cloning in one place
-- YAML::Syck usage could just be using JSON::MaybeXS
 
 
 Make a corpus-checker for checking parsing of In The Wild Gherkin files...

@@ -9,6 +9,9 @@ use Module::Runtime qw(use_module);
 use List::Util qw(max);
 use Pod::Usage;
 use FindBin qw($RealBin $Script);
+use YAML::Syck;
+# $YAML::Syck::ImplicitTyping = 1;
+use Data::Dumper;
 
 use Test::BDD::Cucumber::I18n
   qw(languages langdef readable_keywords keyword_to_subname);
@@ -103,6 +106,37 @@ sub _initialize_harness {
     $self->harness( $harness_module->new() );
 }
 
+sub _probe_config_path {
+    my ($self, $path) = @_;
+
+    foreach $path ($path, $ENV{PHERKIN}) {
+        die "Config file '$path' not found"
+            if defined $path && $path && ! -f $path;
+        return $path if defined $path && $path;
+    }
+
+    foreach $path ('.pherkin.yml',
+                   'config/pherkin.yml', '.config/pherkin.yml',
+                   't/.pherkin.yml', '~/.pherkin.yml') {
+        return $path if $path && -f $path;
+    }
+}
+
+sub _probe_config {
+    my ($self, $path, $profile) = @_;
+    my $config;
+    
+    $path = $self->_probe_config_path($path);
+    $config = LoadFile($path) if $path;
+    $config ||= {
+        'default' => { },
+    };
+
+    my $rv = $config->{$profile};
+    $rv ||= {};
+    return $rv;
+}
+
 sub _process_arguments {
     my ( $self, @args ) = @_;
     local @ARGV = @args;
@@ -115,6 +149,8 @@ sub _process_arguments {
     my $tags       = [];
     my $help       = 0;
     GetOptions(
+        'c|config=s' => \( my $config_arg ),
+        'p|profile=s'=> \( my $profile ),
         'I=s@'       => \$includes,
         'l|lib'      => \( my $add_lib ),
         'b|blib'     => \( my $add_blib ),
@@ -124,6 +160,9 @@ sub _process_arguments {
         'i18n=s'     => \( my $i18n ),
         'h|help|?'   => \$help,
     );
+
+    $profile ||= 'default';
+    my $config = $self->_probe_config($config_arg, $profile);
 
     pod2usage(
         -verbose => 1,
@@ -135,17 +174,23 @@ sub _process_arguments {
         _print_languages();
     }
 
+    push @$includes, @{ $config->{includes} }
+        if defined $config->{includes};
     unshift @$includes, 'lib' if $add_lib;
     unshift @$includes, 'blib/lib', 'blib/arch' if $add_blib;
 
     # Munge the output harness
-    $self->_initialize_harness( $harness || "TermColor" );
+    $self->_initialize_harness( $harness
+                                || $config->{output}
+                                || "TermColor" );
     lib->import( @$includes );
 
     # Store any extra step paths
+    push @$step_paths, @{ $config->{step_paths} } if $config->{step_paths};
     $self->step_paths($step_paths);
 
     # Store our TagSpecScheme
+    push @$tags, @{ $config->{tags} } if $config->{tags};
     $self->tag_scheme( $self->_process_tags( @{$tags} ) );
 
     return ( pop @ARGV );
