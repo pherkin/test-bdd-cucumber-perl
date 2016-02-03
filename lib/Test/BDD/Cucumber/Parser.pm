@@ -168,7 +168,7 @@ sub _extract_scenarios {
 
         my $langdef = $self->{langdef};
         if ( $line->content =~
-m/^((?:$langdef->{background})|(?:$langdef->{scenario}))(?: Outline)?: ?(.+)?/
+m/^((?:$langdef->{background})|(?:$langdef->{scenario})|(?:$langdef->{scenario_outline})): ?(.+)?/
           )
         {
             my ( $type, $name ) = ( $1, $2 );
@@ -193,6 +193,11 @@ m/^((?:$langdef->{background})|(?:$langdef->{scenario}))(?: Outline)?: ?(.+)?/
             # Attempt to populate it
             @lines = $self->_extract_steps( $feature, $scenario, @lines );
 
+            die parse_error_from_error(
+                "Outline scenario expects 'Examples:' section", $line)
+                if $type =~ m/^($langdef->{scenario_outline})/
+                   && ! defined $scenario->data;
+            
             if ( $type =~ m/^($langdef->{background})/ ) {
                 $feature->background($scenario);
             } else {
