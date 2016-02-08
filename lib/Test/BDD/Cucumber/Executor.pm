@@ -12,7 +12,7 @@ Definitions, and reporting on progress through the passed-in harness.
 =cut
 
 use Moose;
-use Storable qw(dclone);
+use Clone qw(clone);
 use List::Util qw/first/;
 use List::MoreUtils qw/pairwise/;
 use Module::Runtime qw/use_module/;
@@ -277,7 +277,7 @@ sub execute_scenario {
                     # Data portion
                     columns => $step->columns || [],
                     data => ref( $step->data )
-                    ? dclone( $step->data )
+                    ? clone( $step->data )
                     : $step->data || '',
 
                     # Step-specific info
