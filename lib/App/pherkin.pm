@@ -125,7 +125,7 @@ sub _find_config_file {
 
             # Home locations
             (   map      { dir($_)->file('.pherkin') }
-                grep map { $ENV{$_} } qw/HOME USERPROFILE/
+                grep { $_ } map { $ENV{$_} } qw/HOME USERPROFILE/
             )
         )
         )
