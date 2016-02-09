@@ -48,7 +48,7 @@ Tag specifications
  -t, --tags @tag1,@tag2 Run scenarios tagged with '@tag1' and '@tag2'
  -t, --tags ~@tag       Run scenarios tagged without '@tag'
 
-Configuration profiles (see CONFIGURATION PROFILES below)
+Configuration profiles (see CONFIGURATION PROFILES below/`man pherkin`)
 
  -g, --config [path]    A YAML file containing configuration profiles
  -p, --profile [name]   Name of the profile to load from the above config file.
@@ -102,7 +102,7 @@ is equivalent to:
 
   --steps foo/steps --steps ~/steps --output TermColor --tags tag1,tag2
 
-Command line options take precedence over profile ones, if you specify both.
+Command line options are specified after profile ones, if you specify both.
 
 If you specify C<--debug-profile> then information showing which profile is
 loaded and how is printed to STDOUT, and then `pherkin` terminates.

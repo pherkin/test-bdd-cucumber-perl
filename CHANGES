@@ -1,4 +1,6 @@
 -----
+0.42: 09 Feb 2016
+    - `--debug-profiles` works as advertised...
 0.41: 09 Feb 2016
     - pherkin command line options can now be read from config files, based on
         a patch by eheulsmann
