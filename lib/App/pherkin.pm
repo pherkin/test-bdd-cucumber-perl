@@ -14,7 +14,7 @@ use Data::Dumper;
 use Path::Class qw/file dir/;
 
 use Test::BDD::Cucumber::I18n
-    qw(languages langdef readable_keywords keyword_to_subname);
+  qw(languages langdef readable_keywords keyword_to_subname);
 use Test::BDD::Cucumber::Loader;
 
 use Moose;
@@ -60,21 +60,20 @@ Returns a L<Test::BDD::Cucumber::Model::Result> object for all steps run.
 sub run {
     my ( $self, @arguments ) = @_;
 
-# localized features will have utf8 in them and options may output utf8 as well
+ # localized features will have utf8 in them and options may output utf8 as well
     binmode STDOUT, ':utf8';
 
     my ($features_path) = $self->_process_arguments(@arguments);
     $features_path ||= './features/';
 
-    my ( $executor, @features )
-        = Test::BDD::Cucumber::Loader->load( $features_path,
-        $self->tag_scheme );
+    my ( $executor, @features ) =
+      Test::BDD::Cucumber::Loader->load( $features_path, $self->tag_scheme );
     die "No feature files found in $features_path" unless @features;
 
-    $executor->add_extensions( $_ ) for @{ $self->extensions };
+    $executor->add_extensions($_) for @{ $self->extensions };
 
     Test::BDD::Cucumber::Loader->load_steps( $executor, $_ )
-        for @{ $self->step_paths };
+      for @{ $self->step_paths };
 
     return $self->_run_tests( $executor, @features );
 }
@@ -105,7 +104,7 @@ sub _initialize_harness {
     }
 
     eval { use_module($harness_module) }
-        || die "Unable to load harness [$harness_module]: $@";
+      || die "Unable to load harness [$harness_module]: $@";
 
     $self->harness( $harness_module->new() );
 }
@@ -122,16 +121,18 @@ sub _find_config_file {
         map { ( "$_.yaml", "$_.yml" ) } (
 
             # Relative locations
-            (   map { file($_) }
-                    qw!.pherkin config/pherkin ./.config/pherkin t/.pherkin!
+            (
+                map { file($_) }
+                  qw!.pherkin config/pherkin ./.config/pherkin t/.pherkin!
             ),
 
             # Home locations
-            (   map { dir($_)->file('.pherkin') }
-                grep {$_} map { $ENV{$_} } qw/HOME USERPROFILE/
+            (
+                map { dir($_)->file('.pherkin') }
+                grep { $_ } map { $ENV{$_} } qw/HOME USERPROFILE/
             )
         )
-        )
+      )
     {
         return $_ if -f $_;
         print "No config file found in $_\n" if $debug;
@@ -142,8 +143,8 @@ sub _find_config_file {
 sub _load_config {
     my ( $self, $profile_name, $proposed_config_filename, $debug ) = @_;
 
-    my $config_filename
-        = $self->_find_config_file( $proposed_config_filename, $debug );
+    my $config_filename =
+      $self->_find_config_file( $proposed_config_filename, $debug );
     my $config_data_whole;
 
     # Check we can actually load some data from that file if required
@@ -154,10 +155,10 @@ sub _load_config {
         if ($profile_name) {
             print "No configuration files found\n" if $debug;
             die
-                "Profile name [$profile_name] specified, but no configuration file found (use --debug-profiles to debug)";
+"Profile name [$profile_name] specified, but no configuration file found (use --debug-profiles to debug)";
         } else {
             print "No configuration files found, and no profile specified\n"
-                if $debug;
+              if $debug;
             return;
         }
     }
@@ -167,13 +168,13 @@ sub _load_config {
     # Check the config file has the right type of data at the profile name
     unless ( ref $config_data_whole eq 'HASH' ) {
         die
-            "Config file [$config_filename] doesn't return a hashref on parse, instead a ["
-            . ref($config_data_whole) . ']';
+"Config file [$config_filename] doesn't return a hashref on parse, instead a ["
+          . ref($config_data_whole) . ']';
     }
     my $config_data     = $config_data_whole->{$profile_name};
     my $profile_problem = sub {
         return "Config file [$config_filename] profile [$profile_name]: "
-            . shift();
+          . shift();
     };
     unless ($config_data) {
         die $profile_problem->("Profile not found");
@@ -190,7 +191,7 @@ sub _load_config {
 
         if ( my $reftype = ref $value ) {
             die $profile_problem->(
-                "Option $key is a [$reftype] but can only be a single value or ARRAY"
+"Option $key is a [$reftype] but can only be a single value or ARRAY"
             ) unless $reftype eq 'ARRAY';
             push( @arguments, $key, $_ ) for @$value;
         } else {
@@ -252,7 +253,7 @@ sub _process_arguments {
 
     # Load the configuration file
     my @configuration_options = $self->_load_config( map { $deref->($_) }
-            qw/profile config debug_profiles/ );
+          qw/profile config debug_profiles/ );
 
     # Merge those configuration items
     # First we need a list of matching keys
@@ -276,19 +277,19 @@ sub _process_arguments {
             # Only use it if we don't have something already
             if ( defined $$target ) {
                 print
-                    "Ignoring $key from config file because set on cmd line as $$target\n"
-                    if $deref->('debug_profiles');
+"Ignoring $key from config file because set on cmd line as $$target\n"
+                  if $deref->('debug_profiles');
             } else {
                 $$target = $value;
                 print "Set $key to $target from config file\n"
-                    if $deref->('debug_profiles');
+                  if $deref->('debug_profiles');
             }
 
         } else {
             my $array = $additions{ 0 + $target } ||= [];
             push( @$array, $value );
             print "Adding $value near the front of $key\n"
-                if $deref->('debug_profiles');
+              if $deref->('debug_profiles');
         }
     }
     for my $target ( values %options ) {
@@ -299,8 +300,8 @@ sub _process_arguments {
 
     if ( $deref->('debug_profiles') ) {
         print "Values are:\n";
-        for (sort keys %options) {
-            printf(" %16s: ", $_);
+        for ( sort keys %options ) {
+            printf( " %16s: ", $_ );
             my $value = $deref->($_);
             if ( ref $value ) {
                 print join ', ', @$value;
@@ -319,7 +320,7 @@ sub _process_arguments {
 
     unshift @{ $deref->('includes') }, 'lib' if $deref->('lib');
     unshift @{ $deref->('includes') }, 'blib/lib', 'blib/arch'
-        if $deref->('blib');
+      if $deref->('blib');
 
     # We may need some of the imported paths...
     lib->import( @{ $deref->('includes') } );
@@ -331,7 +332,7 @@ sub _process_arguments {
         my @e_args = eval $e_args;
         die "Bad arguments in [$e]: $@" if $@;
         use_module $e;
-        push( @{$self->extensions}, $e->new( @e_args ) );
+        push( @{ $self->extensions }, $e->new(@e_args) );
     }
 
     # Munge the output harness
@@ -386,14 +387,14 @@ sub _print_languages {
 
     my @languages = languages();
 
-    my $max_code_length = max map {length} @languages;
-    my $max_name_length
-        = max map { length( langdef($_)->{name} ) } @languages;
-    my $max_native_length
-        = max map { length( langdef($_)->{native} ) } @languages;
+    my $max_code_length = max map { length } @languages;
+    my $max_name_length =
+      max map { length( langdef($_)->{name} ) } @languages;
+    my $max_native_length =
+      max map { length( langdef($_)->{native} ) } @languages;
 
-    my $format
-        = "| %-${max_code_length}s | %-${max_name_length}s | %-${max_native_length}s |\n";
+    my $format =
+"| %-${max_code_length}s | %-${max_name_length}s | %-${max_native_length}s |\n";
 
     for my $language ( sort @languages ) {
         my $langdef = langdef($language);
@@ -408,15 +409,15 @@ sub _print_langdef {
     my $langdef = langdef($language);
 
     my @keywords = qw(feature background scenario scenario_outline examples
-        given when then and but);
-    my $max_length
-        = max map { length readable_keywords( $langdef->{$_} ) } @keywords;
+      given when then and but);
+    my $max_length =
+      max map { length readable_keywords( $langdef->{$_} ) } @keywords;
 
     my $format = "| %-16s | %-${max_length}s |\n";
     for my $keyword (
         qw(feature background scenario scenario_outline
         examples given when then and but )
-        )
+      )
     {
         printf $format, $keyword, readable_keywords( $langdef->{$keyword} );
     }
@@ -424,7 +425,7 @@ sub _print_langdef {
     my $codeformat = "| %-16s | %-${max_length}s |\n";
     for my $keyword (qw(given when then )) {
         printf $codeformat, $keyword . ' (code)',
-            readable_keywords( $langdef->{$keyword}, \&keyword_to_subname );
+          readable_keywords( $langdef->{$keyword}, \&keyword_to_subname );
     }
 
     exit;

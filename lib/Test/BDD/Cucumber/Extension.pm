@@ -26,7 +26,7 @@ should look for their own configuration in
 
 =cut
 
-has config => (is => 'rw', isa => 'HashRef');
+has config => ( is => 'rw', isa => 'HashRef' );
 
 =head1 METHODS
 
@@ -37,7 +37,7 @@ the directory of the extension) which hold step files to be loaded when
 the extension is loaded.
 
 =cut
-    
+
 sub step_directories { return []; }
 
 =head2 pre_feature($feature, $feature_stash)
@@ -51,10 +51,9 @@ Invoked by the Executor after executing the background and feature scenarios
 and their repective post-hooks. Reports errors by calling croak().
 
 =cut
-    
-sub pre_feature { return; }
-sub post_feature { return; }
 
+sub pre_feature  { return; }
+sub post_feature { return; }
 
 =head2 pre_scenario($scenario, $feature_stash, $scenario_stash)
 
@@ -70,9 +69,8 @@ $failure indicates whether any of the steps in the scenario has failed.
 
 =cut
 
-sub pre_scenario { return; }
+sub pre_scenario  { return; }
 sub post_scenario { return; }
-
 
 =head2 pre_step($step, $step_context)
 
@@ -96,10 +94,8 @@ Note: *executed* steps, so not called for skipped steps.
 
 =cut
 
-sub pre_step { return; }
+sub pre_step  { return; }
 sub post_step { return; }
-
-
 
 =head1 AUTHOR
 

@@ -54,8 +54,8 @@ END
     croak $message;
 }
 
-$Test::Builder::Test
-    = Test::BDD::Cucumber::TestBuilderDelegator->new( Test::Builder->new() );
+$Test::Builder::Test =
+  Test::BDD::Cucumber::TestBuilderDelegator->new( Test::Builder->new() );
 
 use Test::BDD::Cucumber::StepContext;
 use Test::BDD::Cucumber::Util;
@@ -156,8 +156,8 @@ sub execute {
     my $feature_stash = {};
 
     $harness->feature($feature);
-    my @background = (
-        $feature->background ? ( background => $feature->background ) : () );
+    my @background =
+      ( $feature->background ? ( background => $feature->background ) : () );
 
     # Get all scenarios
     my @scenarios = @{ $feature->scenarios() };
@@ -172,7 +172,8 @@ sub execute {
 
         # Execute the scenario itself
         $self->execute_scenario(
-            {   @background,
+            {
+                @background,
                 scenario      => $scenario,
                 feature       => $feature,
                 feature_stash => $feature_stash,
@@ -181,7 +182,7 @@ sub execute {
         );
     }
     $_->post_feature( $feature, $feature_stash, 'no' )
-        for reverse @{ $self->extensions };
+      for reverse @{ $self->extensions };
 
     $harness->feature_done($feature);
 }
@@ -215,11 +216,11 @@ sub execute_scenario {
     my ( $self, $options ) = @_;
     my ( $feature, $feature_stash, $harness, $outline, $background_obj,
         $incoming_scenario_stash, $incoming_outline_stash )
-        = @$options{
+      = @$options{
         qw/ feature feature_stash harness scenario background scenario_stash
-            outline_stash
-            /
-        };
+          outline_stash
+          /
+      };
 
     my $is_background = $outline->background;
 
@@ -265,7 +266,7 @@ sub execute_scenario {
 
         if ( not $is_background ) {
             $_->pre_scenario( $outline, $feature_stash, $scenario_stash )
-                for @{ $self->extensions };
+              for @{ $self->extensions };
 
             for my $before_step ( @{ $self->{'steps'}->{'before'} || [] } ) {
 
@@ -273,7 +274,8 @@ sub execute_scenario {
                 my $context = Test::BDD::Cucumber::StepContext->new(
                     { %context_defaults, verb => 'before', } );
 
-                my $result = $self->dispatch( $context, $before_step,
+                my $result =
+                  $self->dispatch( $context, $before_step,
                     $outline_stash->{'short_circuit'}, 0 );
 
                 # If it didn't pass, short-circuit the rest
@@ -287,7 +289,8 @@ sub execute_scenario {
         # execute_scenario...
         if ($background_obj) {
             $self->execute_scenario(
-                {   is_background  => 1,
+                {
+                    is_background  => 1,
                     scenario       => $background_obj,
                     feature        => $feature,
                     feature_stash  => $feature_stash,
@@ -301,12 +304,13 @@ sub execute_scenario {
         foreach my $step ( @{ $outline->steps } ) {
 
             # Multiply out any placeholders
-            my $text = $self->add_placeholders( $step->text, $dataset,
-                $step->line );
+            my $text =
+              $self->add_placeholders( $step->text, $dataset, $step->line );
 
             # Set up a context
             my $context = Test::BDD::Cucumber::StepContext->new(
-                {   %context_defaults,
+                {
+                    %context_defaults,
 
                     # Data portion
                     columns => $step->columns || [],
@@ -321,7 +325,8 @@ sub execute_scenario {
                 }
             );
 
-            my $result = $self->find_and_dispatch( $context,
+            my $result =
+              $self->find_and_dispatch( $context,
                 $outline_stash->{'short_circuit'}, 0 );
 
             # If it didn't pass, short-circuit the rest
@@ -343,7 +348,7 @@ sub execute_scenario {
             }
             $_->post_scenario( $outline, $feature_stash, $scenario_stash,
                 $outline_stash->{'short_circuit'} )
-                for reverse @{ $self->extensions };
+              for reverse @{ $self->extensions };
 
         }
 
@@ -388,28 +393,28 @@ sub find_and_dispatch {
     # Short-circuit if we need to
     return $self->skip_step( $context, 'pending',
         "Short-circuited from previous tests", 0 )
-        if $short_circuit;
+      if $short_circuit;
 
     # Try and find a matching step
     my $step = first { $context->text =~ $_->[0] }
     @{ $self->{'steps'}->{ $context->verb } || [] },
-        @{ $self->{'steps'}->{'step'} || [] };
+      @{ $self->{'steps'}->{'step'} || [] };
 
     # Deal with the simple case of no-match first of all
     unless ($step) {
-        my $message
-            = "No matching step definition for: "
-            . $context->verb . ' '
-            . $context->text;
-        my $result = $self->skip_step( $context, 'undefined', $message,
-            $redispatch );
+        my $message =
+            "No matching step definition for: "
+          . $context->verb . ' '
+          . $context->text;
+        my $result =
+          $self->skip_step( $context, 'undefined', $message, $redispatch );
         return $result;
     }
 
     $_->pre_step( $step, $context ) for @{ $self->extensions };
     my $result = $self->dispatch( $context, $step, 0, $redispatch );
     $_->post_step( $step, $context, $result eq 'passing' )
-        for reverse @{ $self->extensions };
+      for reverse @{ $self->extensions };
     return $result;
 }
 
@@ -428,7 +433,7 @@ sub dispatch {
 
     return $self->skip_step( $context, 'pending',
         "Short-circuited from previous tests", $redispatch )
-        if $short_circuit;
+      if $short_circuit;
 
     # Execute the step definition
     my ( $regular_expression, $coderef ) = @$step;
@@ -448,7 +453,7 @@ sub dispatch {
 
     # Make a minimum pass
     $tb_return->{'builder'}
-        ->ok( 1, "Starting to execute step: " . $context->text );
+      ->ok( 1, "Starting to execute step: " . $context->text );
 
     my $step_name = $redispatch ? 'sub_step' : 'step';
     my $step_done_name = $step_name . '_done';
@@ -510,14 +515,15 @@ sub dispatch {
 
         # Create the result object
         $result = Test::BDD::Cucumber::Model::Result->new(
-            {   result => $status,
+            {
+                result => $status,
                 output => $output
             }
         );
     }
 
-    my @clean_matches
-        = $self->_extract_match_strings( $context->text, \@match_locations );
+    my @clean_matches =
+      $self->_extract_match_strings( $context->text, \@match_locations );
     @clean_matches = [ 0, $context->text ] unless @clean_matches;
 
     # Say the step is done, and return the result. Happens outside
@@ -533,12 +539,12 @@ sub _extract_match_strings {
 
     # Clean up the match locations
     my @match_locations = grep {
-        ( $_->[0] != $_->[1] ) &&   # No zero-length matches
-                                    # And nothing that matched the full string
-            ( !( ( $_->[0] == 0 ) && ( ( $_->[1] == length $text ) ) ) )
-        } grep {
+        ( $_->[0] != $_->[1] ) &&    # No zero-length matches
+                                     # And nothing that matched the full string
+          ( !( ( $_->[0] == 0 ) && ( ( $_->[1] == length $text ) ) ) )
+      } grep {
         defined $_ && ref $_ && defined $_->[0] && defined $_->[1]
-        } @$locations;
+      } @$locations;
 
     return unless @match_locations;
 
@@ -550,7 +556,7 @@ sub _extract_match_strings {
         # expected for nested matches
         no warnings;
         $range->addrange( $_->[0] . '..' . ( $_->[1] - 1 ) )
-            for @match_locations;
+          for @match_locations;
     }
 
     # Walk the string, splitting
@@ -573,16 +579,16 @@ sub _test_status {
     my $self    = shift;
     my $builder = shift;
 
-    my $results
-        = $builder->can("history")
-        ? $self->_test_status_from_history($builder)
-        : $self->_test_status_from_details($builder);
+    my $results =
+        $builder->can("history")
+      ? $self->_test_status_from_history($builder)
+      : $self->_test_status_from_details($builder);
 
     # Turn that in to a Result status
     return
-          $results->{'fail'} ? 'failing'
-        : $results->{'todo'} ? 'pending'
-        :                      'passing';
+        $results->{'fail'} ? 'failing'
+      : $results->{'todo'} ? 'pending'
+      :                      'passing';
 }
 
 sub _test_status_from_details {
@@ -637,7 +643,8 @@ sub skip_step {
 
     # Create a result object
     my $result = Test::BDD::Cucumber::Model::Result->new(
-        {   result => $type,
+        {
+            result => $type,
             output => '1..0 # SKIP ' . $reason
         }
     );

@@ -62,20 +62,16 @@ my $p = App::pherkin->new();
 $p->_process_arguments(
     '-g',
     $dir->file('readable.yaml'),
-    '-p' => 'ehuelsmann',
-    '--steps' => '3',
-    '--steps' => '4',
-    '-o' => 'Data',
-    '-e' => 'Test::CucumberExtensionPush({ id => 2, hash => {}})',
+    '-p'           => 'ehuelsmann',
+    '--steps'      => '3',
+    '--steps'      => '4',
+    '-o'           => 'Data',
+    '-e'           => 'Test::CucumberExtensionPush({ id => 2, hash => {}})',
     '--extensions' => 'Test::CucumberExtensionPush({ id => 3, hash => {}})',
 );
 
 isa_ok( $p->harness, 'Test::BDD::Cucumber::Harness::Data', 'Harness set' );
-is_deeply(
-    $p->{'step_paths'},
-    [ 1, 2, 3, 4 ],
-    'Step paths set'
-);
+is_deeply( $p->{'step_paths'}, [ 1, 2, 3, 4 ], 'Step paths set' );
 
 is( $p->extensions->[0]->id, 1, "Cmdline extension 1" );
 is( $p->extensions->[1]->id, 2, "Cmdline extension 2" );

@@ -32,8 +32,7 @@ HEREDOC
 
 my $extension = Test::CucumberExtensionCount->new();
 $executor = Test::BDD::Cucumber::Executor->new();
-$executor->add_steps(
-    [ Given => qr/a passing step called '(.+)'/, sub { 1; } ],
+$executor->add_steps( [ Given => qr/a passing step called '(.+)'/, sub { 1; } ],
 );
 $executor->add_extensions($extension);
 
@@ -42,7 +41,8 @@ $executor->execute( $feature, $harness );
 
 is_deeply(
     $extension->counts,
-    {   pre_feature   => 1,
+    {
+        pre_feature   => 1,
         post_feature  => 1,
         pre_scenario  => 1,
         post_scenario => 1,
@@ -57,8 +57,7 @@ is_deeply(
 my $hash = {};
 
 $executor = Test::BDD::Cucumber::Executor->new();
-$executor->add_steps(
-    [ Given => qr/a passing step called '(.+)'/, sub { 1; } ],
+$executor->add_steps( [ Given => qr/a passing step called '(.+)'/, sub { 1; } ],
 );
 
 $executor->add_extensions(
@@ -77,9 +76,9 @@ for (
     [ post_feature  => [ 3, 2, 1 ] ],
     [ pre_scenario  => [ 1, 2, 3 ] ],
     [ post_scenario => [ 3, 2, 1 ] ],
-    [ pre_step  => [ 1, 2, 3, 1, 2, 3 ] ],    # background step and scenario step
+    [ pre_step => [ 1, 2, 3, 1, 2, 3 ] ],    # background step and scenario step
     [ post_step => [ 3, 2, 1, 3, 2, 1 ] ],
-    )
+  )
 {
     my ( $hook, $expected ) = @$_;
     is_deeply( $hash->{$hook}, $expected,
