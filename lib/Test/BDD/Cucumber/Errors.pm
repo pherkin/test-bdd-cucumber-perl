@@ -23,6 +23,10 @@ practice are errors with the input test scenarios, and it's helpful to have the
 location of the error and context when debugging those. Perhaps in the future
 these can return error objects.
 
+All current uses (2016-02-09) just pass the results straight to die, so I
+have decided to UTF8 encode the error message on the basis that this probably
+constitutes an application boundary.
+
 =head1 SYNOPSIS
 
   use Test::BDD::Cucumber::Errors qw/parse_error_from_line/;
@@ -75,13 +79,15 @@ sub parse_error_from_line {
           sprintf( "% 3d%s    %s\n", $actual_line, $mark, $lines[$_] );
     }
 
-    return (
+    my $to_return =
         sprintf( $error,
             $feature_filename, $feature_line,
             $caller_filename,  $caller_line,
             $feature_filename, $formatted_lines,
-            ( '-' x ( ( length $feature_filename ) + 8 ) ) )
-    );
+            ( '-' x ( ( length $feature_filename ) + 8 ) ) );
+
+    utf8::encode( $to_return );
+    return $to_return;
 }
 
 sub _get_context_range {
