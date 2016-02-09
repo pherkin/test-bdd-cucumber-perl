@@ -88,7 +88,9 @@ for one:
  ~/.pherkin.yaml
 
 The contents of each profile is merged in as if you'd specified it on the
-command line. C<default> is used if you didn't specify one. For example:
+command line. C<default> is used if you didn't specify one. Command line options
+take precedence for single item values, and they're added to the end of
+multi-line options, if you specify them as well as a config file. For example:
 
  default:
    steps:
@@ -101,8 +103,6 @@ command line. C<default> is used if you didn't specify one. For example:
 is equivalent to:
 
   --steps foo/steps --steps ~/steps --output TermColor --tags tag1,tag2
-
-Command line options are specified after profile ones, if you specify both.
 
 If you specify C<--debug-profile> then information showing which profile is
 loaded and how is printed to STDOUT, and then `pherkin` terminates.

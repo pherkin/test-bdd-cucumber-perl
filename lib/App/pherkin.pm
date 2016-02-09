@@ -124,8 +124,8 @@ sub _find_config_file {
             ),
 
             # Home locations
-            (   map      { dir($_)->file('.pherkin') }
-                grep { $_ } map { $ENV{$_} } qw/HOME USERPROFILE/
+            (   map { dir($_)->file('.pherkin') }
+                grep {$_} map { $ENV{$_} } qw/HOME USERPROFILE/
             )
         )
         )
@@ -184,20 +184,19 @@ sub _load_config {
     my @arguments;
     for my $key ( sort keys %$config_data ) {
         my $value = $config_data->{$key};
-        my $dashed_key = ( length($key) == 1 ? '-' : '--' ) . $key;
 
         if ( my $reftype = ref $value ) {
             die $profile_problem->(
                 "Option $key is a [$reftype] but can only be a single value or ARRAY"
             ) unless $reftype eq 'ARRAY';
-            push( @arguments, $dashed_key, $_ ) for @$value;
+            push( @arguments, $key, $_ ) for @$value;
         } else {
-            push( @arguments, $dashed_key, $value );
+            push( @arguments, $key, $value );
         }
     }
 
     if ($debug) {
-        print "Arguments to add: " . (join ' ', @arguments) . "\n";
+        print "Arguments to add: " . ( join ' ', @arguments ) . "\n";
     }
 
     return @arguments;
@@ -210,62 +209,100 @@ sub _process_arguments {
     # Allow -Ilib, -bl
     Getopt::Long::Configure( 'bundling', 'pass_through' );
 
-    my $help = 0;
+    my %options = (
+        # Relating to other configuration options
+        config => ['g|config=s'],
+        profile => ['p|profile=s'],
+        debug_profiles => ['debug-profiles'],
 
-    # First try and load any configuration profiles
-    GetOptions(
-        'g|config=s'     => \( my $config_file ),
-        'p|profile=s'    => \( my $profile ),
-        'h|help|?'       => \$help,
-        'debug-profiles' => \( my $debug_profiles ),
+        # Standard
+        help => ['h|help|?'],
+        includes => ['I=s@', []],
+        lib => ['l|lib'],
+        blib => ['b|blib'],
+        output => ['o|output=s'],
+        steps => ['s|steps=s@', []],
+        tags => ['t|tags=s@', []],
+        i18n => ['i18n=s',],
     );
+
+    GetOptions( map {
+        my $x;
+        $_->[1] //= \$x;
+        ($_->[0] => $_->[1]);
+    } values %options );
+
+    my $deref = sub {
+        my $key = shift;
+        my $value = $options{ $key }->[1];
+        return (ref $value eq 'ARRAY') ? $value : $$value;
+    };
 
     pod2usage(
         -verbose => 1,
         -input   => "$RealBin/$Script",
-    ) if ($help);
+    ) if $deref->('help');
 
-    my @configuration_options
-        = $self->_load_config( $profile, $config_file, $debug_profiles );
-    @ARGV = ( @configuration_options, @args );
+    # Load the configuration file
+    my @configuration_options =
+        $self->_load_config( map { $deref->( $_ ) } qw/profile config debug_profiles/ );
 
-    if ( $debug_profiles ) {
-        print "Original arguments: " . (join ' ', @args) . "\n";
-        print "Combined arguments: " . (join ' ', @ARGV) . "\n";
-        exit;
+    # Merge those configuration items
+    # First we need a list of matching keys
+    my %keys = map {
+        my ($key_basis, $ref) = @$_;
+        map { $_ => $ref } map {s/=.+//; $_} split(/\|/, $key_basis);
+    } values %options;
+
+    # Now let's go through each option. For arrays, we want the configuration
+    # options to appear in order at the front. So if configuration had 1, 2, and
+    # command line options were 3, 4, we want: 1, 2, 3, 4. This is not straight
+    # forward.
+    my %additions;
+    while ( @configuration_options ) {
+        my ( $key ) = shift( @configuration_options );
+        my ( $value ) = shift( @configuration_options );
+        my $target = $keys{ $key } || die "Unknown configuration option [$key]";
+
+        if ( ref $target ne 'ARRAY' ) {
+            # Only use it if we don't have something already
+            if (defined $$target) {
+                print "Ignoring $key from config file because set on cmd line as $$target\n"
+                    if $deref->('debug_profiles');
+            } else {
+                $$target = $value;
+                print "Set $key to $target from config file\n" if $deref->('debug_profiles');
+            }
+
+        } else {
+            my $array = $additions{ 0 + $target } ||= [];
+            push( @$array, $value );
+            print "Adding $value near the front of $key\n" if $deref->('debug_profiles');
+        }
+    }
+    for my $target (values %options) {
+        next unless ref $target->[1] eq 'ARRAY';
+        my $key = $target->[1] + 0;
+        unshift( @{$target->[1]}, @{ $additions{ $key } || [] } );
     }
 
-    my $includes   = [];
-    my $step_paths = [];
-    my $tags       = [];
-
-    GetOptions(
-        'I=s@'       => \$includes,
-        'l|lib'      => \( my $add_lib ),
-        'b|blib'     => \( my $add_blib ),
-        'o|output=s' => \( my $harness ),
-        's|steps=s@' => \$step_paths,
-        't|tags=s@'  => \$tags,
-        'i18n=s'     => \( my $i18n ),
-    );
-
-    if ($i18n) {
+    if (my $i18n = $deref->('i18n') ) {
         _print_langdef($i18n) unless $i18n eq 'help';
         _print_languages();
     }
 
-    unshift @$includes, 'lib' if $add_lib;
-    unshift @$includes, 'blib/lib', 'blib/arch' if $add_blib;
+    unshift @{$deref->('includes')}, 'lib' if $deref->('lib');
+    unshift @{$deref->('includes')}, 'blib/lib', 'blib/arch' if $deref->('blib');
 
     # Munge the output harness
-    $self->_initialize_harness( $harness || "TermColor" );
-    lib->import(@$includes);
+    $self->_initialize_harness( $deref->('output') || "TermColor" );
+    lib->import(@{$deref->('includes')});
 
     # Store any extra step paths
-    $self->step_paths($step_paths);
+    $self->step_paths( $deref->('steps') );
 
     # Store our TagSpecScheme
-    $self->tag_scheme( $self->_process_tags( @{$tags} ) );
+    $self->tag_scheme( $self->_process_tags( @{$deref->('tags')} ) );
 
     return ( pop @ARGV );
 }

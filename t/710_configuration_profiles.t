@@ -44,12 +44,12 @@ for (
 # We can read a known-good config
 is_deeply(
     [ $class->_load_config( readable => $dir->file('readable.yaml') ) ],
-    [ '-f', 1, '-f', 2 ],
+    [ f => 1, f => 2 ],
     "readable/readable read OK"
 );
 is_deeply(
     [ $class->_load_config( undef, $dir->file('readable.yaml') ) ],
-    [ '--bar', 'baz', '--foo', 'bar' ],
+    [ bar => 'baz', foo => 'bar' ],
     "readable/[default] read OK"
 );
 
@@ -61,13 +61,15 @@ my $p = App::pherkin->new();
 $p->_process_arguments(
     '-g',
     $dir->file('readable.yaml'),
-    '-p' => 'ehuelsmann'
+    '-p' => 'ehuelsmann',
+    '--steps' => '3',
+    '-o' => 'Data',
 );
 
 isa_ok( $p->harness, 'Test::BDD::Cucumber::Harness::Data', 'Harness set' );
 is_deeply(
     $p->{'step_paths'},
-    [ "/usr/share/perl/5.14.2/Test/BDD/Plugin/steps",, "~/your-project/steps" ],
+    [ "/usr/share/perl/5.14.2/Test/BDD/Plugin/steps", "~/your-project/steps", 3 ],
     'Step paths set'
 );
 
