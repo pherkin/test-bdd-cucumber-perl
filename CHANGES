@@ -1,4 +1,8 @@
 -----
+0.43: 09 Feb 2016
+    - Add extensions! See Test::BDD::Cucumber::Executor and
+      Test::BDD::Cucumber::Extensions for details. Work by ehuelsmann:
+        https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/66
 0.42: 09 Feb 2016
     - `--debug-profiles` works as advertised...
 0.41: 09 Feb 2016
