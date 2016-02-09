@@ -13,8 +13,9 @@ use Test::BDD::Cucumber::Harness::Data;
 # If you've taken the time to explicitly declare a Scenario Outline in any
 # language, you need to have provided examples
 
-my $feature = eval { Test::BDD::Cucumber::Parser->parse_string(
-    <<HEREDOC
+my $feature = eval {
+    Test::BDD::Cucumber::Parser->parse_string(
+        <<HEREDOC
 # language: th
 ความต้องการทางธุรกิจ: Test Feature
 	Conditions of satisfaction
@@ -30,7 +31,8 @@ my $feature = eval { Test::BDD::Cucumber::Parser->parse_string(
         กำหนดให้ a passing step called 'bar'
         กำหนดให้ a passing step called '<name>'
 HEREDOC
-) };
+    );
+};
 
 my $error = $@;
 

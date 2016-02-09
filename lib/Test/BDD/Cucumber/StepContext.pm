@@ -43,7 +43,7 @@ See the C<data> method below.
 =cut
 
 has '_data' =>
-    ( is => 'ro', isa => 'Str|ArrayRef', init_arg => 'data', default => '' );
+  ( is => 'ro', isa => 'Str|ArrayRef', init_arg => 'data', default => '' );
 
 =head2 stash
 
@@ -85,7 +85,7 @@ has 'scenario' => (
     isa      => 'Test::BDD::Cucumber::Model::Scenario'
 );
 has 'step' =>
-    ( is => 'ro', required => 0, isa => 'Test::BDD::Cucumber::Model::Step' );
+  ( is => 'ro', required => 0, isa => 'Test::BDD::Cucumber::Model::Step' );
 
 =head2 verb
 
@@ -111,7 +111,7 @@ The L<Test::BDD::Cucumber::Harness> harness being used by the executor.
 =cut
 
 has 'harness' =>
-    ( is => 'ro', required => 1, isa => 'Test::BDD::Cucumber::Harness' );
+  ( is => 'ro', required => 1, isa => 'Test::BDD::Cucumber::Harness' );
 
 =head2 executor
 
@@ -142,7 +142,7 @@ has '_matches' => (
 );
 
 has 'transformers' =>
-    ( is => 'ro', isa => 'ArrayRef', predicate => 'has_transformers', );
+  ( is => 'ro', isa => 'ArrayRef', predicate => 'has_transformers', );
 
 has '_transformed_matches' => (
     is      => 'ro',
@@ -168,7 +168,7 @@ this step which is actually an internal hook, i.e. a Before or After step
 =cut
 
 has 'is_hook' =>
-    ( is => 'ro', isa => 'Bool', lazy => 1, builder => '_build_is_hook' );
+  ( is => 'ro', isa => 'Bool', lazy => 1, builder => '_build_is_hook' );
 
 =head2 parent
 
@@ -244,7 +244,7 @@ sub transform {
 
     defined $value or return $value;
 
-TRANSFORM:
+  TRANSFORM:
     for my $transformer ( @{ $self->transformers } ) {
 
         # turn off this warning so undef can be set in the following regex
@@ -254,15 +254,16 @@ TRANSFORM:
         # and puts any matches into $1, $2, etc.
         # and calls the Transform step
 
-       # also, if the transformer code ref returns undef, this will be coerced
-       # into an empty string, so need to mark it as something else
-       # and then turn it into proper undef
+        # also, if the transformer code ref returns undef, this will be coerced
+        # into an empty string, so need to mark it as something else
+        # and then turn it into proper undef
 
-        if ($value =~ s/$transformer->[0]/
+        if (
+            $value =~ s/$transformer->[0]/
                 my $value = $transformer->[1]->( $self );
                 defined $value ? $value : '__UNDEF__'
             /e
-            )
+          )
         {
             # if we matched then stop processing this match
             return $value eq '__UNDEF__' ? undef : $value;
@@ -313,10 +314,12 @@ sub dispatch {
     my ( $self, $verb, $text, $data ) = @_;
 
     my $step = Test::BDD::Cucumber::Model::Step->new(
-        {   text => $text,
+        {
+            text => $text,
             verb => $verb,
             line => Test::BDD::Cucumber::Model::Line->new(
-                {   number      => $self->step->line->number,
+                {
+                    number      => $self->step->line->number,
                     raw_content => "[Redispatched step: $verb $text]",
                     document    => $self->step->line->document,
                 }
@@ -332,7 +335,8 @@ sub dispatch {
     }
 
     my $new_context = $self->new(
-        {   executor => $self->executor,
+        {
+            executor => $self->executor,
             ( $data    ? ( _data   => $data )    : () ),
             ( $columns ? ( columns => $columns ) : () ),
             stash => {
@@ -409,8 +413,8 @@ sub _build_transformed_data {
         # table:column1,column2,column3
         my $table_text = 'table:' . join( ',', @{ $self->columns } );
 
-        if ( my $transformer
-            = first { $table_text =~ $_->[0] } @{ $self->transformers } )
+        if ( my $transformer =
+            first { $table_text =~ $_->[0] } @{ $self->transformers } )
         {
             # call the Transform step
             $transformer->[1]->( $self, $transformed_data );

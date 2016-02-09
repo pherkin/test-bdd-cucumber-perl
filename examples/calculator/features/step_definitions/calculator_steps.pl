@@ -72,9 +72,9 @@ Given 'having successfully performed the following calculations', sub {
         C->dispatch( 'Given', 'having pressed =' );
 
         is( $calculator->display, $row->{'result'},
-                  $row->{'first'} . ' '
-                . $row->{'operator'} . ' '
-                . $row->{'second'} );
+                $row->{'first'} . ' '
+              . $row->{'operator'} . ' '
+              . $row->{'second'} );
     }
 };
 
@@ -91,6 +91,5 @@ Given 'having added these numbers', sub {
 
 Then qr/^the display should show (.+)/, sub {
     my ($value) = @{ C->matches };
-    is( S->{'Calculator'}->display, $value,
-        "Calculator display as expected" );
+    is( S->{'Calculator'}->display, $value, "Calculator display as expected" );
 };

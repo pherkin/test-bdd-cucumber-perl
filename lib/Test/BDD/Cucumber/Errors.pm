@@ -79,14 +79,13 @@ sub parse_error_from_line {
           sprintf( "% 3d%s    %s\n", $actual_line, $mark, $lines[$_] );
     }
 
-    my $to_return =
-        sprintf( $error,
-            $feature_filename, $feature_line,
-            $caller_filename,  $caller_line,
-            $feature_filename, $formatted_lines,
-            ( '-' x ( ( length $feature_filename ) + 8 ) ) );
+    my $to_return = sprintf( $error,
+        $feature_filename, $feature_line,
+        $caller_filename,  $caller_line,
+        $feature_filename, $formatted_lines,
+        ( '-' x ( ( length $feature_filename ) + 8 ) ) );
 
-    utf8::encode( $to_return );
+    utf8::encode($to_return);
     return $to_return;
 }
 

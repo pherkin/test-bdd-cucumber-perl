@@ -131,7 +131,12 @@ sub _extract_feature_name {
             push( @feature_tags, @tags );
 
         } else {
-            die parse_error_from_line( 'Malformed feature line (expecting: /^(?:' . $self->{langdef}->{feature} . '): (.+)/', $line );
+            die parse_error_from_line(
+                'Malformed feature line (expecting: /^(?:'
+                  . $self->{langdef}->{feature}
+                  . '): (.+)/',
+                $line
+            );
         }
     }
 
@@ -195,9 +200,10 @@ m/^((?:$langdef->{background})|(?:$langdef->{scenario})|(?:$langdef->{scenario_o
 
             # Catch Scenario outlines without examples
             if ( $type =~ m/^($langdef->{scenario_outline})/
-                   && ! @{$scenario->data} ) {
+                && !@{ $scenario->data } )
+            {
                 die parse_error_from_line(
-                "Outline scenario expects 'Examples:' section", $line)
+                    "Outline scenario expects 'Examples:' section", $line );
             }
 
             if ( $type =~ m/^($langdef->{background})/ ) {

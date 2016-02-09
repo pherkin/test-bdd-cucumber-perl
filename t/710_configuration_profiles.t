@@ -26,13 +26,14 @@ my $dir = dir('t/pherkin_config_files');
 
 for (
     [ 'not_yaml.yaml', default => qr/syntax error/ ],
-    [   'top_level_array.yaml',
+    [
+        'top_level_array.yaml',
         default => qr/hashref on parse, instead a \[ARRAY\]/
     ],
     [ 'readable.yaml', arrayref   => qr/\[ARRAY\] but needs to be a HASH/ ],
     [ 'readable.yaml', hashoption => qr/Option foo is a \[HASH\]/ ],
     [ 'readable.yaml', missing    => qr/Profile not found/ ],
-    )
+  )
 {
     my ( $filename, $profile_name, $expecting ) = @$_;
 
@@ -63,13 +64,10 @@ $p->_process_arguments(
     '-p' => 'ehuelsmann'
 );
 
-isa_ok( $p->harness, 'Test::BDD::Cucumber::Harness::Data',
-    'Harness set' );
+isa_ok( $p->harness, 'Test::BDD::Cucumber::Harness::Data', 'Harness set' );
 is_deeply(
     $p->{'step_paths'},
-    [   "/usr/share/perl/5.14.2/Test/BDD/Plugin/steps",,
-        "~/your-project/steps"
-    ],
+    [ "/usr/share/perl/5.14.2/Test/BDD/Plugin/steps",, "~/your-project/steps" ],
     'Step paths set'
 );
 
