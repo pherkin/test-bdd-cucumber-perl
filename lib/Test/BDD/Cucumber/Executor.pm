@@ -66,6 +66,27 @@ has '_bail_out' => ( is => 'rw', isa => 'Bool', default => 0 );
 
 =head1 METHODS
 
+=head2 extensions
+
+=head2 add_extensions
+
+The attributes C<extensions> is an arrayref, storing extensions in the order
+of addition by C<add_extensions()>.  Extensions have their hook-functions
+called by the Executor at specific points in the BDD feature execution.
+
+
+=cut
+
+has extensions => ( is => 'ro', isa => 'ArrayRef', default => sub { [] } );
+
+sub add_extensions {
+    my $self = shift @_;
+    my @extensions = (ref $_[0] eq 'ARRAY') ? @{$_[0]} : @_;
+
+    push @{$self->extensions}, @extensions;
+}
+
+
 =head2 steps
 
 =head2 add_steps
@@ -139,6 +160,7 @@ sub execute {
         @scenarios = $tag_spec->filter(@scenarios);
     }
 
+    $_->pre_feature($feature, $feature_stash) for @{ $self->extensions };
     for my $scenario (@scenarios) {
 
         # Execute the scenario itself
@@ -152,6 +174,8 @@ sub execute {
             }
         );
     }
+    $_->post_feature($feature, $feature_stash, 'no')
+        for reverse @{ $self->extensions };
 
     $harness->feature_done($feature);
 }
@@ -234,6 +258,9 @@ sub execute_scenario {
             $scenario_stash->{'longest_step_line'} );
 
         if ( not $is_background ) {
+            $_->pre_scenario($outline, $feature_stash, $scenario_stash)
+                for @{ $self->extensions };
+
             for my $before_step ( @{ $self->{'steps'}->{'before'} || [] } ) {
 
                 # Set up a context
@@ -312,6 +339,10 @@ sub execute_scenario {
                 # All After steps should happen, to ensure cleanup
                 my $result = $self->dispatch( $context, $after_step, 0, 0 );
             }
+            $_->post_scenario($outline, $feature_stash, $scenario_stash,
+                              $outline_stash->{'short_circuit'})
+                for reverse @{ $self->extensions };
+            
         }
 
         $harness->$harness_stop( $outline, $dataset );
@@ -372,8 +403,13 @@ sub find_and_dispatch {
           $self->skip_step( $context, 'undefined', $message, $redispatch );
         return $result;
     }
-
-    return $self->dispatch( $context, $step, 0, $redispatch );
+    
+    $_->pre_step($step, $context)
+        for @{ $self->extensions };
+    my $result = $self->dispatch( $context, $step, 0, $redispatch );
+    $_->post_step($step, $context, $result eq 'passing')
+        for reverse @{ $self->extensions };
+    return $result;
 }
 
 =head2 dispatch
