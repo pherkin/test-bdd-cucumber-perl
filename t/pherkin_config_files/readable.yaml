@@ -13,8 +13,9 @@ hashoption:
 
 ehuelsmann:
   steps:
-    - /usr/share/perl/5.14.2/Test/BDD/Plugin/steps
-    - ~/your-project/steps
+    - 1
+    - 2
   output: JSON
+  extensions: Test::CucumberExtensionPush({ id => 1, hash => {}})
   tags:
     - tag1,tag2,tag3

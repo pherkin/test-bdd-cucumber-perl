@@ -19,6 +19,7 @@ use Test::BDD::Cucumber::Loader;
 
 use Moose;
 has 'step_paths' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
+has 'extensions' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
 has 'tags'       => ( is => 'rw', isa => 'ArrayRef', required => 0 );
 has 'tag_scheme' => ( is => 'rw', isa => 'ArrayRef', required => 0 );
 
@@ -69,6 +70,8 @@ sub run {
         = Test::BDD::Cucumber::Loader->load( $features_path,
         $self->tag_scheme );
     die "No feature files found in $features_path" unless @features;
+
+    $executor->add_extensions( $_ ) for @{ $self->extensions };
 
     Test::BDD::Cucumber::Loader->load_steps( $executor, $_ )
         for @{ $self->step_paths };
@@ -210,32 +213,36 @@ sub _process_arguments {
     Getopt::Long::Configure( 'bundling', 'pass_through' );
 
     my %options = (
+
         # Relating to other configuration options
-        config => ['g|config=s'],
-        profile => ['p|profile=s'],
+        config         => ['g|config=s'],
+        profile        => ['p|profile=s'],
         debug_profiles => ['debug-profiles'],
 
         # Standard
-        help => ['h|help|?'],
-        includes => ['I=s@', []],
-        lib => ['l|lib'],
-        blib => ['b|blib'],
-        output => ['o|output=s'],
-        steps => ['s|steps=s@', []],
-        tags => ['t|tags=s@', []],
-        i18n => ['i18n=s',],
+        help       => ['h|help|?'],
+        includes   => [ 'I=s@', [] ],
+        lib        => ['l|lib'],
+        blib       => ['b|blib'],
+        output     => ['o|output=s'],
+        steps      => [ 's|steps=s@', [] ],
+        tags       => [ 't|tags=s@', [] ],
+        i18n       => ['i18n=s'],
+        extensions => [ 'e|extensions=s@', [] ],
     );
 
-    GetOptions( map {
-        my $x;
-        $_->[1] //= \$x;
-        ($_->[0] => $_->[1]);
-    } values %options );
+    GetOptions(
+        map {
+            my $x;
+            $_->[1] //= \$x;
+            ( $_->[0] => $_->[1] );
+        } values %options
+    );
 
     my $deref = sub {
-        my $key = shift;
-        my $value = $options{ $key }->[1];
-        return (ref $value eq 'ARRAY') ? $value : $$value;
+        my $key   = shift;
+        my $value = $options{$key}->[1];
+        return ( ref $value eq 'ARRAY' ) ? $value : $$value;
     };
 
     pod2usage(
@@ -244,65 +251,97 @@ sub _process_arguments {
     ) if $deref->('help');
 
     # Load the configuration file
-    my @configuration_options =
-        $self->_load_config( map { $deref->( $_ ) } qw/profile config debug_profiles/ );
+    my @configuration_options = $self->_load_config( map { $deref->($_) }
+            qw/profile config debug_profiles/ );
 
     # Merge those configuration items
     # First we need a list of matching keys
     my %keys = map {
-        my ($key_basis, $ref) = @$_;
-        map { $_ => $ref } map {s/=.+//; $_} split(/\|/, $key_basis);
+        my ( $key_basis, $ref ) = @$_;
+        map { $_ => $ref } map { s/=.+//; $_ } split( /\|/, $key_basis );
     } values %options;
 
     # Now let's go through each option. For arrays, we want the configuration
-    # options to appear in order at the front. So if configuration had 1, 2, and
-    # command line options were 3, 4, we want: 1, 2, 3, 4. This is not straight
-    # forward.
+    # options to appear in order at the front. So if configuration had 1, 2,
+    # and command line options were 3, 4, we want: 1, 2, 3, 4. This is not
+    # straight forward.
     my %additions;
-    while ( @configuration_options ) {
-        my ( $key ) = shift( @configuration_options );
-        my ( $value ) = shift( @configuration_options );
-        my $target = $keys{ $key } || die "Unknown configuration option [$key]";
+    while (@configuration_options) {
+        my ($key)   = shift(@configuration_options);
+        my ($value) = shift(@configuration_options);
+        my $target = $keys{$key} || die "Unknown configuration option [$key]";
 
         if ( ref $target ne 'ARRAY' ) {
+
             # Only use it if we don't have something already
-            if (defined $$target) {
-                print "Ignoring $key from config file because set on cmd line as $$target\n"
+            if ( defined $$target ) {
+                print
+                    "Ignoring $key from config file because set on cmd line as $$target\n"
                     if $deref->('debug_profiles');
             } else {
                 $$target = $value;
-                print "Set $key to $target from config file\n" if $deref->('debug_profiles');
+                print "Set $key to $target from config file\n"
+                    if $deref->('debug_profiles');
             }
 
         } else {
             my $array = $additions{ 0 + $target } ||= [];
             push( @$array, $value );
-            print "Adding $value near the front of $key\n" if $deref->('debug_profiles');
+            print "Adding $value near the front of $key\n"
+                if $deref->('debug_profiles');
         }
     }
-    for my $target (values %options) {
+    for my $target ( values %options ) {
         next unless ref $target->[1] eq 'ARRAY';
         my $key = $target->[1] + 0;
-        unshift( @{$target->[1]}, @{ $additions{ $key } || [] } );
+        unshift( @{ $target->[1] }, @{ $additions{$key} || [] } );
     }
 
-    if (my $i18n = $deref->('i18n') ) {
+    if ( $deref->('debug_profiles') ) {
+        print "Values are:\n";
+        for (sort keys %options) {
+            printf(" %16s: ", $_);
+            my $value = $deref->($_);
+            if ( ref $value ) {
+                print join ', ', @$value;
+            } else {
+                print $value // '[undefined]';
+            }
+            print "\n";
+        }
+        exit;
+    }
+
+    if ( my $i18n = $deref->('i18n') ) {
         _print_langdef($i18n) unless $i18n eq 'help';
         _print_languages();
     }
 
-    unshift @{$deref->('includes')}, 'lib' if $deref->('lib');
-    unshift @{$deref->('includes')}, 'blib/lib', 'blib/arch' if $deref->('blib');
+    unshift @{ $deref->('includes') }, 'lib' if $deref->('lib');
+    unshift @{ $deref->('includes') }, 'blib/lib', 'blib/arch'
+        if $deref->('blib');
+
+    # We may need some of the imported paths...
+    lib->import( @{ $deref->('includes') } );
+
+    # Load any extensions
+    for my $e ( @{ $deref->('extensions') } ) {
+        my $e_args = "()";
+        $e_args = $1 if $e =~ s/\((.+)\)$//;
+        my @e_args = eval $e_args;
+        die "Bad arguments in [$e]: $@" if $@;
+        use_module $e;
+        push( @{$self->extensions}, $e->new( @e_args ) );
+    }
 
     # Munge the output harness
     $self->_initialize_harness( $deref->('output') || "TermColor" );
-    lib->import(@{$deref->('includes')});
 
     # Store any extra step paths
     $self->step_paths( $deref->('steps') );
 
     # Store our TagSpecScheme
-    $self->tag_scheme( $self->_process_tags( @{$deref->('tags')} ) );
+    $self->tag_scheme( $self->_process_tags( @{ $deref->('tags') } ) );
 
     return ( pop @ARGV );
 }

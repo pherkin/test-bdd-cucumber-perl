@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use lib 't/lib';
 
 use Path::Class qw/dir/;
 
@@ -63,14 +64,21 @@ $p->_process_arguments(
     $dir->file('readable.yaml'),
     '-p' => 'ehuelsmann',
     '--steps' => '3',
+    '--steps' => '4',
     '-o' => 'Data',
+    '-e' => 'Test::CucumberExtensionPush({ id => 2, hash => {}})',
+    '--extensions' => 'Test::CucumberExtensionPush({ id => 3, hash => {}})',
 );
 
 isa_ok( $p->harness, 'Test::BDD::Cucumber::Harness::Data', 'Harness set' );
 is_deeply(
     $p->{'step_paths'},
-    [ "/usr/share/perl/5.14.2/Test/BDD/Plugin/steps", "~/your-project/steps", 3 ],
+    [ 1, 2, 3, 4 ],
     'Step paths set'
 );
+
+is( $p->extensions->[0]->id, 1, "Cmdline extension 1" );
+is( $p->extensions->[1]->id, 2, "Cmdline extension 2" );
+is( $p->extensions->[2]->id, 3, "Config extension 3" );
 
 done_testing();

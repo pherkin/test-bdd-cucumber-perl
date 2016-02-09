@@ -56,6 +56,12 @@ Configuration profiles (see CONFIGURATION PROFILES below/`man pherkin`)
  --debug-profile        Shows information about which profile was loaded and how
                         and then terminates
 
+Extensions
+
+ -e Extension::Module   Load an extension. You can place a string in brackets at
+                        the end of the module name which will be eval'd and
+                        passed to new() for the extension.
+
 Help
 
  -h, -?, --help         Print usage information.
@@ -88,9 +94,7 @@ for one:
  ~/.pherkin.yaml
 
 The contents of each profile is merged in as if you'd specified it on the
-command line. C<default> is used if you didn't specify one. Command line options
-take precedence for single item values, and they're added to the end of
-multi-line options, if you specify them as well as a config file. For example:
+command line. C<default> is used if you didn't specify one. For example:
 
  default:
    steps:
@@ -103,6 +107,10 @@ multi-line options, if you specify them as well as a config file. For example:
 is equivalent to:
 
   --steps foo/steps --steps ~/steps --output TermColor --tags tag1,tag2
+
+If you specify both command-line options, and options in a configuration file,
+then the command-line ones override single-value items, and are placed at the
+end of multi-item ones.
 
 If you specify C<--debug-profile> then information showing which profile is
 loaded and how is printed to STDOUT, and then `pherkin` terminates.
