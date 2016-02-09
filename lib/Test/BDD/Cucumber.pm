@@ -14,17 +14,13 @@ Test::BDD::Cucumber - Feature-complete Cucumber-style testing in Perl
 
 A sane and complete Cucumber implementation in Perl
 
+Behaviour of this module is similar to that, but sometimes different from
+the I<real> Cucumber, the plan is to move use the same parser and behaviour
+L<See the logged issue|https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/73>.
+
 =head1 QUICK LINKS
 
 L<Cucumber on Perl on MetaCPAN|https://metacpan.org/release/Test-BDD-Cucumber>
-
-=head1 WARNING
-
-Do have a read of the B<Bugs and Missing> section below so you're not surprised
-when things don't work.
-
-In almost all cases, where the behaviour of this module is different from
-the I<real> Cucumber, the plan is to move it to be more similar to that.
 
 =head1 NEXT STEPS
 
@@ -43,7 +39,8 @@ overview|Test::BDD::Cucumber::Manual::Architecture>.
 
 =head1 TEN SECOND GUIDE TO USING THIS IN YOUR CI ENVIRONMENT
 
-Don't use the command-line tool, L<App::pherkin>. Instead, look at the L<How to integrate with
+Don't use the command-line tool, L<App::pherkin>, for integration in your
+CI environment. Instead, look at the L<How to integrate with
 Test::Builder|Test::BDD::Cucumber::Manual::Integration> document.
 
 =head1 BUGS, MISSING, AND LIMITATIONS
@@ -56,10 +53,6 @@ in the very near future:
 =item * Quoting in tables is broken
 
 =item * Placeholders in pystrings is broken
-
-=item * Explicit Step Outline notation doesn't work (although step outlines are explicitly supported)
-
-=item * Pherkin isn't really fit for purpose yet
 
 =back
 

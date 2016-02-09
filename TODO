@@ -3,7 +3,6 @@
 - [ ] Add a jUnit outputer
 - [ ] Quoting in tables is broken
 - [ ] Placeholders in Pystrings
-- [ ] Make Pherkin feature complete
 
 Make a corpus-checker for checking parsing of In The Wild Gherkin files...
     - https://github.com/diaspora/diaspora/tree/master/features
