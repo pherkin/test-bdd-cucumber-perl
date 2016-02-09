@@ -1,0 +1,3 @@
+# Config files are meant to have hash at top level
+- default:
+    foo: bar

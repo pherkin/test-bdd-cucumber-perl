@@ -1,0 +1,20 @@
+default:
+  foo: bar
+  bar: baz
+readable:
+  f:
+    - 1
+    - 2
+arrayref:
+  - foo: bar
+hashoption:
+  foo:
+    bar: 1
+
+ehuelsmann:
+  steps:
+    - /usr/share/perl/5.14.2/Test/BDD/Plugin/steps
+    - ~/your-project/steps
+  output: Data
+  tags:
+    - tag1,tag2,tag3

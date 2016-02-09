@@ -48,6 +48,14 @@ Tag specifications
  -t, --tags @tag1,@tag2 Run scenarios tagged with '@tag1' and '@tag2'
  -t, --tags ~@tag       Run scenarios tagged without '@tag'
 
+Configuration profiles (see CONFIGURATION PROFILES below)
+
+ -g, --config [path]    A YAML file containing configuration profiles
+ -p, --profile [name]   Name of the profile to load from the above config file.
+                        Defaults to `default`
+ --debug-profile        Shows information about which profile was loaded and how
+                        and then terminates
+
 Help
 
  -h, -?, --help         Print usage information.
@@ -62,6 +70,42 @@ L<Test::BDD::Cucumber::TestBuilder> is also a reasonable option:
 
   pherkin -o TermColor some/path/feature   # The default
   pherkin -o TestBuilder some/path/feature # Test::Builder-type text output
+
+=head1 CONFIGURATION PROFILES
+
+You can specify sets of command line options using a YAML configuration file
+with named profiles in it, and the C<-g, --config> and C<-p, --profile> command
+line options.
+
+If you don't specify a config file, the following paths are searched (in order)
+for one:
+
+ (contents of $ENV{'PHERKIN_CONFIG'})
+ .pherkin.yaml
+ ./config/pherkin.yaml
+ ./.config/pherkin.yaml
+ t/.pherkin.yaml
+ ~/.pherkin.yaml
+
+The contents of each profile is merged in as if you'd specified it on the
+command line. C<default> is used if you didn't specify one. For example:
+
+ default:
+   steps:
+     - foo/steps
+     - ~/steps
+   output: TermColor
+   tags:
+     - tag1,tag2
+
+is equivalent to:
+
+  --steps foo/steps --steps ~/steps --output TermColor --tags tag1,tag2
+
+Command line options take precedence over profile ones, if you specify both.
+
+If you specify C<--debug-profile> then information showing which profile is
+loaded and how is printed to STDOUT, and then `pherkin` terminates.
 
 =head1 AUTHOR
 

@@ -1,32 +1,12 @@
-# This file allows you to store any number of predefined configurations
-# for pherkin. At the root level, there is a 'profile'. The profile can
-# be selected using the --profile or -p command line option.
-#
-# This file is being looked for in the following order:
-#   --config command line argument (bails out if doesn't exist)
-#   PHERKIN environment variable (bails out if doesn't exist)
-#   .pherkin.yml (in current dir) (non-existence ignored)
-#   config/pherkin.yml (non-existence ignored; path taken from Cucumber/Behat)
-#   .config/pherkin.yml (non-existence ignored; path taken from Cucumber/Behat)
-#   t/.pherkin.yml   (non-existince ignored)
-#   ~/.pherkin.yml   (non-existince ignored)
+# `man pherkin`, "CONFIGURATION PROFILES"
 
 default:
-   step_paths:
+   steps:
      - /usr/share/perl/5.14.2/Test/BDD/Plugin/steps
      - ~/your-project/steps
-   output: TermColor
+   o: TermColor
    tags:
      - tag1,tag2,tag3
-ci:
-   extensions:
-     Selenium:
-       enable: Yes
-       implicit_wait_timeout: 30000
-   additional_steps:
-      - /usr/steps1
-      - /usr/steps2
-
 
 # Note: this file is being used by the test suite;
-#  be sure to run tests after modifying   
+#  be sure to run tests after modifying
