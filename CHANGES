@@ -1,4 +1,7 @@
 -----
+0.45: 11 Feb 2016
+    - Removed Moose cleanliness method from
+      Test::BDD::Cucumber::Extension
 0.44: 09 Feb 2016
     - Add extensions! See Test::BDD::Cucumber::Executor and
       Test::BDD::Cucumber::Extensions for details. Work by ehuelsmann:

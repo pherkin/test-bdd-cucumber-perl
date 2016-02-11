@@ -13,7 +13,6 @@ the BDD script execution.
 =cut
 
 use Moose;
-use namespace::autoclean;
 
 =head1 PROPERTIES
 
@@ -78,7 +77,7 @@ Invoked by the Executor before executing each step in $scenario.
 Reports errors by calling croak().
 
 Feature and scenario stashes can be reached through
- $step_context->{stash}->{feature} and 
+ $step_context->{stash}->{feature} and
  $step_context->{stash}->{scenario}
 
 Note: *executed* steps, so not called for skipped steps.
@@ -106,7 +105,5 @@ Erik Huelsmann C<ehuels@gmail.com>
 Copyright 2016, Erik Huelsmann; Licensed under the same terms as Perl
 
 =cut
-
-__PACKAGE__->meta->make_immutable;
 
 1;
