@@ -355,10 +355,14 @@ sub _extract_table {
 
 sub _pipe_array {
     my ( $self, $string ) = @_;
-    my @atoms = split( /\|/, $string );
+    my @atoms = split( /(?<!\\)\|/, $string );
     shift(@atoms);
     return
-      map { my $atom = $_; $atom =~ s/^\s+//; $atom =~ s/\s+$//; $atom } @atoms;
+      map { my $atom = $_;
+            $atom =~ s/^\s+//;
+            $atom =~ s/\s+$//;
+            $atom =~ s/\\(.)/$1/g;
+            $atom } @atoms;
 }
 
 1;

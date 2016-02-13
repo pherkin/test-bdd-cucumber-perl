@@ -52,7 +52,7 @@ Feature: Test Feature
 		  Given I expect "<value>" to be equal to "an | escaped"
         Examples:
           | value           |
-          | an \| escaped   |
+          | an \\| escaped   |
 HEREDOC
     );
 
