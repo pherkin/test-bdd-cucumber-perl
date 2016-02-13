@@ -90,7 +90,9 @@ sub _run_tests {
             { tags => $self->tag_scheme } );
     }
 
+    $_->pre_execute() for @{ $self->extensions };
     $executor->execute( $_, $harness, $tag_spec ) for @features;
+    $_->post_execute() for reverse @{ $self->extensions };
 
     $harness->shutdown();
     return $harness->result;
