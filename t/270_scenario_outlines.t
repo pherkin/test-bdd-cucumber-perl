@@ -40,4 +40,37 @@ ok( $error, "A parsing error was caught" );
 like( $error, qr/Outline scenario expects/, "Error is about outline scenario" );
 like( $error, qr/12\*/, "Error identifies correct start line" );
 
+
+
+$feature = 
+    Test::BDD::Cucumber::Parser->parse_string(
+        <<HEREDOC
+Feature: Test Feature
+	Conditions of satisfaction
+
+	Scenario:
+		  Given I expect "<value>" to be equal to "an | escaped"
+        Examples:
+          | value           |
+          | an \| escaped   |
+HEREDOC
+    );
+
+my $executor = Test::BDD::Cucumber::Executor->new();
+my $harness = Test::BDD::Cucumber::Harness::Data->new();
+my $tbl_value;
+my $expectation;
+
+$executor->add_steps(
+    [ Given => qr/I expect "(.*)" to be equal to "(.*)"/,
+      sub {
+          $tbl_value = $1;
+          $expectation = $2;
+      } ], );
+
+$executor->execute($feature, $harness);
+ok(defined $tbl_value, "table value defined");
+ok(defined $expectation, "expectation defined");
+is($tbl_value, $expectation, "escaped table value equals string value");
+
 done_testing();
