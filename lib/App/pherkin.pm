@@ -165,7 +165,7 @@ sub _load_config {
         }
     }
 
-    $profile_name //= 'default';
+    $profile_name = 'default' unless defined $profile_name;
 
     # Check the config file has the right type of data at the profile name
     unless ( ref $config_data_whole eq 'HASH' ) {
@@ -237,7 +237,7 @@ sub _process_arguments {
     GetOptions(
         map {
             my $x;
-            $_->[1] //= \$x;
+            $_->[1] = \$x unless defined $_->[1];
             ( $_->[0] => $_->[1] );
         } values %options
     );
@@ -308,7 +308,7 @@ sub _process_arguments {
             if ( ref $value ) {
                 print join ', ', @$value;
             } else {
-                print $value // '[undefined]';
+                print ((defined $value) ? $value : '[undefined]' );
             }
             print "\n";
         }

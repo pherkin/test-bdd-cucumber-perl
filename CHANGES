@@ -6,6 +6,8 @@
         https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/50
     - Extensions gains setup and teardown methods
         https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/78
+    - Works on old Perls again:
+        https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/79
 0.45: 11 Feb 2016
     - Removed Moose cleanliness method from
       Test::BDD::Cucumber::Extension
