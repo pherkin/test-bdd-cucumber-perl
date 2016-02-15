@@ -5,7 +5,7 @@ perl:
     - "5.18"
     - "5.16"
     - "5.14"
-    - "5.8.9"
+    - "5.8"
 
 install:
     - dzil authordeps --missing | cpanm --no-skip-satisfied
