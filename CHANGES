@@ -1,4 +1,11 @@
 -----
+0.46: 15 Feb 2016
+    - Spelling mistakes fixed
+        https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/75
+    - Table quoting fixed
+        https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/50
+    - Extensions gains setup and teardown methods
+        https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/78
 0.45: 11 Feb 2016
     - Removed Moose cleanliness method from
       Test::BDD::Cucumber::Extension
