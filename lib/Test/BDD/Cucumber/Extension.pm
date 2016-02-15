@@ -47,7 +47,7 @@ and their respective pre-hooks. Reports errors by calling croak().
 =head2 post_feature($feature, $feature_stash)
 
 Invoked by the Executor after executing the background and feature scenarios
-and their repective post-hooks. Reports errors by calling croak().
+and their respective post-hooks. Reports errors by calling croak().
 
 =cut
 
@@ -62,7 +62,7 @@ their respective pre-hooks. Reports errors by calling croak().
 =head2 post_scenario($scenario, $feature_stash, $scenario_stash, $failed)
 
 Invoked by the Executor after executing all the steps in $scenario
-and their repective post-hooks. Reports errors by calling croak().
+and their respective post-hooks. Reports errors by calling croak().
 
 $failure indicates whether any of the steps in the scenario has failed.
 
