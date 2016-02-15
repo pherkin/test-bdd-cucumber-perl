@@ -260,9 +260,9 @@ sub _process_arguments {
     # Merge those configuration items
     # First we need a list of matching keys
     my %keys = map {
-        my ( $key_basis, $ref ) = @$_;
-        map { $_ => $ref } map { s/=.+//; $_ } split( /\|/, $key_basis );
-    } values %options;
+        my ( $key_basis, $ref ) = @{$options{$_}};
+        map { $_ => $ref } map { s/=.+//; $_ } (split( /\|/, $key_basis ), $_);
+    } keys %options;
 
     # Now let's go through each option. For arrays, we want the configuration
     # options to appear in order at the front. So if configuration had 1, 2,
