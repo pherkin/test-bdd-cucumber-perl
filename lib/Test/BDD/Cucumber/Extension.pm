@@ -39,6 +39,22 @@ the extension is loaded.
 
 sub step_directories { return []; }
 
+=head2 pre_execute()
+
+Invoked by App::pherkin before executing any features.  This callback
+allows generic extension setup. Reports errors by calling croak().
+
+=head2 post_execute()
+
+Invoked by App::pherkin after executing all features.  This callback
+allows generic extension teardown and cleanup. Reports errors by calling
+croak().
+
+=cut
+
+sub pre_execute  { return; }
+sub post_execute { return; }
+
 =head2 pre_feature($feature, $feature_stash)
 
 Invoked by the Executor before executing the background and feature scenarios
