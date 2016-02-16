@@ -38,6 +38,20 @@ definitions. We then pass this in a L<Test::BDD::Model::Feature> object, along
 with a L<Test::BDD::Model::Harness> object, which controls interaction with
 the outside world.
 
+=head1 EXTENSION
+
+Extensions allow hooking into the execution of the steps, with pre- and post
+hooks for steps, scenarios, features and the entire execution. Extensions
+can provide additional step directories from which steps will be made
+available. The feature and scenario stashes are passed to the extension hooks
+allowing for a means of communication between the hooks and the steps.
+
+Extensions - when loaded by the pherkin test executor - receive their
+configuration from the pherkin.yaml configuration file, which works
+similar to L<the configuration of extensions in
+Behat|http://docs.behat.org/en/v2.5/guides/7.config.html#extensions>.
+
+
 =head1 AUTHOR
 
 Peter Sergeant C<pete@clueball.com>
