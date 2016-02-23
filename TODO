@@ -2,10 +2,7 @@
 - [ ] Add a jUnit outputer
 - [ ] Placeholders in Pystrings
 
-Make a corpus-checker for checking parsing of In The Wild Gherkin files...
-    - https://github.com/diaspora/diaspora/tree/master/features
-    - https://github.com/teambox/teambox/tree/dev/features
-    - https://github.com/rspec/rspec-core/tree/master/features
-    - https://github.com/cucumber/cucumber/tree/master/features
-    - https://github.com/cucumber/aruba/tree/master/features
-    - https://github.com/wikimedia/mediawiki/tree/master/tests/browser/features
+- Harness should print out actual scenario and feature keyword used
+- Harness should print out scenario description
+
+- Rewrite to use Gherkin.pm underneath

@@ -1,4 +1,9 @@
 -----
+0.47: 23 Feb 2016
+    - eheulsmann adds extra documentation on extensions
+    https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/82
+    - eheulsmann fixes which keys we allow in configuration files
+    https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/81
 0.46: 15 Feb 2016
     - Spelling mistakes fixed
         https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/75
