@@ -192,10 +192,17 @@ sub _load_config {
         my $value = $config_data->{$key};
 
         if ( my $reftype = ref $value ) {
-            die $profile_problem->(
+            if ( $key ne 'extensions' ) {
+                die $profile_problem->(
 "Option $key is a [$reftype] but can only be a single value or ARRAY"
-            ) unless $reftype eq 'ARRAY';
-            push( @arguments, $key, $_ ) for @$value;
+                ) unless $reftype eq 'ARRAY';
+                push( @arguments, $key, $_ ) for @$value;
+            } else {
+                die $profile_problem->(
+                    "Option $key is a [$reftype] but can only be a HASH" )
+                  unless $reftype eq 'HASH' && $key eq 'extensions';
+                push( @arguments, $key, $value );
+            }
         } else {
             push( @arguments, $key, $value );
         }
@@ -231,7 +238,7 @@ sub _process_arguments {
         steps      => [ 's|steps=s@', [] ],
         tags       => [ 't|tags=s@', [] ],
         i18n       => ['i18n=s'],
-        extensions => [ 'e|extensions=s@', [] ],
+        extensions => [ 'e|extension=s@', [] ],
     );
 
     GetOptions(
@@ -253,6 +260,17 @@ sub _process_arguments {
         -input   => "$RealBin/$Script",
     ) if $deref->('help');
 
+    my @parsed_extensions;
+    for my $e ( @{ $deref->('extensions') } ) {
+        my $e_args = "()";
+        $e_args = $1 if $e =~ s/\((.+)\)$//;
+        my @e_args = eval $e_args;
+        die "Bad arguments in [$e]: $@" if $@;
+
+        push( @parsed_extensions, [ $e, \@e_args ] );
+    }
+    $options{extensions}->[1] = \@parsed_extensions;
+
     # Load the configuration file
     my @configuration_options = $self->_load_config( map { $deref->($_) }
           qw/profile config debug_profiles/ );
@@ -260,8 +278,9 @@ sub _process_arguments {
     # Merge those configuration items
     # First we need a list of matching keys
     my %keys = map {
-        my ( $key_basis, $ref ) = @{$options{$_}};
-        map { $_ => $ref } map { s/=.+//; $_ } (split( /\|/, $key_basis ), $_);
+        my ( $key_basis, $ref ) = @{ $options{$_} };
+        map { $_ => $ref }
+          map { s/=.+//; $_ } ( split( /\|/, $key_basis ), $_ );
     } keys %options;
 
     # Now let's go through each option. For arrays, we want the configuration
@@ -274,7 +293,17 @@ sub _process_arguments {
         my ($value) = shift(@configuration_options);
         my $target = $keys{$key} || die "Unknown configuration option [$key]";
 
-        if ( ref $target ne 'ARRAY' ) {
+        if ( $key eq 'extensions' || $key eq 'extension' )
+        {
+            die "Value of $key in config file expected to be HASH but isn't"
+                if ref $value ne 'HASH';
+            my @e = map { [ $_, [ $value->{$_} ] ] } keys %$value;
+            $value = \@e;
+            my $array = $additions{ 0 + $target } ||= [];
+            push( @$array, @$value );
+            print "Adding extensions near the front of $key"
+              if $deref->('debug_profiles');
+        } elsif ( ref $target ne 'ARRAY' ) {
 
             # Only use it if we don't have something already
             if ( defined $$target ) {
@@ -308,7 +337,7 @@ sub _process_arguments {
             if ( ref $value ) {
                 print join ', ', @$value;
             } else {
-                print ((defined $value) ? $value : '[undefined]' );
+                print( ( defined $value ) ? $value : '[undefined]' );
             }
             print "\n";
         }
@@ -329,12 +358,9 @@ sub _process_arguments {
 
     # Load any extensions
     for my $e ( @{ $deref->('extensions') } ) {
-        my $e_args = "()";
-        $e_args = $1 if $e =~ s/\((.+)\)$//;
-        my @e_args = eval $e_args;
-        die "Bad arguments in [$e]: $@" if $@;
-        use_module $e;
-        push( @{ $self->extensions }, $e->new(@e_args) );
+        my ( $c, $a ) = @$e;
+        use_module $c;
+        push( @{ $self->extensions }, $c->new(@$a) );
     }
 
     # Munge the output harness

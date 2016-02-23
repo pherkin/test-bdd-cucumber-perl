@@ -16,6 +16,10 @@ ehuelsmann:
     - 1
     - 2
   output: JSON
-  extensions: Test::CucumberExtensionPush({ id => 1, hash => {}})
+  extensions:
+     Test::CucumberExtensionPush:
+        id: 1
+        hash:
+          key: value
   tags:
     - tag1,tag2,tag3
