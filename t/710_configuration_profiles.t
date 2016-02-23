@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use lib 't/lib';
 
+use Cwd;
 use Path::Class qw/dir/;
 
 use Test::More;
@@ -71,7 +72,12 @@ $p->_process_arguments(
 );
 
 isa_ok( $p->harness, 'Test::BDD::Cucumber::Harness::Data', 'Harness set' );
-is_deeply( $p->{'step_paths'}, [ 1, 2, 3, 4 ], 'Step paths set' );
+is_deeply( $p->{'step_paths'},
+           [ dir(getcwd . '/t/lib/Test/extension_steps'), # extension loaded
+             dir(getcwd . '/t/lib/Test/extension_steps'), # 3 times
+             dir(getcwd . '/t/lib/Test/extension_steps'),
+             1, 2, 3, 4 ],
+           'Step paths set' );
 
 is( $p->extensions->[0]->id, 1, "Cmdline extension 1" );
 is( $p->extensions->[1]->id, 2, "Cmdline extension 2" );
