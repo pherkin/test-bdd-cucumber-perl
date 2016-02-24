@@ -1,4 +1,6 @@
 -----
+0.48: 24 Feb 2016
+    - Now without cruft that was lying around in the build dir
 0.47: 23 Feb 2016
     - eheulsmann adds extra documentation on extensions
     https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/82
