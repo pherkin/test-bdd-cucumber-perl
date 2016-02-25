@@ -199,7 +199,8 @@ sub _load_config {
                 push( @arguments, $key, $_ ) for @$value;
             } else {
                 die $profile_problem->(
-                    "Option $key is a [$reftype] but can only be a HASH" )
+"Option $key is a [$reftype] but can only be a HASH as '$key' is"
+. " a special case - see the documentation for details")
                   unless $reftype eq 'HASH' && $key eq 'extensions';
                 push( @arguments, $key, $value );
             }
