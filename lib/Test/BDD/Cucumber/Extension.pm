@@ -98,7 +98,7 @@ Feature and scenario stashes can be reached through
 
 Note: *executed* steps, so not called for skipped steps.
 
-=head2 post_scenario($step, $step_context, $failed)
+=head2 post_step($step, $step_context, $failed)
 
 Invoked by the Executor after each executed step in $scenario.
 Reports errors by calling croak().
