@@ -20,7 +20,17 @@ L<See the logged issue|https://github.com/pjlsergeant/test-bdd-cucumber-perl/iss
 
 =head1 QUICK LINKS
 
-L<Cucumber on Perl on MetaCPAN|https://metacpan.org/release/Test-BDD-Cucumber>
+See this distribution: L<Cucumber on Perl on MetaCPAN|https://metacpan.org/release/Test-BDD-Cucumber>
+
+=begin html
+
+You can talk to the author(s) here: <a
+href="https://gitter.im/pjlsergeant/test-bdd-cucumber-perl"><img
+    src="https://badges.gitter.im/pjlsergeant/test-bdd-cucumber-perl.svg"
+    alt="Chat on Gitter"
+></a>
+
+=end html
 
 =head1 NEXT STEPS
 
