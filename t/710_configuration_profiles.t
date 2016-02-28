@@ -67,7 +67,7 @@ $p->_process_arguments(
     '--steps'      => '4',
     '-o'           => 'Data',
     '-e'           => 'Test::CucumberExtensionPush({ id => 2, hash => {}})',
-    '--extensions' => 'Test::CucumberExtensionPush({ id => 3, hash => {}})',
+    '--extension' => 'Test::CucumberExtensionPush({ id => 3, hash => {}})',
 );
 
 isa_ok( $p->harness, 'Test::BDD::Cucumber::Harness::Data', 'Harness set' );

@@ -115,6 +115,36 @@ end of multi-item ones.
 If you specify C<--debug-profile> then information showing which profile is
 loaded and how is printed to STDOUT, and then `pherkin` terminates.
 
+=head2 EXTENSION CONFIGURATION
+
+Extensions named in the C<extensions> section of the configuration will
+be loaded with the configuration from the configuration file:
+
+ default:
+   includes:
+      # include location where extensions reside on disk
+      - t/lib
+   extensions:
+      # extension with configuration
+      Test::CucumberPush:
+          key1: value1
+          key2: value2
+      # extension without configuration
+      Test::CucumberPop:
+
+Notice that contrary to all other configuration parameters, the names
+of the extensions are not prefixed with a dash (i.e. '- t/lib' vs
+'Test::CucumberPush').
+
+The example above is the equivalent of
+
+  use Test::CucumberPush;
+  use Test::CucumberPop;
+
+  Test::CucumberPush->new({ 'key1' => 'value1', 'key2' => 'value2' });
+  Test::CucumberPop->new();
+
+
 =head1 AUTHOR
 
 Peter Sergeant C<pete@clueball.com>
