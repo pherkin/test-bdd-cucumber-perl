@@ -73,9 +73,10 @@ $p->_process_arguments(
 
 isa_ok( $p->harness, 'Test::BDD::Cucumber::Harness::Data', 'Harness set' );
 is_deeply( $p->{'step_paths'},
-           [ dir(getcwd . '/t/lib/Test/extension_steps'), # extension loaded
-             dir(getcwd . '/t/lib/Test/extension_steps'), # 3 times
-             dir(getcwd . '/t/lib/Test/extension_steps'),
+           [  # extension loaded 3 times
+             dir(getcwd)->subdir(qw( t lib Test extension_steps )),
+             dir(getcwd)->subdir(qw( t lib Test extension_steps )),
+             dir(getcwd)->subdir(qw( t lib Test extension_steps )),
              1, 2, 3, 4 ],
            'Step paths set' );
 
