@@ -74,6 +74,8 @@ On Github, of course: L<https://github.com/pjlsergeant/test-bdd-cucumber-perl>.
 
 Peter Sergeant C<pete@clueball.com>
 
+Erik Huelsmann C<ehuels@gmail.com>
+
 Ben Rodgers C<ben@bdr.org>
 
 =head1 LICENSE

@@ -1,4 +1,7 @@
 -----
+0.49: 29 Feb 2016
+    - Special extensions syntax in config files added by
+      eheulsmann
 0.48: 24 Feb 2016
     - Now without cruft that was lying around in the build dir
 0.47: 23 Feb 2016

@@ -299,7 +299,7 @@ sub _process_arguments {
         {
             die "Value of $key in config file expected to be HASH but isn't"
                 if ref $value ne 'HASH';
-            
+
             # if the configuration of the extension is 'undef', then
             # none was defined. Replace it with an empty hashref, which
             # is what Moose's 'new()' method wants later on
