@@ -5,12 +5,13 @@ use warnings;
 
 use lib;
 use Getopt::Long;
-use Module::Runtime qw(use_module);
+use Module::Runtime qw(use_module module_notional_filename);
 use List::Util qw(max);
 use Pod::Usage;
 use FindBin qw($RealBin $Script);
 use YAML::Syck;
 use Data::Dumper;
+use File::Spec;
 use Path::Class qw/file dir/;
 
 use Test::BDD::Cucumber::I18n
@@ -365,7 +366,15 @@ sub _process_arguments {
     for my $e ( @{ $deref->('extensions') } ) {
         my ( $c, $a ) = @$e;
         use_module $c;
-        push( @{ $self->extensions }, $c->new(@$a) );
+
+        my $instance = $c->new(@$a);
+        push( @{ $self->extensions }, $instance );
+
+        my $dir = file($INC{module_notional_filename($c)})->dir;
+        my @step_dirs =
+            map { File::Spec->rel2abs( $_, $dir ) }
+            @{$instance->step_directories};
+        unshift( @{$deref->('steps')}, @step_dirs );
     }
 
     # Munge the output harness
