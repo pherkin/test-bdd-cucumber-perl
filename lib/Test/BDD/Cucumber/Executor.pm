@@ -306,6 +306,12 @@ sub execute_scenario {
             # Multiply out any placeholders
             my $text =
               $self->add_placeholders( $step->text, $dataset, $step->line );
+            my $data = $step->data;
+            $data = (ref $data) ?
+                $self->add_table_placeholders( $data, $dataset, $step->line )
+                : (defined $data) ?
+                $self->add_placeholders( $data, $dataset, $step->line )
+                : '';
 
             # Set up a context
             my $context = Test::BDD::Cucumber::StepContext->new(
@@ -314,9 +320,7 @@ sub execute_scenario {
 
                     # Data portion
                     columns => $step->columns || [],
-                    data => ref( $step->data )
-                    ? clone( $step->data )
-                    : $step->data || '',
+                    data => $data,
 
                     # Step-specific info
                     step => $step,
@@ -374,6 +378,28 @@ sub add_placeholders {
     /eg;
     return Test::BDD::Cucumber::Util::bs_unquote($quoted_text);
 }
+
+
+=head2 add_table_placeholders
+
+Accepts a hash with parsed table data and a hashref, and replaces
+C< <placeholders> > with the values in the hashref, returning a copy of the
+parsed table hashref.
+
+=cut
+
+sub add_table_placeholders {
+    my ($self, $tbl, $dataset, $line) = @_;
+    my @rv = map {
+        my $row = $_;
+        my %inner_rv =
+            map { $_ => $self->add_placeholders($row->{$_}, $dataset, $line)
+        } keys %$row;
+        \%inner_rv;
+    } @$tbl;
+    return \@rv;
+}
+
 
 =head2 find_and_dispatch
 
