@@ -27,15 +27,19 @@ is( $class->_find_config_file('foobar'),
 my $dir = dir('t/pherkin_config_files');
 
 for (
-    [ 'not_yaml.yaml', default => qr/syntax error/ ],
-    [
-        'top_level_array.yaml',
+    [   'top_level_array.yaml',
         default => qr/hashref on parse, instead a \[ARRAY\]/
     ],
     [ 'readable.yaml', arrayref   => qr/\[ARRAY\] but needs to be a HASH/ ],
     [ 'readable.yaml', hashoption => qr/Option foo is a \[HASH\]/ ],
     [ 'readable.yaml', missing    => qr/Profile not found/ ],
-  )
+
+    # YAML::Syck segaults on this for older Perls ¯\_(ツ)_/¯
+    (     ( $] > 5.008008 )
+        ? ( [ 'not_yaml.yaml', default => qr/syntax error/ ] )
+        : ()
+    ),
+    )
 {
     my ( $filename, $profile_name, $expecting ) = @$_;
 
@@ -63,11 +67,11 @@ my $p = App::pherkin->new();
 $p->_process_arguments(
     '-g',
     $dir->file('readable.yaml'),
-    '-p'           => 'ehuelsmann',
-    '--steps'      => '3',
-    '--steps'      => '4',
-    '-o'           => 'Data',
-    '-e'           => 'Test::CucumberExtensionPush({ id => 2, hash => {}})',
+    '-p'          => 'ehuelsmann',
+    '--steps'     => '3',
+    '--steps'     => '4',
+    '-o'          => 'Data',
+    '-e'          => 'Test::CucumberExtensionPush({ id => 2, hash => {}})',
     '--extension' => 'Test::CucumberExtensionPush({ id => 3, hash => {}})',
 );
 
