@@ -1,4 +1,6 @@
 -----
+0.50: 29 Apr 2016
+    - eheulsmann added placeholders to PyStrings
 0.49: 29 Feb 2016
     - Special extensions syntax in config files added by
       eheulsmann
