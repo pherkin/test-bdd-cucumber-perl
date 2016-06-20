@@ -12,7 +12,7 @@ Makes loading Step Definition files and Feature files a breeze...
 
 =head2 load
 
-Accepts a path and an optional C<Test::BDD::Cucumber::Model::TagSpec>,
+Accepts a path and an optional L<Test::BDD::Cucumber::Model::TagSpec>,
 and returns a L<Test::BDD::Executor> object with the Step
 Definition files loaded, and a list of L<Test::BDD::Model::Feature> objects.
 
