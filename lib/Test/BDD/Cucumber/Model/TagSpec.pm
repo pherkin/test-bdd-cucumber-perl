@@ -34,11 +34,11 @@ don't do that. The C<not> function accepts only one argument.
 
 I<eg>:
 
-@important AND @billing: C<[and => 'important', 'billing']>
+@important AND @billing: C<<[and => 'important', 'billing']>>
 
-(@billing OR @WIP) AND @important: C<[ and => [ or => 'billing', 'wip' ], 'important' ]>
+(@billing OR @WIP) AND @important: C<<[ and => [ or => 'billing', 'wip' ], 'important' ]>>
 
-Skipping both @todo and @wip tags: C<[ and => [ not => 'todo' ], [ not => 'wip' ] ]>
+Skipping both @todo and @wip tags: C<<[ and => [ not => 'todo' ], [ not => 'wip' ] ]>>
 
 =head1 ATTRIBUTES
 
@@ -47,7 +47,7 @@ Skipping both @todo and @wip tags: C<[ and => [ not => 'todo' ], [ not => 'wip' 
 An arrayref representing a structure like the above.
 
  TagSet->new({
-	tags => [ and => 'green', 'blue', [ or => 'red', 'yellow' ], [ not => 'white' ] ]
+        tags => [ and => 'green', 'blue', [ or => 'red', 'yellow' ], [ not => 'white' ] ]
  })
 
 =cut
