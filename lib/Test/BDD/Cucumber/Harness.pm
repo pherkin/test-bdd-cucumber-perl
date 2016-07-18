@@ -42,7 +42,7 @@ sub feature_done { my ( $self, $feature ) = @_; }
 
 If you have a background section, then we execute it as a quasi-scenario step
 before each scenario. These hooks are fired before and after that, and passed
-in the L<Test::BDD::Cucmber::Model::Scenario> that represents the Background
+in the L<Test::BDD::Cucumber::Model::Scenario> that represents the Background
 section, and a a dataset hash (although why would you use that?)
 
 =cut
@@ -55,7 +55,7 @@ sub background_done { my ( $self, $scenario, $dataset ) = @_; }
 =head2 scenario_done
 
 Called at the start and end of scenario execution respectively. Both methods
-accept a L<Test::BDD::Cucmber::Model::Scenario> module and a dataset hash.
+accept a L<Test::BDD::Cucumber::Model::Scenario> module and a dataset hash.
 
 =cut
 
@@ -67,7 +67,7 @@ sub scenario_done { my ( $self, $scenario, $dataset ) = @_; }
 =head2 step_done
 
 Called at the start and end of step execution respectively. Both methods
-accept a L<Test::BDD::Cucmber::StepContext> object. C<step_done> also accepts
+accept a L<Test::BDD::Cucumber::StepContext> object. C<step_done> also accepts
 a L<Test::BDD::Cucumber::Model::Result> object and an arrayref of arrayrefs with
 locations of consolidated matches, for highlighting.
 
