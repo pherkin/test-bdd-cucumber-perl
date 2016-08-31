@@ -29,5 +29,5 @@ Then qr/the (.+) output is "(.+)"/, sub {
         'hex'    => 'hexdigest'
     }->{$type};
 
-    is( S->{'object'}->$method, $expected );
+    is( S->{'object'}->$method,  $expected );
 };
