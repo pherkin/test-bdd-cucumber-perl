@@ -58,10 +58,11 @@ Returns a L<Test::BDD::Cucumber::Model::Result> object for all steps run.
 
 =cut
 
-sub run {
+sub _pre_run {
     my ( $self, @arguments ) = @_;
 
- # localized features will have utf8 in them and options may output utf8 as well
+    # localized features will have utf8 in them and options may output utf8 as
+    # well
     binmode STDOUT, ':utf8';
 
     my ($features_path) = $self->_process_arguments(@arguments);
@@ -76,6 +77,12 @@ sub run {
     Test::BDD::Cucumber::Loader->load_steps( $executor, $_ )
       for @{ $self->step_paths };
 
+    return ( $executor, @features );
+}
+
+sub run {
+    my ( $self, @arguments ) = @_;
+    my ( $executor, @features ) = $self->_pre_run( @arguments );
     return $self->_run_tests( $executor, @features );
 }
 

@@ -121,7 +121,7 @@ sub _note_step_data {
     }
 }
 
-sub shutdown { my $self = shift; $self->_tb->note( done_testing() ); }
+sub shutdown { my $self = shift; $self->_tb->note( $self->_tb->done_testing() ); }
 
 =head1 AUTHOR
 

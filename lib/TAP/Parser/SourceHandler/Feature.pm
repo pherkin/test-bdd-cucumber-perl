@@ -3,8 +3,12 @@ package TAP::Parser::SourceHandler::Feature;
 use strict;
 use warnings;
 
+use Path::Class qw/file/;
+
 use base 'TAP::Parser::SourceHandler';
 use TAP::Parser::Iterator::Process;
+
+use App::pherkin;
 
 use Test::BDD::Cucumber::Loader;
 use Test::BDD::Cucumber::Harness::TestBuilder;
@@ -16,16 +20,24 @@ TAP::Parser::IteratorFactory->register_handler(__PACKAGE__);
 sub can_handle {
     my ( $class, $source ) = @_;
 
-    #use Data::Printer; p $source; exit;
-
     if (   $source->meta->{'is_file'}
         && $source->meta->{'file'}->{'basename'} =~ m/\.feature$/ )
     {
 
         my $dir = $source->meta->{'file'}->{'dir'};
-        unless ( $source->{'cucumber_executors'}->{$dir} ) {
-            my ($executor) = Test::BDD::Cucumber::Loader->load($dir);
-            $source->{'cucumber_executors'}->{$dir} = $executor;
+        unless ( $source->{'pherkins'}->{$dir} ) {
+
+            my $pherkin = App::pherkin->new();
+            my ( $executor, @features ) = $pherkin->_pre_run($dir);
+
+            $source->{'pherkins'}->{$dir} = {
+                pherkin  => $pherkin,
+                executor => $executor,
+                features => {
+                    map { ( file( $_->document->filename ) . '' ) => $_ }
+                        @features
+                }
+            };
         }
         return 1;
     }
@@ -38,14 +50,11 @@ sub make_iterator {
 
     my $tagspec = $source->config_for($class)->{'tagspec'};
 
-    my ($input_fh, $output_fh);
+    my ( $input_fh, $output_fh );
     pipe $input_fh, $output_fh;
 
-    #open( my $output_fh, '>', 'filename.tmp');
     my $tb = Test::Builder->create();
     $tb->output($output_fh);
-
-    #open( my $input_fh, '<', 'filename.tmp');
 
     my $it = TAP::Parser::Iterator::Stream->new($input_fh);
 
@@ -55,15 +64,21 @@ sub make_iterator {
         }
     );
 
-    my $dir      = $source->meta->{'file'}->{'dir'};
-    my $executor = $source->{'cucumber_executors'}->{$dir}
-        || die "No executor instantiated for [$dir]";
+    my $dir     = $source->meta->{'file'}->{'dir'};
+    my $runtime = $source->{'pherkins'}->{$dir}
+        || die "No pherkin instantiation for [$dir]";
 
-    my $feature = Test::BDD::Cucumber::Parser->parse_file(
-        $dir . $source->meta->{'file'}->{'basename'}, $tagspec );
+    my $executor = $runtime->{'executor'};
+    my $pherkin  = $runtime->{'pherkin'};
+    $pherkin->harness($harness);
 
-    $executor->execute( $feature, $harness );
-    $tb->done_testing();
+    my $filename = file( $dir . $source->meta->{'file'}->{'basename'} ) . '';
+
+    my $feature = $runtime->{'features'}->{$filename}
+        || die "Feature not pre-loaded: [$filename]; have: "
+        . ( join '; ', keys %{ $runtime->{'features'} } );
+
+    $pherkin->_run_tests( $executor, $feature );
 
     return $it;
 }
