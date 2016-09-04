@@ -61,7 +61,7 @@ equivalent:
   sub { C->matches->[0] }
 
   # Set a value in the scenario-level stash
-  sub { my $context = shift; my $stash = $context->stash; $stash->{'count'} = 1 }
+  sub { my $context = shift; my $stash = $context->stash->{'scenario'}; $stash->{'count'} = 1 }
   sub { S->{'count'} = 1 }
 
 We will evaluate the regex immediately before we execute the coderef, so you
