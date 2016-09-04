@@ -28,7 +28,22 @@ sub can_handle {
         unless ( $source->{'pherkins'}->{$dir} ) {
 
             my $pherkin = App::pherkin->new();
-            my ( $executor, @features ) = $pherkin->_pre_run($dir);
+
+            # Reformulate before passing to the cmd line parser
+            my @cmd_line;
+            my %options = %{ $source->config_for($class) };
+            while ( my ( $key, $value ) = each %options ) {
+
+                # Nasty hack
+                if ( length $key > 1 ) {
+                    push( @cmd_line, "--$key", $value );
+                } else {
+                    push( @cmd_line, "-$key", $value );
+                }
+            }
+
+            my ( $executor, @features )
+                = $pherkin->_pre_run( @cmd_line, $dir );
 
             $source->{'pherkins'}->{$dir} = {
                 pherkin  => $pherkin,
@@ -47,8 +62,6 @@ sub can_handle {
 
 sub make_iterator {
     my ( $class, $source ) = @_;
-
-    my $tagspec = $source->config_for($class)->{'tagspec'};
 
     my ( $input_fh, $output_fh );
     pipe $input_fh, $output_fh;
