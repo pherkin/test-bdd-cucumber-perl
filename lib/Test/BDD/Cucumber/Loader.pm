@@ -35,7 +35,7 @@ use Test::BDD::Cucumber::Parser;
 use Test::BDD::Cucumber::StepFile();
 
 sub load {
-    my ( $class, $path, $tag_scheme ) = @_;
+    my ( $class, $path ) = @_;
 
     my $executor = Test::BDD::Cucumber::Executor->new();
 
@@ -55,7 +55,7 @@ sub load {
     my @features = map {
         my $file = file($_);
         my $feature =
-          Test::BDD::Cucumber::Parser->parse_file( $file, $tag_scheme );
+          Test::BDD::Cucumber::Parser->parse_file( $file );
       } (
         $file
         ? ( $file . '' )
