@@ -47,15 +47,13 @@ has '_data' =>
 
 =head2 stash
 
-A hash of hashes, containing three keys, C<feature>, C<scenario> and C<step>.
-The stash allows you to persist data across features, scenarios, or steps
-(although the latter is there for completeness, rather than having any useful
-function).
+A hash of hashes, containing two keys, C<feature>, C<scenario>.
+The stash allows you to persist data across features or scenarios.
 
 The scenario-level stash is also available to steps by calling C<S()>, making
 the following two lines of code equivalent:
 
- sub { my $context = shift; my $stash = $context->stash; $stash->{'count'} = 1 }
+ sub { my $context = shift; my $stash = $context->stash->{'scenario'}; $stash->{'count'} = 1 }
  sub { S->{'count'} = 1 }
 
 =cut
