@@ -492,6 +492,7 @@ sub dispatch {
 
     # New scope for the localization
     my $result;
+    my $stash_keys = join ';', sort keys %{$context->stash};
     {
         # Localize test builder
         local $Test::Builder::Test->{'_wraps'} = $tb_return->{'builder'};
@@ -547,6 +548,8 @@ sub dispatch {
             }
         );
     }
+    warn qq|Unsupported: Step modified C->stash instead of C->stash->{scenario} or C->stash->{feature}|
+        if $stash_keys ne (join ';', sort keys %{$context->stash});
 
     my @clean_matches =
       $self->_extract_match_strings( $context->text, \@match_locations );
