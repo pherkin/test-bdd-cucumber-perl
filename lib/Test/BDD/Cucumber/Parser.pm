@@ -42,20 +42,19 @@ use Test::BDD::Cucumber::Errors qw/parse_error_from_line/;
 # https://github.com/cucumber/cucumber/wiki/Scenario-outlines
 
 sub parse_string {
-    my ( $class, $string, $tag_scheme ) = @_;
+    my ( $class, $string ) = @_;
 
     return $class->_construct(
         Test::BDD::Cucumber::Model::Document->new(
             {
                 content => $string
             }
-        ),
-        $tag_scheme
+        )
     );
 }
 
 sub parse_file {
-    my ( $class, $string, $tag_scheme ) = @_;
+    my ( $class, $string ) = @_;
     return $class->_construct(
         Test::BDD::Cucumber::Model::Document->new(
             {
@@ -63,13 +62,12 @@ sub parse_file {
                   scalar( read_file( $string, { binmode => ':utf8' } ) ),
                 filename => '' . $string
             }
-        ),
-        $tag_scheme
+        )
     );
 }
 
 sub _construct {
-    my ( $class, $document, $tag_scheme ) = @_;
+    my ( $class, $document ) = @_;
 
     my $feature =
       Test::BDD::Cucumber::Model::Feature->new( { document => $document } );
