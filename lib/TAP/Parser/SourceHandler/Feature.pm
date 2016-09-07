@@ -6,7 +6,6 @@ use warnings;
 use Path::Class qw/file/;
 
 use base 'TAP::Parser::SourceHandler';
-use TAP::Parser::Iterator::Process;
 
 use App::pherkin;
 
@@ -19,6 +18,8 @@ TAP::Parser::IteratorFactory->register_handler(__PACKAGE__);
 
 sub can_handle {
     my ( $class, $source ) = @_;
+
+    #use Data::Printer; p $source;
 
     if (   $source->meta->{'is_file'}
         && $source->meta->{'file'}->{'basename'} =~ m/\.feature$/ )
@@ -70,6 +71,11 @@ sub make_iterator {
     $tb->output($output_fh);
 
     my $it = TAP::Parser::Iterator::Stream->new($input_fh);
+    fork and return $it;
+
+    warn "Executing $source from $$";
+    sleep 5;
+
 
     my $harness = Test::BDD::Cucumber::Harness::TestBuilder->new(
         {   fail_skip    => 1,
@@ -93,7 +99,7 @@ sub make_iterator {
 
     $pherkin->_run_tests( $executor, $feature );
 
-    return $it;
+    exit;
 }
 
 1;
