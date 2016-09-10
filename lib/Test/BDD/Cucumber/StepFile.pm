@@ -146,6 +146,8 @@ sub load {
     my ( $class, $filename ) = @_;
     {
         local @definitions;
+
+        # Debian Jessie with security patches requires an absolute path
         do File::Spec->rel2abs($filename);
         die "Step file [$filename] failed to load: $@" if $@;
         return @definitions;
