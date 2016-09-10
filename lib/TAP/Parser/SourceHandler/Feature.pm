@@ -7,6 +7,8 @@ use Path::Class qw/file/;
 
 use base 'TAP::Parser::SourceHandler';
 
+use TAP::Parser::Iterator::Stream;
+
 use App::pherkin;
 
 use Test::BDD::Cucumber::Loader;
@@ -70,9 +72,13 @@ sub make_iterator {
     my $tb = Test::Builder->create();
     $tb->output($output_fh);
 
-    my $it = TAP::Parser::Iterator::Stream->new($input_fh);
-    fork and return $it;
+    my $pid = fork;
+    if ($pid) {
+        close $output_fh;
+        return TAP::Parser::Iterator::Stream->new($input_fh);
+    }
 
+    close $input_fh;
     my $harness = Test::BDD::Cucumber::Harness::TestBuilder->new(
         {   fail_skip    => 1,
             _tb_instance => $tb,
@@ -95,6 +101,7 @@ sub make_iterator {
 
     $pherkin->_run_tests( $executor, $feature );
 
+    close $output_fh;
     exit;
 }
 
