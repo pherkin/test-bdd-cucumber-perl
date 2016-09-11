@@ -73,10 +73,6 @@ sub make_iterator {
     my $it = TAP::Parser::Iterator::Stream->new($input_fh);
     fork and return $it;
 
-    warn "Executing $source from $$";
-    sleep 5;
-
-
     my $harness = Test::BDD::Cucumber::Harness::TestBuilder->new(
         {   fail_skip    => 1,
             _tb_instance => $tb,
