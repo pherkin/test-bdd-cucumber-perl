@@ -215,10 +215,10 @@ the Harness interface.
 sub execute_scenario {
     my ( $self, $options ) = @_;
     my ( $feature, $feature_stash, $harness, $outline, $background_obj,
-        $incoming_scenario_stash, $incoming_outline_stash )
+        $incoming_scenario_stash, $incoming_outline_state )
       = @$options{
         qw/ feature feature_stash harness scenario background scenario_stash
-          outline_stash
+          outline_state
           /
       };
 
@@ -227,8 +227,8 @@ sub execute_scenario {
     my $harness_start = $is_background ? 'background'      : 'scenario';
     my $harness_stop  = $is_background ? 'background_done' : 'scenario_done';
 
-    my $outline_stash = $incoming_outline_stash || {};
-    $outline_stash->{'short_circuit'} ||= $self->_bail_out;
+    my $outline_state = $incoming_outline_state || {};
+    $outline_state->{'short_circuit'} ||= $self->_bail_out;
 
     # Multiply out Scenario Outlines as appropriate
     my @datasets = @{ $outline->data };
@@ -276,11 +276,11 @@ sub execute_scenario {
 
                 my $result =
                   $self->dispatch( $context, $before_step,
-                    $outline_stash->{'short_circuit'}, 0 );
+                    $outline_state->{'short_circuit'}, 0 );
 
                 # If it didn't pass, short-circuit the rest
                 unless ( $result->result eq 'passing' ) {
-                    $outline_stash->{'short_circuit'} = 1;
+                    $outline_state->{'short_circuit'} = 1;
                 }
             }
         }
@@ -296,7 +296,7 @@ sub execute_scenario {
                     feature_stash  => $feature_stash,
                     harness        => $harness,
                     scenario_stash => $scenario_stash,
-                    outline_stash  => $outline_stash
+                    outline_state  => $outline_state
                 }
             );
         }
@@ -331,11 +331,11 @@ sub execute_scenario {
 
             my $result =
               $self->find_and_dispatch( $context,
-                $outline_stash->{'short_circuit'}, 0 );
+                $outline_state->{'short_circuit'}, 0 );
 
             # If it didn't pass, short-circuit the rest
             unless ( $result->result eq 'passing' ) {
-                $outline_stash->{'short_circuit'}++;
+                $outline_state->{'short_circuit'}++;
             }
 
         }
@@ -351,7 +351,7 @@ sub execute_scenario {
                 my $result = $self->dispatch( $context, $after_step, 0, 0 );
             }
             $_->post_scenario( $outline, $feature_stash, $scenario_stash,
-                $outline_stash->{'short_circuit'} )
+                $outline_state->{'short_circuit'} )
               for reverse @{ $self->extensions };
 
         }
