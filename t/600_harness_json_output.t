@@ -64,6 +64,11 @@ is_deeply(
 
 # Test feature attributes
 my %json_feature = %{ $parsed_json->[0] };
+is_deeply(
+    join(", ", sort keys %json_feature),
+    "description, elements, id, keyword, line, name, tags, uri",
+    "feature contains only valid keys"
+);
 is( $json_feature{keyword}, 'Feature', 'feature keyword' );
 is( $json_feature{name}, 'Simple tests of Digest.pm', 'feature name' );
 like(
@@ -102,6 +107,11 @@ is_deeply(
 
 # Test SHA-1 scenario attributes including second example line
 my %json_scenario = %{ $json_feature{elements}[2] };
+is_deeply(
+    join(", ", sort keys %json_scenario),
+    "id, keyword, line, name, steps, tags, type",
+    "scenario contains only valid keys"
+);
 is( $json_scenario{keyword}, 'Scenario',    'scenario keyword' );
 is( $json_scenario{name},    'Check SHA-1', 'scenario name' );
 like(
@@ -142,6 +152,11 @@ is_deeply(
 
 # Test successful step attributes
 my %success_step = %{ $json_scenario{steps}[2] };
+is_deeply(
+    join(", ", sort keys %success_step),
+    "keyword, line, name, result",
+    "success step contains only valid keys"
+);
 is( $success_step{keyword}, 'When', 'step keyword' );
 is( $success_step{name}, q{I've added "bar" to the object}, "step name" );
 is(
