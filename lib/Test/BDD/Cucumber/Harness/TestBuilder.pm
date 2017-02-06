@@ -110,7 +110,7 @@ sub _note_step_data {
 
     if ( ref( $step->data ) eq 'ARRAY' ) {
         for (@step_data) {
-            note( $di . $_ );
+            $self->_tb->note( $di . $_ );
         }
     } else {
         $self->_tb->note( $di . '"""' );
