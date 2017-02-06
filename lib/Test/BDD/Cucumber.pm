@@ -55,16 +55,12 @@ Test::Builder|Test::BDD::Cucumber::Manual::Integration> document.
 
 =head1 BUGS, MISSING, AND LIMITATIONS
 
-The following things do not work in this release, although support is planned
-in the very near future:
+For current bugs, check the issue tracer at GitHub:
 
-=over 4
+  L<https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues>
 
-=item * Quoting in tables is broken
-
-=item * Placeholders in pystrings is broken
-
-=back
+Since Test::BDD::Cucumber uses its own parser, differences probably exist
+in the intepretation of feature files when comparing to Cucumber.
 
 =head1 CODE
 

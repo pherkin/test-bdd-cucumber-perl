@@ -60,6 +60,11 @@ sub scenario {
     push @{ $self->current_feature->{elements} }, $self->current_scenario;
 }
 
+sub scenario_done {
+    my $self = shift;
+    $self->current_scenario( {} );
+}
+
 sub step {
     my ( $self, $context ) = @_;
     $self->step_start_at( time() );

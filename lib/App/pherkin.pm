@@ -68,9 +68,8 @@ sub _pre_run {
     my ($features_path) = $self->_process_arguments(@arguments);
     $features_path ||= './features/';
 
-    my ( $executor, @features )
-        = Test::BDD::Cucumber::Loader->load( $features_path,
-        $self->tag_scheme );
+    my ( $executor, @features ) =
+      Test::BDD::Cucumber::Loader->load( $features_path );
     die "No feature files found in $features_path" unless @features;
 
     $executor->add_extensions($_) for @{ $self->extensions };
