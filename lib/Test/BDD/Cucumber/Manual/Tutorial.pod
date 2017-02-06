@@ -181,8 +181,6 @@ and C<S> is a function which returns the scenario stash. So the above can be
 written:
 
  Given qr/a Digest (\S+) object/, sub {
-    my $c = shift;
-
     my $object = Digest->new($1);
     ok( $object, "Object created" );
     S->{'object'} = $object;

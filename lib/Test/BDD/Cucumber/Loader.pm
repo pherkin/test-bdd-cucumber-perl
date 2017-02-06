@@ -12,12 +12,12 @@ Makes loading Step Definition files and Feature files a breeze...
 
 =head2 load
 
-Accepts a path, and returns a L<Test::BDD::Executor> object with the Step
-Definition files loaded, and a list of L<Test::BDD::Model::Feature> objects.
+Accepts a path, and returns a L<Test::BDD::Cucumber::Executor> object with the Step
+Definition files loaded, and a list of L<Test::BDD::Cucumber::Model::Feature> objects.
 
 =head2 load_steps
 
-Accepts an L<Test::BDD::Executor> object and a string representing either a
+Accepts an L<Test::BDD::Cucumber::Executor> object and a string representing either a
 step file, or a directory containing zero or more C<*_steps.pl> files, and loads
 the steps in to the executor; if you've used C<load> we'll have already scanned
 the feature directory for C<*_steps.pl> files.
@@ -35,7 +35,7 @@ use Test::BDD::Cucumber::Parser;
 use Test::BDD::Cucumber::StepFile();
 
 sub load {
-    my ( $class, $path, $tag_scheme ) = @_;
+    my ( $class, $path ) = @_;
 
     my $executor = Test::BDD::Cucumber::Executor->new();
 
@@ -55,7 +55,7 @@ sub load {
     my @features = map {
         my $file = file($_);
         my $feature =
-          Test::BDD::Cucumber::Parser->parse_file( $file, $tag_scheme );
+          Test::BDD::Cucumber::Parser->parse_file( $file );
       } (
         $file
         ? ( $file . '' )

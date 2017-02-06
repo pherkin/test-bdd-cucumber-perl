@@ -33,10 +33,10 @@ C<Test::BDD::Cucumber::Model>.
 
 =head1 EXECUTOR
 
-We build up a L<Test::BDD::Executor> object, in to which we load the step
-definitions. We then pass this in a L<Test::BDD::Model::Feature> object, along
-with a L<Test::BDD::Model::Harness> object, which controls interaction with
-the outside world.
+We build up a L<Test::BDD::Cucumber::Executor> object, in to which we load the
+step definitions. We then pass this in a L<Test::BDD::Cucumber::Model::Feature>
+object, along with a L<Test::BDD::Cucumber::Model::Harness> object, which
+controls interaction with the outside world.
 
 =head1 EXTENSION
 

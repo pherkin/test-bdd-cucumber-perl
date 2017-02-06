@@ -39,16 +39,16 @@ matches any.
 
  Given qr/I have (\d+)/, sub {
     S->{'count'} += $1;
- }
+ };
 
  When "The count is an integer", sub {
     S->{'count'} =
         int( S->{'count'} );
- }
+ };
 
  Then qr/The count should be (\d+)/, sub {
     is( S->{'count'}, C->matches->[0], "Count matches" );
- }
+ };
 
 Each of the exported verb functions accept a regular expression (or a string
 that's used as one), and a coderef. The coderef is passed a single argument,
@@ -61,7 +61,7 @@ equivalent:
   sub { C->matches->[0] }
 
   # Set a value in the scenario-level stash
-  sub { my $context = shift; my $stash = $context->stash; $stash->{'count'} = 1 }
+  sub { my $context = shift; my $stash = $context->stash->{'scenario'}; $stash->{'count'} = 1 }
   sub { S->{'count'} = 1 }
 
 We will evaluate the regex immediately before we execute the coderef, so you
