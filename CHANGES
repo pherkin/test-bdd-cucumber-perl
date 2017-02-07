@@ -1,4 +1,11 @@
 -----
+0.51: 07 Feb 2017
+    - Added a TAP source-handler for Cucumber files, should also
+      allow for parallelization
+    - Table and PyString interpolation fixes @ eheulsmann
+    - Localization examples for Spanish @ Gonzalo Barco
+    - Doc Typos fixed @ Grant McLean
+    - Fixed up JSON output @ Tomas Pokorny
 0.50: 29 Apr 2016
     - eheulsmann added placeholders to PyStrings
 0.49: 29 Feb 2016
