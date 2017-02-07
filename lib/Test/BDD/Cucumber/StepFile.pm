@@ -9,6 +9,7 @@ Test::BDD::Cucumber::StepFile - Functions for creating and loading Step Definiti
 use strict;
 use warnings;
 use Carp qw/croak/;
+use File::Spec qw/rel2abs/;
 
 use Test::BDD::Cucumber::I18n qw(languages langdef keyword_to_subname);
 require Exporter;
@@ -145,7 +146,9 @@ sub load {
     my ( $class, $filename ) = @_;
     {
         local @definitions;
-        do $filename;
+
+        # Debian Jessie with security patches requires an absolute path
+        do File::Spec->rel2abs($filename);
         die "Step file [$filename] failed to load: $@" if $@;
         return @definitions;
     }

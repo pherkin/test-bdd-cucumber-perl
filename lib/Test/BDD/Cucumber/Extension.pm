@@ -41,14 +41,22 @@ sub step_directories { return []; }
 
 =head2 pre_execute()
 
-Invoked by App::pherkin before executing any features.  This callback
+Invoked by C<App::pherkin> before executing any features.  This callback
 allows generic extension setup. Reports errors by calling croak().
+
+Note: When the C<TAP::Parser::SourceHandler::Feature> plugin for C<prove>
+ is used, there are no guarantees at this point that this hook is called
+ exactly once (or even just once per feature directory).
 
 =head2 post_execute()
 
-Invoked by App::pherkin after executing all features.  This callback
+Invoked by C<App::pherkin> after executing all features.  This callback
 allows generic extension teardown and cleanup. Reports errors by calling
 croak().
+
+Note: When the C<TAP::Parser::SourceHandler::Feature> plugin for C<prove>
+ is used, there are no guarantees at this point that this hook is called
+ at all (be it per feature directory or per C<prove> run).
 
 =cut
 

@@ -51,6 +51,11 @@ configuration from the pherkin.yaml configuration file, which works
 similar to L<the configuration of extensions in
 Behat|http://docs.behat.org/en/v2.5/guides/7.config.html#extensions>.
 
+Note: when using extensions in combination with the
+C<TAP::Parser::SourceHandler::Feature> plugin for C<prove>, there is no
+guarantee that the C<pre_execute> and C<post_execute> hooks execute
+exactly once or even execute at all.
+This is a current limitation to be lifted in a future release.
 
 =head1 AUTHOR
 

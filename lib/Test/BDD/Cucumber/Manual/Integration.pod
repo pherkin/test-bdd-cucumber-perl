@@ -2,7 +2,7 @@ package Test::BDD::Cucumber::Manual::Integration;
 
 =head1 NAME
 
-Test::BDD::Cucumber::Manual::Integration - Integrating with Test::Builder
+Test::BDD::Cucumber::Manual::Integration - Test suite integration options
 
 =head1 DESCRIPTION
 
@@ -10,10 +10,24 @@ How to use Test::BDD::Cucumber in your test suite
 
 =head1 OVERVIEW
 
-You may well want your Cucumber tests to be executed as part of your standard
-test-suite. Luckily, this is SUPER easy.
+Test::BDD::Cucumber offers two options to integrate your tests with your
+test framework:
 
-=head1 WELL-COMMENTED EXAMPLE
+ 1. Creation of a .t file which fires off your selected .feature files
+    (Test::Builder integration)
+ 2. Integration with C<prove> which will run your .feature
+    files as it does .t files
+
+The benefits from using the latter approach is that all C<prove>'s advanced
+features like parallel testing, randomized order, C<--state>ful runs, etc
+are also available without efforts of the test developer.
+
+
+=head1 Test::Builder integration -- a documented example
+
+The code below needs to be stored in a C<.t> file in the C<t/> or C<xt/>
+directory. When done that way, the tests are integrated into C<make test>
+as generated from C<make test> after C<perl Makefile.PL>.
 
  #!perl
 
@@ -32,16 +46,52 @@ test-suite. Luckily, this is SUPER easy.
  # The features are returned in @features, and the executor is created with the
  # step definitions loaded.
  my ( $executor, @features ) = Test::BDD::Cucumber::Loader->load(
-	't/cucumber_core_features/' );
+        't/cucumber_core_features/' );
 
  # Create a Harness to execute against. TestBuilder harness prints TAP
  my $harness = Test::BDD::Cucumber::Harness::TestBuilder->new({});
 
  # For each feature found, execute it, using the Harness to print results
  $executor->execute( $_, $harness ) for @features;
- 
+
  # Shutdown gracefully
  $harness->shutdown();
+
+
+=head1 prove integration
+
+With Test::BDD::Cucumber installed in the Perl search path (PERL5LIB)
+comes the possibility to run the .feature files with a C<prove> command
+directly, by specifying
+
+ $ prove -r
+         --source Feature
+         --feature-option extensions=.feature
+         --feature-option tags=~@wip
+         --ext=.feature
+         t/
+
+This command registers a C<prove> plugin named C<Feature> associated with
+the C<.feature> extension.  Additionally, it passes a tag filter to exclude
+@wip tagged features and scenarios from being run.
+
+When executed, the command searches the C<t/> directory recursively for files
+with the C<.feature> extension.  For each directory holding at least one
+C<.feature> file, the step files are loaded from the C<step_definitions/>
+subdirectory.
+
+The command above will find and run I<only> C<.feature> files. When you want
+to run your regular C<.t> files as well as Test::BDD::Cucumber's
+C<.feature> files, run the following command:
+
+ $ prove -r --source Perl --ext=.t
+         --source Feature
+         --feature-option extensions=.feature
+         --feature-option tags=~@wip
+         --ext=.feature
+         t/
+
+
 
 =cut
 
