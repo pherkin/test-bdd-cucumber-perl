@@ -28,8 +28,6 @@ L<Test::BDD::Cucumber::Model::Feature> object on success.
 use strict;
 use warnings;
 
-use File::Slurp;
-
 use Test::BDD::Cucumber::Model::Document;
 use Test::BDD::Cucumber::Model::Feature;
 use Test::BDD::Cucumber::Model::Scenario;
@@ -55,15 +53,19 @@ sub parse_string {
 
 sub parse_file {
     my ( $class, $string ) = @_;
-    return $class->_construct(
-        Test::BDD::Cucumber::Model::Document->new(
-            {
-                content =>
-                  scalar( read_file( $string, { binmode => ':utf8' } ) ),
-                filename => '' . $string
-            }
-        )
-    );
+    {
+        local $/;
+        open(my $in, '<', $string) or die $?;
+        binmode $in, 'utf8';
+        return $class->_construct(
+            Test::BDD::Cucumber::Model::Document->new(
+                {
+                    content => <$in>,
+                    filename => '' . $string
+                }
+            )
+        );
+    }
 }
 
 sub _construct {
