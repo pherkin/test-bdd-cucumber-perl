@@ -10,7 +10,6 @@ use Test::Differences;
 use Test::DumpFeature;
 use Test::BDD::Cucumber::Parser;
 use YAML::Syck;
-use File::Slurp;
 use File::Find::Rule;
 
 my @files = @ARGV;
@@ -19,7 +18,14 @@ my @files = @ARGV;
   unless @files;
 
 for my $file (@files) {
-    my $file_data = read_file($file);
+    my $file_data;
+
+    open(my $in, '<', $file) or die $?;
+    binmode $in, 'utf8';
+    {
+        local $/;
+        $file_data = <$in>;
+    }
     my ( $feature, $yaml ) = split( /----------DIVIDER----------/, $file_data );
     my $expected = Load($yaml);
     my $actual   = Test::DumpFeature::dump_feature(
