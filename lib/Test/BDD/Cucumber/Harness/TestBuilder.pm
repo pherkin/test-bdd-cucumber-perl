@@ -81,7 +81,7 @@ sub step_done {
             }
             $self->_note_step_data($step);
         } else {
-        TODO: { todo_skip $step_name, 1 }
+        TODO: { $self->_tb->todo_skip( $step_name, 1 ) }
             $self->_note_step_data($step);
         }
     } elsif ( $status eq 'passing' ) {
