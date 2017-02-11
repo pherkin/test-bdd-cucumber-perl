@@ -69,6 +69,10 @@ sub make_iterator {
     my ( $input_fh, $output_fh );
     pipe $input_fh, $output_fh;
 
+    # Don't cache the output so prove sees it immediately
+    #  (pipes are stdio buffered by default)
+    $output_fh->autoflush(1);
+
     my $tb = Test::Builder->create();
     $tb->output($output_fh);
 
