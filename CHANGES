@@ -1,4 +1,7 @@
 -----
+0.52: 13 Feb 2017
+    - Removed File::Slurp @ehuelsmann
+    - Minor test fixes @ehuelsmann
 0.51: 07 Feb 2017
     - Added a TAP source-handler for Cucumber files, should also
       allow for parallelization
