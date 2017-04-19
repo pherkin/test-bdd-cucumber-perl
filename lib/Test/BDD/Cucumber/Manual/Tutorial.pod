@@ -290,6 +290,43 @@ To see which keywords (and sub names) to use, ask pherkin about a specific langu
 The last three lines of this list show you which sub names to use in your step file.
 Head over to the F<i18n> directory for some examples.
 
+=head1 Running selected tests only
+
+Features and scenarios can be included or excluded from a test run
+by specifying the C<--tags> option to C<pherkin>:
+
+  $ pherkin -t @prod,@test,-@wip ...
+
+The above will run the scenarios marked with the tags @prod and those
+marked with @test, but not those marked with @wip.  Scenarios can be
+tagged by specifying a list of tags on the line before the scenario:
+
+  @prod @wip
+  Scenario: Production test for a feature under development
+
+All scenarios in a feature file can be marked with the same tag by specifying
+the tags before the feature line. E.g.
+
+  @TODO
+  Feature: A feature tagged with the special TODO tag
+
+There's one special purpose tag (@TODO). Read the next section for more.
+
+=head1 Marking tests as work in progress
+
+C<Test::More> uses C<TODO: { ... }> blocks to mark tests as 'acceptable
+to fail.
+
+The same effect can be achieved in pherkin by marking scenarios or
+features with the @TODO tag. E.g.:
+
+  @TODO
+  Scenario: To be completed
+     This step doesn't have a matcher yet
+
+The above test won't be reported as failing when it does fail and
+as 'unexpected passing test' when it passes.
+
 =head1 Next Steps...
 
 That's the tutorial done! You can find out more about writing steps in

@@ -268,6 +268,15 @@ sub execute_scenario {
             $_->pre_scenario( $outline, $feature_stash, $scenario_stash )
               for @{ $self->extensions };
 
+            # Needs to be registered on the wrapping/outer test builder
+            # because todo out put on the wrapped/inner test builder
+            # will mark the first step as failed and will hard-fail
+            # all further steps -- we want the test to run to completion
+            # if it doesn't fail though; so it will be reported in prove's
+            # 'bonus' section
+            $Test::Builder::Test->todo_start
+                if grep { $_ eq 'TODO' } @{ $outline->tags };
+
             for my $before_step ( @{ $self->{'steps'}->{'before'} || [] } ) {
 
                 # Set up a context
@@ -350,10 +359,13 @@ sub execute_scenario {
                 # All After steps should happen, to ensure cleanup
                 my $result = $self->dispatch( $context, $after_step, 0, 0 );
             }
+
+            $Test::Builder::Test->todo_end
+                if grep { $_ eq 'TODO' } @{ $outline->tags };
+
             $_->post_scenario( $outline, $feature_stash, $scenario_stash,
                 $outline_state->{'short_circuit'} )
               for reverse @{ $self->extensions };
-
         }
 
         $harness->$harness_stop( $outline, $dataset );

@@ -10,12 +10,24 @@ use warnings;
 
 Test::BDD::Cucumber - Feature-complete Cucumber-style testing in Perl
 
+=head1 SYNOPSIS
+
+From the command line:
+
+  # invoke all features at once
+  $ pherkin t/bdd/
+
+  # or just one set of features
+  $ pherkin t/bdd/startup.feature
+
+Or check the L<example test script integration|https://github.com/pjlsergeant/test-bdd-cucumber-perl/blob/master/t/900_run_cucumber_tests.t>
+
 =head1 DESCRIPTION
 
 A sane and complete Cucumber implementation in Perl
 
-Behaviour of this module is similar to that, but sometimes different from
-the I<real> Cucumber, the plan is to move use the same parser and behaviour
+Behaviour of this module is similar to the I<real> Cucumber, the plan is
+to move use the same parser and behaviour
 L<See the logged issue|https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/73>.
 
 =head1 QUICK LINKS
