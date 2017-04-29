@@ -74,6 +74,7 @@ sub _pre_run {
     die "No feature files found in $features_path" unless @features;
 
     $executor->add_extensions($_) for @{ $self->extensions };
+    $_->pre_execute($self) for @{ $self->extensions };
 
     Test::BDD::Cucumber::Loader->load_steps( $executor, $_ )
         for @{ $self->step_paths };
@@ -81,10 +82,19 @@ sub _pre_run {
     return ( $executor, @features );
 }
 
+sub _post_run {
+    my $self = shift;
+
+    $_->post_execute() for reverse @{ $self->extensions };
+}
+
+
 sub run {
     my ( $self,     @arguments ) = @_;
     my ( $executor, @features )  = $self->_pre_run(@arguments);
-    return $self->_run_tests( $executor, @features );
+    my $result = $self->_run_tests( $executor, @features );
+    $self->_post_run;
+    return $result;
 }
 
 sub _run_tests {
@@ -99,9 +109,7 @@ sub _run_tests {
             { tags => $self->tag_scheme } );
     }
 
-    $_->pre_execute() for @{ $self->extensions };
     $executor->execute( $_, $harness, $tag_spec ) for @features;
-    $_->post_execute() for reverse @{ $self->extensions };
 
     $harness->shutdown();
     return $harness->result;
