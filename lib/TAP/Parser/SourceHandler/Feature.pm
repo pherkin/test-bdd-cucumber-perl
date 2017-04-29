@@ -7,7 +7,7 @@ use Path::Class qw/file/;
 
 use base 'TAP::Parser::SourceHandler';
 
-use TAP::Parser::Iterator::Stream;
+use TAP::Parser::Iterator::PherkinStream;
 
 use App::pherkin;
 
@@ -76,10 +76,17 @@ sub make_iterator {
     my $tb = Test::Builder->create();
     $tb->output($output_fh);
 
+    my $dir     = $source->meta->{'file'}->{'dir'};
+    my $runtime = $source->{'pherkins'}->{$dir}
+        || die "No pherkin instantiation for [$dir]";
+
+    my $executor = $runtime->{'executor'};
+    my $pherkin  = $runtime->{'pherkin'};
+
     my $pid = fork;
     if ($pid) {
         close $output_fh;
-        return TAP::Parser::Iterator::Stream->new($input_fh);
+        return TAP::Parser::Iterator::PherkinStream->new($input_fh, $pherkin);
     }
 
     close $input_fh;
@@ -89,14 +96,7 @@ sub make_iterator {
         }
     );
 
-    my $dir     = $source->meta->{'file'}->{'dir'};
-    my $runtime = $source->{'pherkins'}->{$dir}
-        || die "No pherkin instantiation for [$dir]";
-
-    my $executor = $runtime->{'executor'};
-    my $pherkin  = $runtime->{'pherkin'};
     $pherkin->harness($harness);
-
     my $filename = file( $dir . $source->meta->{'file'}->{'basename'} ) . '';
 
     my $feature = $runtime->{'features'}->{$filename}
