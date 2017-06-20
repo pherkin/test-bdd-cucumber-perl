@@ -13,7 +13,8 @@ L<"Publish pretty cucumber reports"|https://github.com/masterthought/cucumber-re
 
 =cut
 
-use Moose;
+use Moo;
+use Types::Standard qw( Num HashRef ArrayRef FileHandle );
 use JSON::MaybeXS;
 use Time::HiRes qw ( time );
 
@@ -27,7 +28,7 @@ A filehandle to write output to; defaults to C<STDOUT>
 
 =cut
 
-has 'fh' => ( is => 'rw', isa => 'FileHandle', default => sub { \*STDOUT } );
+has 'fh' => ( is => 'rw', isa => FileHandle, default => sub { \*STDOUT } );
 
 =head2 json_args
 
@@ -37,16 +38,16 @@ List of options to be passed to L<JSON::MaybeXS>'s C<new()> method
 
 has json_args => (
     is      => 'ro',
-    isa     => 'HashRef',
+    isa     => HashRef,
     default => sub { { utf8 => 1, pretty => 1 } }
 );
 
 #
 
-has all_features => ( is => 'ro', isa => 'ArrayRef', default => sub { [] } );
-has current_feature  => ( is => 'rw', isa => 'HashRef' );
-has current_scenario => ( is => 'rw', isa => 'HashRef' );
-has step_start_at    => ( is => 'rw', isa => 'Num' );
+has all_features => ( is => 'ro', isa => ArrayRef, default => sub { [] } );
+has current_feature  => ( is => 'rw', isa => HashRef );
+has current_scenario => ( is => 'rw', isa => HashRef );
+has step_start_at    => ( is => 'rw', isa => Num );
 
 sub feature {
     my ( $self, $feature ) = @_;

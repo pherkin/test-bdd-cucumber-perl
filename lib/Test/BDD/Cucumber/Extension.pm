@@ -12,7 +12,8 @@ the BDD script execution.
 
 =cut
 
-use Moose;
+use Moo;
+use Types::Standard qw( HashRef );
 
 =head1 PROPERTIES
 
@@ -25,7 +26,7 @@ should look for their own configuration in
 
 =cut
 
-has config => ( is => 'rw', isa => 'HashRef' );
+has config => ( is => 'rw', isa => HashRef );
 
 =head1 METHODS
 

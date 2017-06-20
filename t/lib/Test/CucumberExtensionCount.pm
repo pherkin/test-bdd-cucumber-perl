@@ -2,11 +2,12 @@
 
 package Test::CucumberExtensionCount;
 
-use Moose;
+use Moo;
+use Types::Standard qw( HashRef );
 use Test::BDD::Cucumber::Extension;
 extends 'Test::BDD::Cucumber::Extension';
 
-has counts => ( is => 'ro', isa => 'HashRef', default => sub { {} } );
+has counts => ( is => 'ro', isa => HashRef, default => sub { {} } );
 
 sub step_directories {
     return ['extension_steps/'];

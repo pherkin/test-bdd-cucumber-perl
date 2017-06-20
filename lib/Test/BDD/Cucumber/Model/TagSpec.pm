@@ -13,7 +13,8 @@ way.
 
 use strict;
 use warnings;
-use Moose;
+use Moo;
+use Types::Standard qw( ArrayRef );
 use Clone qw/clone/;
 
 =head1 OVERVIEW
@@ -52,7 +53,7 @@ An arrayref representing a structure like the above.
 
 =cut
 
-has 'tags' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
+has 'tags' => ( is => 'rw', isa => ArrayRef, default => sub { [] } );
 
 =head1 METHODS
 

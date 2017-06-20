@@ -3,14 +3,15 @@ package    # hide from PAUSE indexer
 
 use strict;
 use warnings;
-use Moose;
+use Moo;
+use Types::Standard qw( Num Str );
 
-has 'left'     => ( is => 'rw', isa => 'Num', default => 0 );
-has 'right'    => ( is => 'rw', isa => 'Str', default => '' );
-has 'operator' => ( is => 'rw', isa => 'Str', default => '+' );
+has 'left'     => ( is => 'rw', isa => Num, default => 0 );
+has 'right'    => ( is => 'rw', isa => Str, default => '' );
+has 'operator' => ( is => 'rw', isa => Str, default => '+' );
 
-has 'display' => ( is => 'rw', isa => 'Str', default => '0' );
-has 'equals'  => ( is => 'rw', isa => 'Str', default => '' );
+has 'display' => ( is => 'rw', isa => Str, default => '0' );
+has 'equals'  => ( is => 'rw', isa => Str, default => '' );
 
 sub key_in {
     my ( $self, $seq ) = @_;

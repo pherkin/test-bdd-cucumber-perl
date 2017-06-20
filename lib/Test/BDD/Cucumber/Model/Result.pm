@@ -12,10 +12,8 @@ Encapsulation of result state - whether that's for a step, scenario, or feature
 
 use strict;
 use warnings;
-use Moose;
-use Moose::Util::TypeConstraints;
-
-enum 'StepStatus', [qw( passing failing pending undefined )];
+use Moo;
+use Types::Standard qw( Enum Str );
 
 =head1 ATTRIBUTES
 
@@ -27,7 +25,7 @@ wasn't run, either due to no matching step, or because a previous step failed.
 
 =cut
 
-has 'result' => ( is => 'ro', isa => 'StepStatus', required => 1 );
+has 'result' => ( is => 'ro', isa => Enum[qw( passing failing pending undefined )], required => 1 );
 
 =head2 output
 
@@ -35,7 +33,7 @@ The underlying test-output that contributed to a result.
 
 =cut
 
-has 'output' => ( is => 'ro', isa => 'Str', required => 1 );
+has 'output' => ( is => 'ro', isa => Str, required => 1 );
 
 =head1 METHODS
 

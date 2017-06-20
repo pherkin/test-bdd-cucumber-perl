@@ -11,7 +11,9 @@ Definitions, and reporting on progress through the passed-in harness.
 
 =cut
 
-use Moose;
+use Moo;
+use MooX::HandlesVia;
+use Types::Standard qw( Bool ArrayRef HashRef );
 use Clone qw(clone);
 use List::Util qw/first/;
 use List::MoreUtils qw/pairwise/;
@@ -62,7 +64,7 @@ use Test::BDD::Cucumber::Util;
 use Test::BDD::Cucumber::Model::Result;
 use Test::BDD::Cucumber::Errors qw/parse_error_from_line/;
 
-has '_bail_out' => ( is => 'rw', isa => 'Bool', default => 0 );
+has '_bail_out' => ( is => 'rw', isa => Bool, default => 0 );
 
 =head1 METHODS
 
@@ -88,9 +90,9 @@ The C<pre_*> will be called in order 2, 3, 1, and C<post_*> will be called in
 
 has extensions => (
     is      => 'ro',
-    isa     => 'ArrayRef',
-    traits  => ['Array'],
+    isa     => ArrayRef,
     default => sub { [] },
+    handles_via => 'Array',
     handles => { add_extensions => 'unshift' },
 );
 
@@ -109,7 +111,7 @@ and populates C<steps> with them.
 
 =cut
 
-has 'steps' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
+has 'steps' => ( is => 'rw', isa => HashRef, default => sub { {} } );
 
 sub add_steps {
     my ( $self, @steps ) = @_;

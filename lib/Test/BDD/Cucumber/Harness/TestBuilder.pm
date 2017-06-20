@@ -19,12 +19,13 @@ Boolean - makes tests with no matcher fail
 
 use strict;
 use warnings;
-use Moose;
+use Moo;
+use Types::Standard qw( Bool InstanceOf );
 use Test::More;
 
 extends 'Test::BDD::Cucumber::Harness';
-has 'fail_skip' => ( is => 'rw', isa => 'Bool', default => 0 );
-has '_tb_instance' => ( is => 'rw', isa => 'Test::Builder' );
+has 'fail_skip' => ( is => 'rw', isa => Bool, default => 0 );
+has '_tb_instance' => ( is => 'rw', isa => InstanceOf['Test::Builder'] );
 
 my $li = ' ' x 7;
 my $ni = ' ' x 4;
