@@ -1,6 +1,7 @@
 package Test::BDD::Cucumber::Model::Document;
 
-use Moose;
+use Moo;
+use Types::Standard qw( Str ArrayRef InstanceOf );
 use Test::BDD::Cucumber::Model::Line;
 
 =head1 NAME
@@ -19,7 +20,7 @@ The filename from which the document was loaded.
 
 =cut
 
-has 'filename' => ( is => 'ro', isa => 'Str' );
+has 'filename' => ( is => 'ro', isa => Str );
 
 =head2 content
 
@@ -27,7 +28,7 @@ The file contents, as a string
 
 =cut
 
-has 'content' => ( is => 'ro', isa => 'Str' );
+has 'content' => ( is => 'ro', isa => Str );
 
 =head2 lines
 
@@ -39,7 +40,7 @@ objects
 has 'lines' => (
     is      => 'rw',
     default => sub { [] },
-    isa     => 'ArrayRef[Test::BDD::Cucumber::Model::Line]'
+    isa     => ArrayRef[InstanceOf['Test::BDD::Cucumber::Model::Line']]
 );
 
 =head1 OTHER

@@ -2,12 +2,13 @@
 
 package Test::CucumberExtensionPush;
 
-use Moose;
+use Moo;
+use Types::Standard qw( HashRef );
 use Test::BDD::Cucumber::Extension;
 extends 'Test::BDD::Cucumber::Extension';
 
 has id => ( is => 'ro' );
-has hash => ( is => 'ro', isa => 'HashRef', default => sub { {} } );
+has hash => ( is => 'ro', isa => HashRef, default => sub { {} } );
 
 sub step_directories {
     return ['extension_steps/'];
