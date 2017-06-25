@@ -1,4 +1,6 @@
 -----
+0.53: 26 Jun 2017
+    - Moose -> Moo, thanks to https://github.com/vti
 0.52: 13 Feb 2017
     - Removed File::Slurp @ehuelsmann
     - Minor test fixes @ehuelsmann
