@@ -1,8 +1,12 @@
 package Test::BDD::Cucumber::Executor;
-
+$Test::BDD::Cucumber::Executor::VERSION = '0.54';
 =head1 NAME
 
 Test::BDD::Cucumber::Executor - Run through Feature and Harness objects
+
+=head1 VERSION
+
+version 0.53
 
 =head1 DESCRIPTION
 
@@ -285,6 +289,7 @@ sub execute_scenario {
                     $outline_state->{'short_circuit'} = 1;
                 }
             }
+            $outline_state->{'short_circuit'} = $self->_bail_out;
         }
 
         # Run the background if we have one. This recurses back in to

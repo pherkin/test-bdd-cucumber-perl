@@ -1,4 +1,6 @@
 -----
+0.54: 28 Jun 2017
+    - Skip failed steps only for the current scenario
 0.52: 13 Feb 2017
     - Removed File::Slurp @ehuelsmann
     - Minor test fixes @ehuelsmann
