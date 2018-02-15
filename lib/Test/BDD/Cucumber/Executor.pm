@@ -479,6 +479,10 @@ sub dispatch {
     $tb_return->{'builder'}->failure_output( \$output );
     $tb_return->{'builder'}->todo_output( \$output );
 
+    binmode($tb_return->{'builder'}->output(), ':utf8');
+    binmode($tb_return->{'builder'}->failure_output(), ':utf8');
+    binmode($tb_return->{'builder'}->todo_output(), ':utf8');
+
     # Make a minimum pass
     $tb_return->{'builder'}
       ->ok( 1, "Starting to execute step: " . $context->text );
