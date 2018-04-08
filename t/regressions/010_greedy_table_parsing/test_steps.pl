@@ -24,3 +24,12 @@ Then qr/the results look like/, sub {
         is $got, $expect, "test: $func";
     }
 };
+
+Then qr/the ((?:hex|b64)digest) looks like:/, sub {
+    my $func = $1;
+    my $expect = C->data;
+    chomp $expect;
+    my $digest = S->{digest};
+    my $got = $digest->$func();
+    is $got, $expect, "test: $func";
+};
