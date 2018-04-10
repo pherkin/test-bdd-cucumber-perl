@@ -1,4 +1,7 @@
 -----
+0.55: 11 Apr 2018
+    - Fix a parsing bug with PyStrings at the end of a scenario, via latk
+        https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/127
 0.54: 10 Apr 2018
     - Set output layers properly to UTF8, via ivanych
         https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/126
