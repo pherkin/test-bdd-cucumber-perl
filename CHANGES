@@ -1,4 +1,7 @@
 -----
+0.56: 21 Apr 2018
+    - Minor upgrade to minimum required Moo version to help try and flush
+      out some CPAN smokers failure.
 0.55: 11 Apr 2018
     - Fix a parsing bug with PyStrings at the end of a scenario, via latk
         https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/127
