@@ -110,6 +110,7 @@ When 'Cucumber runs the scenario with steps for a calculator', sub {
     S->{'executor'}->execute_scenario(
         {
             scenario      => S->{'feature'}->scenarios->[0],
+            scenario_stash => {},
             feature       => S->{'feature'},
             feature_stash => {},
             harness       => S->{'harness'}
