@@ -316,6 +316,34 @@ sub _execute_steps {
     return;
 }
 
+
+sub _execute_hook_steps {
+    my ( $self, $phase, $context_defaults, $outline_state ) = @_;
+    my $want_short = ($phase eq 'before');
+
+    for my $step ( @{ $self->{'steps'}->{$phase} || [] } ) {
+
+        my $context = Test::BDD::Cucumber::StepContext->new(
+            { %$context_defaults, verb => $phase, } );
+
+        my $result =
+            $self->dispatch(
+                $context, $step,
+                ($want_short ? $outline_state->{'short_circuit'} : 0),
+                0 );
+
+        # If it didn't pass, short-circuit the rest
+        unless ( $result->result eq 'passing' ) {
+            if ($want_short) {
+                $outline_state->{'short_circuit'} = 1;
+            }
+        }
+    }
+
+    return;
+}
+
+
 sub execute_scenario {
     my ( $self, $options ) = @_;
     my ( $feature, $feature_stash, $harness, $outline, $background_obj,
@@ -347,28 +375,13 @@ sub execute_scenario {
     );
     $context_defaults{stash}->{scenario} = $scenario_stash;
 
-    # OK, back to the normal execution
     $harness->scenario( $outline, $dataset,
                         $scenario_stash->{'longest_step_line'} );
 
     $_->pre_scenario( $outline, $feature_stash, $scenario_stash )
         for @{ $self->extensions };
 
-    for my $before_step ( @{ $self->{'steps'}->{'before'} || [] } ) {
-
-        # Set up a context
-        my $context = Test::BDD::Cucumber::StepContext->new(
-            { %context_defaults, verb => 'before', } );
-
-        my $result =
-            $self->dispatch( $context, $before_step,
-                             $outline_state->{'short_circuit'}, 0 );
-
-        # If it didn't pass, short-circuit the rest
-        unless ( $result->result eq 'passing' ) {
-            $outline_state->{'short_circuit'} = 1;
-        }
-    }
+    $self->_execute_hook_steps( 'before', \%context_defaults, $outline_state );
 
     if ($background_obj) {
         $harness->background( $outline, $dataset,
@@ -399,15 +412,8 @@ sub execute_scenario {
             context_defaults => \%context_defaults,
         });
 
-    for my $after_step ( @{ $self->{'steps'}->{'after'} || [] } ) {
+    $self->_execute_hook_steps( 'after', \%context_defaults, $outline_state );
 
-        # Set up a context
-        my $context = Test::BDD::Cucumber::StepContext->new(
-            { %context_defaults, verb => 'after', } );
-
-        # All After steps should happen, to ensure cleanup
-        my $result = $self->dispatch( $context, $after_step, 0, 0 );
-    }
     $_->post_scenario( $outline, $feature_stash, $scenario_stash,
                        $outline_state->{'short_circuit'} )
         for reverse @{ $self->extensions };
