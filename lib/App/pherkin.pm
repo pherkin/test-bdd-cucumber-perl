@@ -19,13 +19,15 @@ use Test::BDD::Cucumber::I18n
 use Test::BDD::Cucumber::Loader;
 
 use Moo;
-use Types::Standard qw( ArrayRef );
+use Types::Standard qw( ArrayRef Str );
 has 'step_paths' => ( is => 'rw', isa => ArrayRef, default => sub { [] } );
 has 'extensions' => ( is => 'rw', isa => ArrayRef, default => sub { [] } );
 has 'tags'       => ( is => 'rw', isa => ArrayRef, required => 0 );
 has 'tag_scheme' => ( is => 'rw', isa => ArrayRef, required => 0 );
 
 has 'harness' => ( is => 'rw' );
+
+has 'run_mode' => ( is => 'rw', isa => Str, required => 0, default => '' );
 
 =head1 NAME
 
@@ -84,6 +86,8 @@ sub _pre_run {
 sub run {
     my ( $self,     @arguments ) = @_;
     my ( $executor, @features )  = $self->_pre_run(@arguments);
+
+    $executor->run_mode( $self->run_mode );
     return $self->_run_tests( $executor, @features );
 }
 
@@ -99,9 +103,17 @@ sub _run_tests {
             { tags => $self->tag_scheme } );
     }
 
-    $_->pre_execute() for @{ $self->extensions };
-    $executor->execute( $_, $harness, $tag_spec ) for @features;
-    $_->post_execute() for reverse @{ $self->extensions };
+    if (! $self->run_mode ) { # regular run mode
+        $_->pre_execute() for @{ $self->extensions };
+        $executor->execute( $_, $harness, $tag_spec ) for @features;
+        $_->post_execute() for reverse @{ $self->extensions };
+    }
+    elsif ($self->run_mode eq 'match') {
+        $executor->execute( $_, $harness, $tag_spec ) for @features;
+    }
+    else {
+        die 'Unexpected run mode: ' . $self->run_mode;
+    }
 
     $harness->shutdown();
     return $harness->result;
@@ -247,6 +259,9 @@ sub _process_arguments {
         tags       => [ 't|tags=s@', [] ],
         i18n       => ['i18n=s'],
         extensions => [ 'e|extension=s@', [] ],
+
+        # Execution
+        run_mode   => [ 'm|mode=s' ],
     );
 
     GetOptions(
@@ -389,6 +404,11 @@ sub _process_arguments {
 
     # Store our TagSpecScheme
     $self->tag_scheme( $self->_process_tags( @{ $deref->('tags') } ) );
+
+    # Set run mode
+    if ( $deref->('run_mode') ) {
+        $self->run_mode( $deref->('run_mode') );
+    }
 
     return ( pop @ARGV );
 }

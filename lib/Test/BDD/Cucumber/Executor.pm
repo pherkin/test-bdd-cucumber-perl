@@ -13,7 +13,7 @@ Definitions, and reporting on progress through the passed-in harness.
 
 use Moo;
 use MooX::HandlesVia;
-use Types::Standard qw( Bool ArrayRef HashRef );
+use Types::Standard qw( Bool ArrayRef HashRef Str );
 use Clone qw(clone);
 use List::Util qw/first/;
 use List::MoreUtils qw/pairwise/;
@@ -144,6 +144,27 @@ sub add_steps {
     }
 }
 
+=head2 run_mode
+
+The attribute C<run_mode> determines the execution characteristic
+of the C<Executor>. The default value is the empty string, which means
+regular execution of the step functions.
+
+The other (currently supported) value is C<match> which means the steps
+do not actually get executed; this mode merely serves to check which
+steps can be matched. Matching steps are reported as successes to the
+test harness.
+
+=cut
+
+has run_mode => (
+    is => 'rw',
+    isa => Str,
+    required => 0,
+    default => '',
+);
+
+
 =head2 execute
 
 Execute accepts a feature object, a harness object, and an optional
@@ -169,7 +190,9 @@ sub execute {
         @scenarios = $tag_spec->filter(@scenarios);
     }
 
-    $_->pre_feature( $feature, $feature_stash ) for @{ $self->extensions };
+    if ( ! $self->run_mode ) {
+        $_->pre_feature( $feature, $feature_stash ) for @{ $self->extensions };
+    }
     for my $outline (@scenarios) {
 
         # Execute the scenario itself
@@ -183,8 +206,10 @@ sub execute {
             }
         );
     }
-    $_->post_feature( $feature, $feature_stash, 'no' )
-      for reverse @{ $self->extensions };
+    if ( ! $self->run_mode ) {
+        $_->post_feature( $feature, $feature_stash, 'no' )
+            for reverse @{ $self->extensions };
+    }
 
     $harness->feature_done($feature);
 }
@@ -378,8 +403,10 @@ sub execute_scenario {
     $harness->scenario( $outline, $dataset,
                         $scenario_stash->{'longest_step_line'} );
 
-    $_->pre_scenario( $outline, $feature_stash, $scenario_stash )
-        for @{ $self->extensions };
+    if ( ! $self->run_mode ) {
+        $_->pre_scenario( $outline, $feature_stash, $scenario_stash )
+            for @{ $self->extensions };
+    }
 
     $self->_execute_hook_steps( 'before', \%context_defaults, $outline_state );
 
@@ -414,9 +441,11 @@ sub execute_scenario {
 
     $self->_execute_hook_steps( 'after', \%context_defaults, $outline_state );
 
-    $_->post_scenario( $outline, $feature_stash, $scenario_stash,
-                       $outline_state->{'short_circuit'} )
-        for reverse @{ $self->extensions };
+    if ( ! $self->run_mode ) {
+        $_->post_scenario( $outline, $feature_stash, $scenario_stash,
+                           $outline_state->{'short_circuit'} )
+            for reverse @{ $self->extensions };
+    }
 
     $harness->scenario_done( $outline, $dataset );
 
@@ -498,10 +527,14 @@ sub find_and_dispatch {
         return $result;
     }
 
-    $_->pre_step( $step, $context ) for @{ $self->extensions };
+    if ( ! $self->run_mode ) {
+        $_->pre_step( $step, $context ) for @{ $self->extensions };
+    }
     my $result = $self->dispatch( $context, $step, 0, $redispatch );
-    $_->post_step( $step, $context, $result eq 'passing' )
-      for reverse @{ $self->extensions };
+    if ( ! $self->run_mode ) {
+        $_->post_step( $step, $context, $result eq 'passing' )
+            for reverse @{ $self->extensions };
+    }
     return $result;
 }
 
@@ -594,10 +627,12 @@ sub dispatch {
         @match_locations = pairwise { [ $a, $b ] } @starts, @ends;
 
         # OK, actually execute
-        eval { $coderef->($context) };
-        if ($@) {
-            $Test::Builder::Test->ok( 0, "Test compiled" );
-            $Test::Builder::Test->diag($@);
+        if ( ! $self->run_mode ) {
+            eval { $coderef->($context) };
+            if ($@) {
+                $Test::Builder::Test->ok( 0, "Test compiled" );
+                $Test::Builder::Test->diag($@);
+            }
         }
 
         # Close up the Test::Builder object
