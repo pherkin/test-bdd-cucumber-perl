@@ -254,9 +254,7 @@ C<scenario> - A L<Test::BDD::Cucumber::Model::Scenario> object
 C<background_obj> - An optional L<Test::BDD::Cucumber::Model::Scenario> object
 representing the Background
 
-C<scenario_stash> - We'll create a new scenario stash unless you've posted one
-in. This is used exclusively for giving Background sections access to the same
-stash as the scenario they're running before.
+C<scenario_stash> - A hashref that lives the lifetime of the scenario execution
 
 For each step, a L<Test::BDD::Cucumber::StepContext> object is created, and
 passed to C<dispatch()>. Nothing is returned - everything is played back through
@@ -264,83 +262,17 @@ the Harness interface.
 
 =cut
 
-sub execute_scenario {
+
+sub _execute_steps {
     my ( $self, $options ) = @_;
-    my ( $feature, $feature_stash, $harness, $outline, $background_obj,
-        $scenario_stash, $outline_state, $dataset )
+    my ( $feature, $feature_stash, $harness, $outline,
+        $scenario_stash, $outline_state, $dataset, $context_defaults )
       = @$options{
-        qw/ feature feature_stash harness scenario background scenario_stash
-          outline_state dataset
+        qw/ feature feature_stash harness scenario scenario_stash
+          outline_state dataset context_defaults
           /
       };
 
-    my $is_background = $outline->background;
-
-    my $harness_start = $is_background ? 'background'      : 'scenario';
-    my $harness_stop  = $is_background ? 'background_done' : 'scenario_done';
-
-    my %context_defaults = (
-        executor => $self,    # Held weakly by StepContext
-
-        # Data portion
-        data  => '',
-        stash => {
-            feature => $feature_stash,
-            step    => {},
-        },
-
-        # Step-specific info
-        feature  => $feature,
-        scenario => $outline,
-
-        # Communicators
-        harness => $harness,
-
-        transformers => $self->{'steps'}->{'transform'} || [],
-    );
-
-    $context_defaults{stash}->{scenario} = $scenario_stash;
-
-    # OK, back to the normal execution
-    $harness->$harness_start( $outline, $dataset,
-                              $scenario_stash->{'longest_step_line'} );
-
-    if ( not $is_background ) {
-        $_->pre_scenario( $outline, $feature_stash, $scenario_stash )
-            for @{ $self->extensions };
-
-        for my $before_step ( @{ $self->{'steps'}->{'before'} || [] } ) {
-
-            # Set up a context
-            my $context = Test::BDD::Cucumber::StepContext->new(
-                { %context_defaults, verb => 'before', } );
-
-            my $result =
-                $self->dispatch( $context, $before_step,
-                                 $outline_state->{'short_circuit'}, 0 );
-
-            # If it didn't pass, short-circuit the rest
-            unless ( $result->result eq 'passing' ) {
-                $outline_state->{'short_circuit'} = 1;
-            }
-        }
-    }
-
-    # Run the background if we have one. This recurses back in to
-    # execute_scenario...
-    if ($background_obj) {
-        $self->execute_scenario(
-            {
-                is_background  => 1,
-                scenario       => $background_obj,
-                feature        => $feature,
-                feature_stash  => $feature_stash,
-                harness        => $harness,
-                scenario_stash => $scenario_stash,
-                outline_state  => $outline_state
-            }
-            );
-    }
 
     foreach my $step ( @{ $outline->steps } ) {
 
@@ -357,7 +289,7 @@ sub execute_scenario {
         # Set up a context
         my $context = Test::BDD::Cucumber::StepContext->new(
             {
-                %context_defaults,
+                %$context_defaults,
 
                     # Data portion
                     columns => $step->columns || [],
@@ -381,23 +313,106 @@ sub execute_scenario {
 
     }
 
-    if ( not $is_background ) {
-        for my $after_step ( @{ $self->{'steps'}->{'after'} || [] } ) {
+    return;
+}
 
-            # Set up a context
-            my $context = Test::BDD::Cucumber::StepContext->new(
-                { %context_defaults, verb => 'after', } );
+sub execute_scenario {
+    my ( $self, $options ) = @_;
+    my ( $feature, $feature_stash, $harness, $outline, $background_obj,
+        $scenario_stash, $outline_state, $dataset )
+      = @$options{
+        qw/ feature feature_stash harness scenario background scenario_stash
+          outline_state dataset
+          /
+      };
 
-            # All After steps should happen, to ensure cleanup
-            my $result = $self->dispatch( $context, $after_step, 0, 0 );
+    my %context_defaults = (
+        executor => $self,    # Held weakly by StepContext
+
+        # Data portion
+        data  => '',
+        stash => {
+            feature => $feature_stash,
+            step    => {},
+        },
+
+        # Step-specific info
+        feature  => $feature,
+        scenario => $outline,
+
+        # Communicators
+        harness => $harness,
+
+        transformers => $self->{'steps'}->{'transform'} || [],
+    );
+    $context_defaults{stash}->{scenario} = $scenario_stash;
+
+    # OK, back to the normal execution
+    $harness->scenario( $outline, $dataset,
+                        $scenario_stash->{'longest_step_line'} );
+
+    $_->pre_scenario( $outline, $feature_stash, $scenario_stash )
+        for @{ $self->extensions };
+
+    for my $before_step ( @{ $self->{'steps'}->{'before'} || [] } ) {
+
+        # Set up a context
+        my $context = Test::BDD::Cucumber::StepContext->new(
+            { %context_defaults, verb => 'before', } );
+
+        my $result =
+            $self->dispatch( $context, $before_step,
+                             $outline_state->{'short_circuit'}, 0 );
+
+        # If it didn't pass, short-circuit the rest
+        unless ( $result->result eq 'passing' ) {
+            $outline_state->{'short_circuit'} = 1;
         }
-        $_->post_scenario( $outline, $feature_stash, $scenario_stash,
-                           $outline_state->{'short_circuit'} )
-            for reverse @{ $self->extensions };
-
     }
 
-    $harness->$harness_stop( $outline, $dataset );
+    if ($background_obj) {
+        $harness->background( $outline, $dataset,
+                              $scenario_stash->{'longest_step_line'} );
+        $self->_execute_steps(
+            {
+                scenario       => $background_obj,
+                feature        => $feature,
+                feature_stash  => $feature_stash,
+                harness        => $harness,
+                scenario_stash => $scenario_stash,
+                outline_state  => $outline_state,
+                context_defaults => \%context_defaults,
+            }
+            );
+        $harness->background_done( $outline, $dataset );
+    }
+
+    $self->_execute_steps(
+        {
+            scenario       => $outline,
+            feature        => $feature,
+            feature_stash  => $feature_stash,
+            harness        => $harness,
+            scenario_stash => $scenario_stash,
+            outline_state  => $outline_state,
+            dataset        => $dataset,
+            context_defaults => \%context_defaults,
+        });
+
+    for my $after_step ( @{ $self->{'steps'}->{'after'} || [] } ) {
+
+        # Set up a context
+        my $context = Test::BDD::Cucumber::StepContext->new(
+            { %context_defaults, verb => 'after', } );
+
+        # All After steps should happen, to ensure cleanup
+        my $result = $self->dispatch( $context, $after_step, 0, 0 );
+    }
+    $_->post_scenario( $outline, $feature_stash, $scenario_stash,
+                       $outline_state->{'short_circuit'} )
+        for reverse @{ $self->extensions };
+
+    $harness->scenario_done( $outline, $dataset );
 
     return;
 }
