@@ -112,12 +112,17 @@ Feature and scenario stashes can be reached through
 
 Note: *executed* steps, so not called for skipped steps.
 
-=head2 post_step($step, $step_context, $failed)
+=head2 post_step($step, $step_context, $failed, $result)
 
 Invoked by the Executor after each executed step in $scenario.
 Reports errors by calling croak().
 
-$failure indicates whether the step has failed.
+$failed indicates that the step has not been completed succesfully;
+this means the step can have failed, be marked as TODO or pending
+(not implemented).
+
+$result is a C<Test::BDD::Cucumber::Model::Result> instance which
+holds the completion status of the step.
 
 Note: *executed* steps, so not called for skipped steps.
 
