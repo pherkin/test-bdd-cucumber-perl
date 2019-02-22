@@ -500,7 +500,7 @@ sub find_and_dispatch {
 
     $_->pre_step( $step, $context ) for @{ $self->extensions };
     my $result = $self->dispatch( $context, $step, 0, $redispatch );
-    $_->post_step( $step, $context, $result eq 'passing' )
+    $_->post_step( $step, $context, ( $result->result ne 'passing' ), $result )
       for reverse @{ $self->extensions };
     return $result;
 }
