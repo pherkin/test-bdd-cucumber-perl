@@ -19,11 +19,12 @@ use Test::BDD::Cucumber::I18n
 use Test::BDD::Cucumber::Loader;
 
 use Moo;
-use Types::Standard qw( ArrayRef );
+use Types::Standard qw( ArrayRef Bool );
 has 'step_paths' => ( is => 'rw', isa => ArrayRef, default => sub { [] } );
 has 'extensions' => ( is => 'rw', isa => ArrayRef, default => sub { [] } );
 has 'tags'       => ( is => 'rw', isa => ArrayRef, required => 0 );
 has 'tag_scheme' => ( is => 'rw', isa => ArrayRef, required => 0 );
+has 'match_only' => ( is => 'rw', isa => Bool,     default => 0 );
 
 has 'harness' => ( is => 'rw' );
 
@@ -92,6 +93,12 @@ sub _post_run {
 sub run {
     my ( $self,     @arguments ) = @_;
     my ( $executor, @features )  = $self->_pre_run(@arguments);
+
+    if ( $self->match_only ) {
+        $self->_make_executor_match_only($executor) if $self->match_only;
+        $self->_rename_feature_steps( @features );
+    }
+
     my $result = $self->_run_tests( $executor, @features );
     $self->_post_run;
     return $result;
@@ -255,6 +262,7 @@ sub _process_arguments {
         tags       => [ 't|tags=s@', [] ],
         i18n       => ['i18n=s'],
         extensions => [ 'e|extension=s@', [] ],
+        match_only => ['m|match'],
     );
 
     GetOptions(
@@ -398,6 +406,9 @@ sub _process_arguments {
     # Store our TagSpecScheme
     $self->tag_scheme( $self->_process_tags( @{ $deref->('tags') } ) );
 
+    # Match only?
+    $self->match_only( $deref->('match_only') );
+
     return ( pop @ARGV );
 }
 
@@ -483,6 +494,44 @@ sub _print_langdef {
     }
 
     exit;
+}
+
+sub _make_executor_match_only {
+    my ($self, $executor) = @_;
+
+    my $match_sub = sub {
+        my $context = shift;
+        $Test::Builder::Test->ok( 1, "Test matched" );
+        return 1;
+    };
+
+    for my $verb ( keys %{$executor->steps} ) {
+        for my $step_tuple ( @{ $executor->steps->{$verb} } ) {
+            $step_tuple->[1] = $match_sub;
+        }
+    }
+
+    return 1;
+}
+
+sub _rename_feature_steps {
+    my ($self, @features) = @_;
+
+    my %steps;
+    for my $feature ( @features ) {
+        for my $scenario ( $feature->background, @{ $feature->scenarios } ) {
+            next unless $scenario;
+            for my $step ( @{ $scenario->steps } ) {
+                $steps{ $step . '' } = $step;
+            }
+        }
+    }
+
+    for my $step_object ( values %steps ) {
+        $step_object->verb_original(
+            'MATCH MODE: ' . ( $step_object->verb_original || $step_object->verb )
+        );
+    }
 }
 
 =head1 AUTHOR

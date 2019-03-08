@@ -32,6 +32,10 @@ Controlling @INC
  -b, --blib             Add 'blib/lib' and 'blib/arch' to @INC
  -I [dir]               Add given directory to @INC
 
+Controlling Execution
+
+ -m, --match            Only match steps in from features with available ones
+
 Output formatting
 
  -o, --output           Output harness. Defaults to 'TermColor'. See 'Outputs'
