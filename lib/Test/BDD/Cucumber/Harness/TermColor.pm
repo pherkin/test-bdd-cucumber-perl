@@ -116,16 +116,6 @@ sub _colors {
 }
 
 my $margin = 2;
-
-sub BUILD {
-    my $self = shift;
-    my $fh   = $self->fh;
-
-    if ( $margin > 1 ) {
-        print $fh "\n" x ( $margin - 1 );
-    }
-}
-
 my $current_feature;
 
 sub feature {
