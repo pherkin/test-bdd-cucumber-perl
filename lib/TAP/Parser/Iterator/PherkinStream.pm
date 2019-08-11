@@ -7,9 +7,10 @@ use base 'TAP::Parser::Iterator::Stream';
 
 
 sub _initialize {
-    my ($self, $fh, $pherkin) = @_;
+    my ($self, $fh, $pherkin, $child_pid) = @_;
 
     $self->{pherkin} = $pherkin;
+    $self->{child_pid} = $child_pid;
     return $self->SUPER::_initialize($fh);
 }
 
@@ -17,6 +18,9 @@ sub _finish {
     my $self = shift;
 
     $self->{pherkin}->_post_run();
+    if ($self->{child_pid}) {
+        waitpid $self->{child_pid}, 0; # reap child process
+    }
     return $self->SUPER::_finish(@_);
 }
 
