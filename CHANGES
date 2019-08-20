@@ -1,4 +1,9 @@
 -----
+0.57: 9 Apr 2019
+   -  Add 'match mode'; don't run steps, only check matches against
+      defined steps in step files
+   -  Fix the 'result' argument of the 'post_step' callback of of
+      extensions; it used to always be 'failed'
 0.56: 21 Apr 2018
     - Minor upgrade to minimum required Moo version to help try and flush
       out some CPAN smokers failure.
