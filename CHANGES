@@ -9,10 +9,10 @@
       out some CPAN smokers failure.
 0.55: 11 Apr 2018
     - Fix a parsing bug with PyStrings at the end of a scenario, via latk
-        https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/127
+        https://github.com/pherkin/test-bdd-cucumber-perl/pull/127
 0.54: 10 Apr 2018
     - Set output layers properly to UTF8, via ivanych
-        https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/126
+        https://github.com/pherkin/test-bdd-cucumber-perl/pull/126
 0.53: 26 Jun 2017
     - Moose -> Moo, thanks to https://github.com/vti
 0.52: 13 Feb 2017
@@ -34,32 +34,32 @@
     - Now without cruft that was lying around in the build dir
 0.47: 23 Feb 2016
     - eheulsmann adds extra documentation on extensions
-    https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/82
+    https://github.com/pherkin/test-bdd-cucumber-perl/pull/82
     - eheulsmann fixes which keys we allow in configuration files
-    https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/81
+    https://github.com/pherkin/test-bdd-cucumber-perl/pull/81
 0.46: 15 Feb 2016
     - Spelling mistakes fixed
-        https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/75
+        https://github.com/pherkin/test-bdd-cucumber-perl/issues/75
     - Table quoting fixed
-        https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/50
+        https://github.com/pherkin/test-bdd-cucumber-perl/issues/50
     - Extensions gains setup and teardown methods
-        https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/78
+        https://github.com/pherkin/test-bdd-cucumber-perl/pull/78
     - Works on old Perls again:
-        https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/79
+        https://github.com/pherkin/test-bdd-cucumber-perl/issues/79
 0.45: 11 Feb 2016
     - Removed Moose cleanliness method from
       Test::BDD::Cucumber::Extension
 0.44: 09 Feb 2016
     - Add extensions! See Test::BDD::Cucumber::Executor and
       Test::BDD::Cucumber::Extensions for details. Work by ehuelsmann:
-        https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/66
+        https://github.com/pherkin/test-bdd-cucumber-perl/pull/66
 0.41: 09 Feb 2016
     - pherkin command line options can now be read from config files, based on
         a patch by eheulsmann
     - Scenario outline handling now works properly with i18n, thanks eheulsmann
-        https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/71
+        https://github.com/pherkin/test-bdd-cucumber-perl/pull/71
     - Storable dependency removed, thanks ehuelsmann
-        https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/69
+        https://github.com/pherkin/test-bdd-cucumber-perl/pull/69
     - Various spelling mistakes fixed - thanks James McCoy
 0.40: 02 Jan 2016
     - Step redispatching
@@ -74,7 +74,7 @@
     - Don't require Devel::FindRef
 0.35: 21 Jul 2015
     - Fixed the Test::Builder wrapping issue discussed at:
-        https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/61
+        https://github.com/pherkin/test-bdd-cucumber-perl/pull/61
       Output from Test::Exception should now be properly captured.
     - Updated git repository all over the places
 0.34: 21 Apr 2015
@@ -89,16 +89,16 @@
     - Minor typo fixes, thanks 'poum', 'Chylli'
 0.32: 23 Dec 2014
     - Colour themes for TermColor harness, fixes
-        https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/35
+        https://github.com/pherkin/test-bdd-cucumber-perl/issues/35
     - Command-line options are now passed through
-        https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/49/files
+        https://github.com/pherkin/test-bdd-cucumber-perl/pull/49/files
     - Both of these are based on a patch from benningm
 0.31: 09 Oct 2014
     - Specified a minimum version of File::Slurp in response to a
       private bug report
 0.30: 27 Apr 2014
     - Use core module Digest::SHA instead of Digest::SHA1
-        https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/45
+        https://github.com/pherkin/test-bdd-cucumber-perl/issues/45
 0.29: 26 Apr 2014
     - Tried to fix Win32 issue again
     - Remove FindBin::libs
@@ -111,11 +111,11 @@
     - Ran the whole thing through perltidy
 0.26: 21 Jun 2014
     - Fixed a bug relating to skipped steps in TermColor output
-      https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/40
+      https://github.com/pherkin/test-bdd-cucumber-perl/issues/40
     - Changed examples/ to use C->matches
 0.25: 08 Jun 2014
     - Highlight parameters properly in TermColor output using @+ and @-
-      https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/24
+      https://github.com/pherkin/test-bdd-cucumber-perl/issues/24
 0.24: 07 Jun 2014
     - Replacing string `eval` with block `eval` for requiring test harnesses -
       thanks Paul Cochrane
@@ -150,24 +150,24 @@
 0.16: 01 Dec 2013
     - Default behaviour from pherkin is to suppress colours when outputting
         to not a tty; thanks (for this, and much of the stuff in 0.15) to
-        rjp: https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/11
+        rjp: https://github.com/pherkin/test-bdd-cucumber-perl/pull/11
     - Try and use Win32::Console::ANSI if on Windows
-        https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/13
+        https://github.com/pherkin/test-bdd-cucumber-perl/issues/13
     - Before and After Hooks now implemented
-        highflying: https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/15
+        highflying: https://github.com/pherkin/test-bdd-cucumber-perl/pull/15
     - Step Placeholder Transform now implemented
     - Step line number now displayed on failing steps (TestBuilder output)
     - Fixed bug where results from skipped steps were not being added to the overall results
     - Run tagged scenarios
-        rjp: https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/15
-        highflying: https://github.com/pjlsergeant/test-bdd-cucumber-perl/pull/10
+        rjp: https://github.com/pherkin/test-bdd-cucumber-perl/pull/15
+        highflying: https://github.com/pherkin/test-bdd-cucumber-perl/pull/10
 0.15: 21 May 2013
     - pherkin now accepts an output type via -o, eg:
         pherkin -o TestBuilder ; pherkin -o TermColor
       This is a partial solution to:
-        https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/8
+        https://github.com/pherkin/test-bdd-cucumber-perl/issues/8
     - Use the original verb that the test file used
-      https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/9
+      https://github.com/pherkin/test-bdd-cucumber-perl/issues/9
 0.14: 04 May 2013
     - Actually apply the Test::Builder 1.5 stuff
 0.13: 04 May 2013
@@ -175,10 +175,10 @@
     - Reintroduced the "auto_corpus" tests, and made them work
 0.12: 17 Nov 2012
     - Fixed tag-related issues, thanks to Craig Caroon
-      https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/5
+      https://github.com/pherkin/test-bdd-cucumber-perl/issues/5
 0.11: 20 May 2012
     - Correct Term::ANSIColor dependency
-      https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/4
+      https://github.com/pherkin/test-bdd-cucumber-perl/issues/4
 0.10: 02 May 2012
     - Changed dependency from Clone::Fast to Clone, because the following
       bug stopped it being installed without a force...
@@ -196,10 +196,10 @@
     - Added tags at a code-level (but not to pherkin, yet)
 0.06: 31 Mar 2012
     - Fixed up the behaviour of Background sections, to run before each and
-      every Scenario. See: https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/3
+      every Scenario. See: https://github.com/pherkin/test-bdd-cucumber-perl/issues/3
       Bug reported by: intrigeri@boum.org
     - `pherkin` now returns a non-zero exit code if tests failed, as per:
-      https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues/1
+      https://github.com/pherkin/test-bdd-cucumber-perl/issues/1
 0.05: 18 Mar 2012
     - Yet another feature parsing bug, relating to empty lines after scenarios
 0.04: 14 Jan 2012
