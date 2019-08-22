@@ -88,7 +88,7 @@ C<features/step_definitions/basic_steps.pl> file in it:
  };
 
 When you run L<pherkin|App::Pherkin> or the Test::Builder-based test which does
-the same thing (L<900_run_features.t|https://github.com/pjlsergeant/test-bdd-cucumber-perl/blob/master/t/900_run_features.t>),
+the same thing (L<900_run_features.t|https://github.com/pherkin/test-bdd-cucumber-perl/blob/master/t/900_run_features.t>),
 we look for a C<features/> directory, and search for step definitions files
 (matched by C<*_steps.pl>) and feature files (matched by C<*.feature>).
 
