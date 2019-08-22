@@ -1,8 +1,14 @@
 -----
+0.58: [to be released]
+    - Test::BDD::Cucumber has a new home: https://github.com/pherkin
+    - Rename links (issues, PRs) to point to the new home
+    - Reap finished child processes in the `prove` plugin
+      `TAP::Parser::Iterator::PherkinStream`
+    - Eliminate empty lines between successive feature
 0.57: 9 Apr 2019
-   -  Add 'match mode'; don't run steps, only check matches against
+    - Add 'match mode'; don't run steps, only check matches against
       defined steps in step files
-   -  Fix the 'result' argument of the 'post_step' callback of of
+    - Fix the 'result' argument of the 'post_step' callback of of
       extensions; it used to always be 'failed'
 0.56: 21 Apr 2018
     - Minor upgrade to minimum required Moo version to help try and flush
