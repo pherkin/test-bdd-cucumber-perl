@@ -1,5 +1,3 @@
 
-- [ ] Add a jUnit outputer
-
 - Harness should print out actual scenario and feature keyword used
 - Harness should print out scenario description
