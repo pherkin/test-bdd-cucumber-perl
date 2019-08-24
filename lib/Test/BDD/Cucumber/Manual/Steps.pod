@@ -65,7 +65,55 @@ equivalent:
   sub { S->{'count'} = 1 }
 
 We will evaluate the regex immediately before we execute the coderef, so you
-can use $1, $2, $etc, although these are also available via the StepContext.
+can use $1, $2, $etc. Similarly you can access named matches using C<$+{match_name}>.
+
+=head1 ADDITIONAL STEPS
+
+Next to the steps that will be matched directly against feature file input, a
+number of additional step functions are supported:
+
+=over 4
+
+=item * C<Before> and C<After>
+
+These steps create hooks into the evaluation process of feature files. E.g.
+
+   Before sub {  # Run before every scenario
+      # ... scenario set up code
+   };
+
+   After sub {  # Run after every scenario
+     # ... scenario tear down code
+   };
+
+For more extensive hook functionality, see L<Test::BDD::Cucumber::Extension>.
+
+=item * C<Transform>
+
+The C<Transform> step serves to map matched values or table rows from feature file
+(string) input to step input values. The step takes two arguments, same as the
+C<Given>, C<When> and C<Then> steps: a regular expression and a code reference. E.g.
+
+
+   Transform qr/^(\d+)$/, sub {
+      # transform matches of digit-only strings
+
+      my $rv = $1;
+      # ... do something with $rv
+      return $rv;
+   };
+
+   Transform qr/^table:col1,col2$/, sub {
+      # transform tables with 2 columns, named col1 and col2 respectively
+
+      my ($step_context, $data) = @_;
+      # ... transform data in $data
+      return $data;
+   };
+
+
+=back
+
 
 =head1 NEXT STEPS
 
@@ -80,7 +128,7 @@ Peter Sergeant C<pete@clueball.com>
 
 =head1 LICENSE
 
-Copyright 2011-2016, Peter Sergeant; Licensed under the same terms as Perl
+Copyright 2011-2019, Peter Sergeant; Licensed under the same terms as Perl
 
 =cut
 

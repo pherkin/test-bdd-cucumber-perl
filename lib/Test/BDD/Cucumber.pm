@@ -10,6 +10,26 @@ use warnings;
 
 Test::BDD::Cucumber - Feature-complete Cucumber-style testing in Perl
 
+=head1 SYNOPSIS
+
+
+   # Driving tests using the 'pherkin' binary that comes with the distribution
+   $ pherkin -l -b t/
+
+   # Or choose a subset of tests to be run by selecting all scenarios tagged 'slow'
+   $ pherkin -l -b --tags @slow t/
+
+   # Or all those /not/ tagged 'slow'
+   $ pherkin -l -b --tags ~@slow
+
+
+   # Driving tests using 'prove' integration
+   $ prove --source Feature --ext=.feature t/
+
+   # Driving parallel tests using 'prove'
+   $ prove --source Feature -j 9 --ext=.feature t/
+
+
 =head1 DESCRIPTION
 
 A sane and complete Cucumber implementation in Perl
@@ -18,9 +38,11 @@ Behaviour of this module is similar to that, but sometimes different from
 the I<real> Cucumber, the plan is to move use the same parser and behaviour
 L<See the logged issue|https://github.com/pherkin/test-bdd-cucumber-perl/issues/73>.
 
-=head1 QUICK LINKS
-
-See this distribution: L<Cucumber on Perl on MetaCPAN|https://metacpan.org/release/Test-BDD-Cucumber>
+The implementation supports the following Gherkin keywords in feature files:
+C<Feature>, C<Scenario>, C<Scenario Outline>, C<Examples>, C<Given>, C<When>,
+C<Then>, C<And> and C<But>. Additionally, C<Scenario> can be used with C<Examples>.
+This best maps to L<Gherkin version 6.0.13|https://github.com/cucumber/cucumber/blob/master/gherkin/CHANGELOG.md#6013---2018-09-25>,
+but without support for its new C<Rule> and C<Example> keywords.
 
 =begin html
 
@@ -31,6 +53,7 @@ href="https://gitter.im/pjlsergeant/test-bdd-cucumber-perl"><img
 ></a>
 
 =end html
+
 
 =head1 NEXT STEPS
 
