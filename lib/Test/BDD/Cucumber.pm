@@ -57,7 +57,7 @@ Test::Builder|Test::BDD::Cucumber::Manual::Integration> document.
 
 For current bugs, check the issue tracer at GitHub:
 
-  L<https://github.com/pjlsergeant/test-bdd-cucumber-perl/issues>
+  L<https://github.com/pherkin/test-bdd-cucumber-perl/issues>
 
 Since Test::BDD::Cucumber uses its own parser, differences probably exist
 in the intepretation of feature files when comparing to Cucumber.
