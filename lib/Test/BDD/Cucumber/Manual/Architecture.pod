@@ -7,7 +7,43 @@ Test::BDD::Cucumber::Manual::Architecture - Structural Overview
 =head1 INTRODUCTION
 
 This short document exists to give you an idea how the different components of
-this distribution fit together.
+this distribution fit together. Components fall into three categories: one for
+dealing with definition of the step functions (Perl code), the other for dealing
+with feature files. And then there's the third group, with
+C<Test::BDD::Cucumber::Executor> which links the two groups together; building on
+the steps to execute the features.
+
+In the first group are C<Test::BDD::Cucumber::StepFile> and
+C<Test::BDD::Cucumber::Loader>. The second group is bigger and is comprised of
+
+=over 4
+
+=item * C<Test::BDD::Cucumber::Parser>
+
+=item * C<Test::BDD::Cucumber::Model::*>
+
+=back
+
+The third group holds - next to C<Test::BDD::Cucumber::Executor>:
+
+=over 4
+
+=item * C<Test::BDD::Cucumber::Harness::*>
+
+=item * C<Test::BDD::Cucumber::StepContext>
+
+=item * C<Test::BDD::Cucumber::TestBuilderDelegator>
+
+=item * C<Test::BDD::Cucumber::Errors>
+
+=item * C<Test::BDD::Cucumber::Extension>
+
+=back
+
+Please note that the C<Test::BDD::Cucumber::Harness> should not be confused
+with C<TAP::Harness> or C<Test2::Harness>; this harness is TBC's own and
+optionally forwards events to the C<Test::Builder::Test> harness.
+
 
 =head1 MODELS
 
@@ -35,8 +71,20 @@ C<Test::BDD::Cucumber::Model>.
 
 We build up a L<Test::BDD::Cucumber::Executor> object, in to which we load the
 step definitions. We then pass this in a L<Test::BDD::Cucumber::Model::Feature>
-object, along with a L<Test::BDD::Cucumber::Model::Harness> object, which
+object, along with a L<Test::BDD::Cucumber::Harness> object, which
 controls interaction with the outside world.
+
+=head2 Test::Builder
+
+While running step functions, C<Test::BDD::Cucumber::Executor> reroutes
+the flow of test events (calls to C<ok>, C<fail>, etc) to itself. Based on the
+collected data, the step itself is reported as a success or failure to the
+test driver.
+
+Confusing about this situation is that both the channel to report through to
+the actual test driver is an instance of Test::Builder as well as the method
+used to route the stream of test events to itself uses a Test::Builder instance.
+
 
 =head1 EXTENSION
 
@@ -63,7 +111,7 @@ Peter Sergeant C<pete@clueball.com>
 
 =head1 LICENSE
 
-Copyright 2011-2016, Peter Sergeant; Licensed under the same terms as Perl
+Copyright 2011-2019, Peter Sergeant; Licensed under the same terms as Perl
 
 =cut
 
