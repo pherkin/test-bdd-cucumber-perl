@@ -107,7 +107,13 @@ C<add_steps()> takes step definitions of the item list form:
   [ Given => qr//, sub {} ],
  ),
 
-and populates C<steps> with them.
+Or, when metadata is specified with the step, of the form:
+
+ (
+  [ Given => qr//, { meta => $data }, sub {} ]
+ ),
+
+(where the hashref stores step metadata) and populates C<steps> with them.
 
 =cut
 
@@ -118,27 +124,30 @@ sub add_steps {
 
     # Map the steps to be lower case...
     for (@steps) {
-        my ( $verb, $match, $code ) = @$_;
+        my ( $verb, $match, $meta, $code );
+
+        if (@$_ == 3) {
+            ( $verb, $match, $code ) = @$_;
+            $meta = {};
+        }
+        else {
+            ( $verb, $match, $meta, $code ) = @$_;
+        }
         $verb = lc $verb;
 
-        if ( $verb =~ /^(before|after)$/ ) {
-            $code  = $match;
-            $match = qr//;
-        } else {
-            unless ( ref($match) ) {
-                $match =~ s/:\s*$//;
-                $match = quotemeta($match);
-                $match = qr/^$match:?/i;
-            }
+        unless ( ref($match) ) {
+            $match =~ s/:\s*$//;
+            $match = quotemeta($match);
+            $match = qr/^$match:?/i;
         }
 
         if ( $verb eq 'transform' or $verb eq 'after' ) {
 
             # Most recently defined Transform takes precedence
             # and After blocks need to be run in reverse order
-            unshift( @{ $self->{'steps'}->{$verb} }, [ $match, $code ] );
+            unshift( @{ $self->{'steps'}->{$verb} }, [ $match, $meta, $code ] );
         } else {
-            push( @{ $self->{'steps'}->{$verb} }, [ $match, $code ] );
+            push( @{ $self->{'steps'}->{$verb} }, [ $match, $meta, $code ] );
         }
 
     }
@@ -523,7 +532,7 @@ sub dispatch {
       if $short_circuit;
 
     # Execute the step definition
-    my ( $regular_expression, $coderef ) = @$step;
+    my ( $regular_expression, $meta, $coderef ) = @$step;
 
     # Setup what we'll pass to step_done, with out localized Test::Builder
     # stuff

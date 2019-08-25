@@ -18,7 +18,7 @@ use Test::BDD::Cucumber::Harness::TermColor;
 
 my $feature = Test::BDD::Cucumber::Parser->parse_string( join '', (<DATA>) );
 my $executor = Test::BDD::Cucumber::Executor->new();
-$executor->add_steps( [ Given => qr/(a) f(o)o b(a)r (baz)/, sub { 1; } ], );
+$executor->add_steps( [ Given => qr/(a) f(o)o b(a)r (baz)/, {}, sub { 1; } ], );
 
 my $expected = <<END;
 [0]  [97]Foo[0]

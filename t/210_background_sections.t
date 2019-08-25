@@ -37,12 +37,12 @@ my $pass_until = 2;
 
 my $executor = Test::BDD::Cucumber::Executor->new();
 $executor->add_steps(
-    [ Given => qr/a passing step called '(.+)'/, sub { 1; } ],
+    [ Given => (qr/a passing step called '(.+)'/, {}, sub { 1; }) ],
     [
-        Given => 'a background step that sometimes passes',
-        sub {
-            ok( ( $pass_until && $pass_until-- ), "Still passes" );
-        }
+     Given => ('a background step that sometimes passes', {},
+               sub {
+                   ok( ( $pass_until && $pass_until-- ), "Still passes" );
+               })
     ],
 );
 

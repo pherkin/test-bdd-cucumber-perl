@@ -12,6 +12,7 @@ use utf8;
 
 use Carp qw/croak/;
 use File::Spec qw/rel2abs/;
+use Scalar::Util qw/reftype/;
 
 use Test::BDD::Cucumber::I18n qw(languages langdef keyword_to_subname);
 require Exporter;
@@ -70,16 +71,28 @@ these are returned to it...
 
 =cut
 
+sub _ensure_meta {
+    my ($p, $f, $l) = caller(1);
+    if (ref $_[1] and reftype $_[1] eq 'HASH') {
+        $_[1]->{source} = $f;
+        $_[1]->{line} = $l;
+        return @_;
+    }
+    else {
+        return ($_[0], { source => $f, line => $l }, $_[1]);
+    }
+}
+
 # Mapped to Given, When, and Then as part of the i18n mapping below
-sub _Given { push( @definitions, [ Given => @_ ] ) }
-sub _When  { push( @definitions, [ When  => @_ ] ) }
-sub _Then  { push( @definitions, [ Then  => @_ ] ) }
+sub _Given { push( @definitions, [ Given => _ensure_meta(@_) ] ) }
+sub _When  { push( @definitions, [ When  => _ensure_meta(@_) ] ) }
+sub _Then  { push( @definitions, [ Then  => _ensure_meta(@_) ] ) }
 
-sub Step { push( @definitions, [ Step => @_ ] ) }
+sub Step { push( @definitions, [ Step => _ensure_meta(@_) ] ) }
 
-sub Transform { push( @definitions, [ Transform => @_ ] ) }
-sub Before    { push( @definitions, [ Before    => @_ ] ) }
-sub After     { push( @definitions, [ After     => @_ ] ) }
+sub Transform { push( @definitions, [ Transform => _ensure_meta(@_) ] ) }
+sub Before    { push( @definitions, [ Before    => _ensure_meta(qr//, @_) ] ) }
+sub After     { push( @definitions, [ After     => _ensure_meta(qr//, @_) ] ) }
 
 my @SUBS;
 
