@@ -4,6 +4,7 @@
       support for: Armenian, Aragonese, Asturian, Azerbaijani, Bosnian,
       Emoji, Irish, Gujarati, Georgian, Macedonian (Cyrilic),
       Macedonian (Latin), Mongolian and Tamil
+    - Documentation updates and (hopefully) clarification
 0.58: 22 Aug 2019
     - Test::BDD::Cucumber has a new home: https://github.com/pherkin
     - Rename links (issues, PRs) to point to the new home
