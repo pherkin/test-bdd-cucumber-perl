@@ -79,24 +79,32 @@ for those who want to extend or hook into feature file execution
 
 =back
 
-=head1 TEN SECOND GUIDE TO USING THIS IN YOUR CI ENVIRONMENT
-
-Don't use the command-line tool, L<App::pherkin>, for integration in your
-CI environment. Instead, look at the L<How to integrate with
-Test::Builder|Test::BDD::Cucumber::Manual::Integration> document.
-
-=head1 BUGS, MISSING, AND LIMITATIONS
+=head1 BUGS AND LIMITATIONS
 
 For current bugs, check the issue tracer at GitHub:
+L<https://github.com/pherkin/test-bdd-cucumber-perl/issues>
 
-  L<https://github.com/pherkin/test-bdd-cucumber-perl/issues>
+Two things need specific mentioning:
 
-Since Test::BDD::Cucumber uses its own parser, differences probably exist
+=over 4
+
+=item * No support for Test2 in Step files at the moment
+
+While this support is planned, currently, there's only support for Test::Builder
+based test modules (e.g. Test::Exception, Test::Differences, Test::More, etc)
+
+=item * Due to the use of its own parser,differences probably exist
 in the intepretation of feature files when comparing to Cucumber.
 
-=head1 CODE
+=back
+
+=head1 SOURCE
 
 On Github, of course: L<https://github.com/pherkin/test-bdd-cucumber-perl>.
+
+=head1 SEE ALSO
+
+L<Gherkin> - A Gherkin parser and compiler
 
 =head1 AUTHORS
 
