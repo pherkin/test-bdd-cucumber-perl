@@ -473,14 +473,14 @@ sub _print_langdef {
 
     my $langdef = langdef($language);
 
-    my @keywords = qw(feature background scenario scenario_outline examples
+    my @keywords = qw(feature background scenario scenarioOutline examples
         given when then and but);
     my $max_length
         = max map { length readable_keywords( $langdef->{$_} ) } @keywords;
 
     my $format = "| %-16s | %-${max_length}s |\n";
     for my $keyword (
-        qw(feature background scenario scenario_outline
+        qw(feature background scenario scenarioOutline
         examples given when then and but )
         )
     {

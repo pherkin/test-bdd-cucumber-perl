@@ -8,6 +8,8 @@ Test::BDD::Cucumber::StepFile - Functions for creating and loading Step Definiti
 
 use strict;
 use warnings;
+use utf8;
+
 use Carp qw/croak/;
 use File::Spec qw/rel2abs/;
 

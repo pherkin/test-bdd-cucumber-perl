@@ -31,6 +31,7 @@ Internationalization of feature files and step definitions.
 
 use strict;
 use warnings;
+use utf8;
 
 use base 'Exporter';
 
@@ -50,7 +51,7 @@ sub _initialize_language_definitions_from_shared_json_file {
     for my $language ( keys %$langdefs ) {
         my $langdef = $langdefs->{$language};
         for my $key ( keys %$langdef ) {
-            $langdef->{$key} =~ s{\Q*|\E}{};
+            $langdef->{$key} =~ s{[*]\s*[|]}{};
         }
     }
 
