@@ -35,25 +35,13 @@ Test::BDD::Cucumber - Feature-complete Cucumber-style testing in Perl
 A sane and complete Cucumber implementation in Perl
 
 Behaviour of this module is similar to that, but sometimes different from
-the I<real> Cucumber, the plan is to move use the same parser and behaviour
-L<See the logged issue|https://github.com/pherkin/test-bdd-cucumber-perl/issues/73>.
+the I<real> Cucumber, the plan is to move use the same parser and behaviour.
 
 The implementation supports the following Gherkin keywords in feature files:
 C<Feature>, C<Scenario>, C<Scenario Outline>, C<Examples>, C<Given>, C<When>,
 C<Then>, C<And> and C<But>. Additionally, C<Scenario> can be used with C<Examples>.
 This best maps to L<Gherkin version 6.0.13|https://github.com/cucumber/cucumber/blob/master/gherkin/CHANGELOG.md#6013---2018-09-25>,
 but without support for its new C<Rule> and C<Example> keywords.
-
-=begin html
-
-You can talk to the author(s) here: <a
-href="https://gitter.im/pjlsergeant/test-bdd-cucumber-perl"><img
-    src="https://badges.gitter.im/pjlsergeant/test-bdd-cucumber-perl.svg"
-    alt="Chat on Gitter"
-></a>
-
-=end html
-
 
 =head1 GETTING STARTED
 
@@ -79,6 +67,16 @@ for those who want to extend or hook into feature file execution
 
 =back
 
+=begin html
+
+If you have problems getting started, you can talk to the author(s) here: <a
+href="https://gitter.im/pjlsergeant/test-bdd-cucumber-perl"><img
+    src="https://badges.gitter.im/pjlsergeant/test-bdd-cucumber-perl.svg"
+    alt="Chat on Gitter"
+></a>
+
+=end html
+
 =head1 BUGS AND LIMITATIONS
 
 For current bugs, check the issue tracer at GitHub:
@@ -93,8 +91,11 @@ Two things need specific mentioning:
 While this support is planned, currently, there's only support for Test::Builder
 based test modules (e.g. Test::Exception, Test::Differences, Test::More, etc)
 
-=item * Due to the use of its own parser,differences probably exist
+=item * Due to the use of its own parser, differences probably exist
 in the intepretation of feature files when comparing to Cucumber.
+
+Also L<see the issue|https://github.com/pherkin/test-bdd-cucumber-perl/issues/73> for
+tracking this topic.
 
 =back
 
