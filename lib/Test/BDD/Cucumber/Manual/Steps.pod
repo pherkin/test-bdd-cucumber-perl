@@ -1,5 +1,7 @@
 package Test::BDD::Cucumber::Manual::Steps;
 
+=encoding utf8
+
 =head1 NAME
 
 Test::BDD::Cucumber::Manual::Steps - How to write Step Definitions
@@ -26,14 +28,10 @@ The fake shebang line gives some hints to syntax highlighters, and
 C<use strict;> and C<use warnings;> are hopefully fairly standard at this point.
 
 Most of I<my> Step Definition files make use of L<Test::More>, but you can use
-any L<Test::Builder> based testing module. Your step will pass its pass or fail
-status back to its harness via L<Test::Builder> - B<each step is run as if it
-were its own tiny test file>, with its own localized L<Test::Builder> object.
+any L<Test::Builder> based testing module. E.g. C<Test::Exception>.
 
 L<Test::BDD::Cucumber::StepFile> gives us the functions C<Given()>, C<When()>,
-C<Then()> and C<Step()>. These pass the step definitions to the class loading
-the step definitions, and specify which Step Verb should be used - C<Step()>
-matches any.
+C<Then()> and C<Step()>.
 
 =head1 STEP DEFINITIONS
 
@@ -65,7 +63,89 @@ equivalent:
   sub { S->{'count'} = 1 }
 
 We will evaluate the regex immediately before we execute the coderef, so you
-can use $1, $2, $etc. Similarly you can access named matches using C<$+{match_name}>.
+can use C<$1>, C<$2>, C<$etc>. Similarly you can access named matches using C<$+{match_name}>.
+
+=head2 Accessing step, scenario and feature properties
+
+Step functions have access to the various properties of the step, scenario and feature in
+which they're being used. This includes tags, line numbers, etc. E.g.:
+
+  # Examples of step properties
+  C->step->line->number
+  C->step->verb
+  C->step->original_verb
+
+  # Examples of scenario properties
+  C->scenario->name
+  C->scenario->tags
+
+  # Examples of feature properties
+  C->feature->name
+  C->feature->tags
+  C->feature->language
+
+For a full review of available properties, see L<Test::BDD::Cucumber::Model::Step>,
+L<Test::BDD::Cucumber::Model::Scenario> and L<Test::BDD::Cucumber::Model::Feature>
+respectively.
+
+=head2 Re-using step definitions
+
+Sometimes you want to call one step from another step. You can do this via the
+I<StepContext>, using the C<dispatch()> method. For example:
+
+  Given qr/I have entered (\d+)/, sub {
+        C->dispatch( 'Given', "I have pressed $1");
+        C->dispatch( 'Given', "I have pressed enter", { some => 'data' } );
+  };
+
+For more on this topic, check the L<Redispatching|Test::BDD::Cucumber::StepContext/Redispatching>
+section in the documentation for C<Test::BDD::Cucumber::StepContext>.
+
+=head1 LOCALIZATION
+
+Both feature files and step files can be written using non-english Gherkin keywords. A german
+feature file could look like the example below.
+
+  # language: de
+  Funktionalität: Grundlegende Taschenrechnerfunktionen
+    Um sicherzustellen, dass ich die Calculator-Klasse korrekt programmiert habe,
+    möchte ich als Entwickler einige grundlegende Funktionen prüfen,
+    damit ich beruhigt meine Calculator-Klasse verwenden kann.
+
+    Szenario: Anzeige des ersten Tastendrucks
+      Gegeben sei ein neues Objekt der Klasse Calculator
+      Wenn ich 1 gedrückt habe
+      Dann ist auf der Anzeige 1 zu sehen
+
+To see which keywords (and sub names) to use, ask pherkin about a specific language:
+
+ > pherkin --i18n de
+ | feature          | "Funktionalität"                             |
+ | background       | "Grundlage"                                  |
+ ...
+ | given (code)     | "Angenommen", "Gegebensei", "Gegebenseien"   |
+ | when (code)      | "Wenn"                                       |
+ | then (code)      | "Dann"                                       |
+
+The last three lines of this list show you which sub names to use in your step
+file as indicated by the '(code)' suffix. A corresponding step file specifying
+a step function for C<Wenn ich 1 gedrückt habe>, could be:
+
+  #!perl
+
+  use strict;
+  use warnings;
+  use utf8;    # Interpret accented German chars in regexes and identifiers properly
+
+  use Test::More;
+  use Test::BDD::Cucumber::StepFile;
+
+
+  Wenn qr/^ich (.+) gedrückt habe/, sub {
+      S->{'Calculator'}->press($_) for split( /(,| und) /, C->matches->[0] );
+  };
+
+For more extensive examples see F<examples/i18n_de/> and F<examples/i18n_es>.
 
 =head1 ADDITIONAL STEPS
 
