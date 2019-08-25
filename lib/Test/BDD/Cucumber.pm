@@ -55,20 +55,29 @@ href="https://gitter.im/pjlsergeant/test-bdd-cucumber-perl"><img
 =end html
 
 
-=head1 NEXT STEPS
+=head1 GETTING STARTED
 
-If you are B<completely new to Cucumber>, you'd get a pretty overview from
-reading our short and crunchy L<Tutorial|Test::BDD::Cucumber::Manual::Tutorial>.
+This module comes with a few introductory tutorials.
 
-If you B<already understand Cucumber>, and just want to get started then you
-should read the L<Step-writing quick-start
-guide|Test::BDD::Cucumber::Manual::Steps>, the documentation for our
-command-line tool L<App::pherkin>, and L<How to integrate with
-Test::Builder|Test::BDD::Cucumber::Manual::Integration>.
+=over 4
 
-If you B<want to extend or integrated Test::BDD::Cucumber> then you'd probably
-be more interested in our L<Architecture
-overview|Test::BDD::Cucumber::Manual::Architecture>.
+=item * L<A Cucumber feature writing tutorial|Test::BDD::Cucumber::Manual::Tutorial>
+
+for those new to Cucumber and BDD testing
+
+=item * L<A Step writing tutorial|Test::BDD::Cucumber::Manual::Steps>
+
+to get you started writing the code run for each C<Given>, C<Then>, C<When> step
+
+=item * L<A guide on integrating with your test suite|Test::BDD::Cucumber::Manual::Integration>
+
+=item * L<An architecture overview|Test::BDD::Cucumber::Manual::Architecture>
+
+for those who want to extend or hook into feature file execution
+
+=item * Documentation of the command-line tool L<App::pherkin>
+
+=back
 
 =head1 TEN SECOND GUIDE TO USING THIS IN YOUR CI ENVIRONMENT
 
