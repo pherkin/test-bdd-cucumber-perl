@@ -32,16 +32,21 @@ Test::BDD::Cucumber - Feature-complete Cucumber-style testing in Perl
 
 =head1 DESCRIPTION
 
-A sane and complete Cucumber implementation in Perl
+A complete Cucumber implementation in Perl
+
+The implementation supports the following Gherkin keywords in feature files:
+C<Feature>, C<Scenario>, C<Scenario Outline>, C<Examples>, C<Given>, C<When>,
+C<Then>, C<And> and C<But>. Additionally, C<Scenario> can be used as a synonym
+for C<Scenario Outline> (with C<Examples>). This best maps to
+L<Gherkin version 6.0.13|https://github.com/cucumber/cucumber/blob/master/gherkin/CHANGELOG.md#6013---2018-09-25>,
+but without support for its new C<Rule> and C<Example> keywords.
+
+This implementation supports the same languages as Gherkin 7.0.3 - that is, it
+supports exactly the same translated keywords.
 
 Behaviour of this module is similar to that, but sometimes different from
 the I<real> Cucumber, the plan is to move use the same parser and behaviour.
 
-The implementation supports the following Gherkin keywords in feature files:
-C<Feature>, C<Scenario>, C<Scenario Outline>, C<Examples>, C<Given>, C<When>,
-C<Then>, C<And> and C<But>. Additionally, C<Scenario> can be used with C<Examples>.
-This best maps to L<Gherkin version 6.0.13|https://github.com/cucumber/cucumber/blob/master/gherkin/CHANGELOG.md#6013---2018-09-25>,
-but without support for its new C<Rule> and C<Example> keywords.
 
 =head1 GETTING STARTED
 
