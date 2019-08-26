@@ -195,6 +195,39 @@ C<Given>, C<When> and C<Then> steps: a regular expression and a code reference. 
 =back
 
 
+=head1 BEST PRACTICES
+
+When writing step files, it's a good idea to take a few things into account.
+
+=over 4
+
+=item * Declare a C<package> at the top of your step file
+
+By declaring a specific package (your own), you make sure not to step on internals of other modules.
+At the time of writing, the default package is C<Test::BDD::Cucumber::StepFile>, which may lead to
+errors being reported in that package, even though they occur in your step file (which is confusing).
+
+The default package may change in the future and it will likely not be seeded with the content of
+the C<T::B::C::StepFile> package.
+
+=item * Declare a different C<package> per step file
+
+By using different packages per step file (or group of step files), name spaces are isolated which
+reduces the risk of importing functions with the same name from different packages.
+
+An example where this will be the case is when some of your step files are written using C<Test::More>
+and some others are written using C<Test2::Bundle::More> -- both export a function C<ok>, but with
+conflicting function prototypes.
+
+=item * Don't define functions in your step file
+
+Especially step files provided by extensions. Step files may be loaded more than once, depending on
+the exact scenario in which C<App::pherkin> is run. When the step files are being loaded multiple times,
+there won't be any impact on step definition, but any function definitions will cause 'function redefined'
+warnings.
+
+=back
+
 =head1 NEXT STEPS
 
 How step files are loaded is discussed in
