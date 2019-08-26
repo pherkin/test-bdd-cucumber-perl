@@ -1,5 +1,6 @@
 -----
 0.59: [to be released]
+    - Increase minimum Perl version to 5.10
     - Updated languge support from Cucumber upstream repository, adding
       support for: Armenian, Aragonese, Asturian, Azerbaijani, Bosnian,
       Emoji, Irish, Gujarati, Georgian, Macedonian (Cyrilic),
