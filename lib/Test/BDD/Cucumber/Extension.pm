@@ -62,7 +62,7 @@ croak().
 
 Note: When the C<TAP::Parser::SourceHandler::Feature> plugin for C<prove>
  is used, there are no guarantees at this point that this hook is called
- only once. 
+ only once.
 
 =cut
 
@@ -106,11 +106,23 @@ sub post_scenario { return; }
 Invoked by the Executor before executing each step in $scenario.
 Reports errors by calling croak().
 
-Feature and scenario stashes can be reached through
- $step_context->{stash}->{feature} and
- $step_context->{stash}->{scenario}
+C<$step> contains a reference to an array with step data:
 
-Note: *executed* steps, so not called for skipped steps.
+  [ qr//, { meta => $data }, $code ]
+
+Feature and scenario stashes can be reached through
+
+  $step_context->stash->{feature}
+  # and
+  $step_context->stash->{scenario}
+
+Feature, scenario and step (from the feature file) are available as
+
+  $step_context->feature
+  $step_context->scenario
+  $step_context->step
+
+Note: B<executed> steps, so not called for skipped steps.
 
 =head2 post_step($step, $step_context, $failed, $result)
 
@@ -124,7 +136,7 @@ this means the step can have failed, be marked as TODO or pending
 $result is a C<Test::BDD::Cucumber::Model::Result> instance which
 holds the completion status of the step.
 
-Note: *executed* steps, so not called for skipped steps.
+Note: B<executed> steps, so not called for skipped steps.
 
 =cut
 

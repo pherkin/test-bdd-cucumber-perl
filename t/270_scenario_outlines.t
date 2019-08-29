@@ -62,11 +62,11 @@ my $tbl_value;
 my $expectation;
 
 $executor->add_steps(
-    [ Given => qr/I expect "(.*)" to be equal to "(.*)"/,
-      sub {
-          $tbl_value = $1;
-          $expectation = $2;
-      } ], );
+    [ Given => (qr/I expect "(.*)" to be equal to "(.*)"/, {},
+                sub {
+                    $tbl_value = $1;
+                    $expectation = $2;
+                }) ], );
 
 $executor->execute($feature, $harness);
 ok(defined $tbl_value, "table value defined");
@@ -97,11 +97,11 @@ $harness = Test::BDD::Cucumber::Harness::Data->new();
 $tbl_value = '';
 
 $executor->add_steps(
-    [ Given => qr/I expect/,
-      sub {
-          my $context = shift;
-          chomp ($tbl_value = $context->data);
-      } ], );
+    [ Given => (qr/I expect/, {},
+                sub {
+                    my $context = shift;
+                    chomp ($tbl_value = $context->data);
+                }) ], );
 
 $executor->execute($feature, $harness);
 ok(defined $tbl_value, "table value defined");
@@ -130,11 +130,11 @@ $harness = Test::BDD::Cucumber::Harness::Data->new();
 $tbl_value = '';
 
 $executor->add_steps(
-    [ Given => qr/I expect/,
-      sub {
-          my $context = shift;
-          $tbl_value = $context->data->[0]->{data};
-      } ], );
+    [ Given => (qr/I expect/, {},
+                sub {
+                    my $context = shift;
+                    $tbl_value = $context->data->[0]->{data};
+                }) ], );
 
 $executor->execute($feature, $harness);
 ok(defined $tbl_value, "table value defined");

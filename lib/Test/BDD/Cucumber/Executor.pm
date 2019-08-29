@@ -13,7 +13,7 @@ Definitions, and reporting on progress through the passed-in harness.
 
 use Moo;
 use MooX::HandlesVia;
-use Types::Standard qw( Bool ArrayRef HashRef );
+use Types::Standard qw( Bool Str ArrayRef HashRef );
 use Clone qw(clone);
 use List::Util qw/first/;
 use List::MoreUtils qw/pairwise/;
@@ -66,6 +66,22 @@ use Test::BDD::Cucumber::Errors qw/parse_error_from_line/;
 
 has '_bail_out' => ( is => 'rw', isa => Bool, default => 0 );
 
+=head1 ATTRIBUTES
+
+=head2 matching
+
+The value of this attribute should be one of C<first> (default), C<relaxed> and C<strict>.
+
+By default (C<first>), the first matching step is executed immediately,
+terminating the search for (further) matching steps. When C<matching> is set
+to anything other than C<first>, all steps are checked for matches. When set
+to C<relaxed>, a warning will be generated on multiple matches. When set to
+C<strict>, an exception will be thrown.
+
+=cut
+
+has matching => ( is => 'rw', isa => Str, default => 'first');
+
 =head1 METHODS
 
 =head2 extensions
@@ -107,7 +123,13 @@ C<add_steps()> takes step definitions of the item list form:
   [ Given => qr//, sub {} ],
  ),
 
-and populates C<steps> with them.
+Or, when metadata is specified with the step, of the form:
+
+ (
+  [ Given => qr//, { meta => $data }, sub {} ]
+ ),
+
+(where the hashref stores step metadata) and populates C<steps> with them.
 
 =cut
 
@@ -118,27 +140,30 @@ sub add_steps {
 
     # Map the steps to be lower case...
     for (@steps) {
-        my ( $verb, $match, $code ) = @$_;
+        my ( $verb, $match, $meta, $code );
+
+        if (@$_ == 3) {
+            ( $verb, $match, $code ) = @$_;
+            $meta = {};
+        }
+        else {
+            ( $verb, $match, $meta, $code ) = @$_;
+        }
         $verb = lc $verb;
 
-        if ( $verb =~ /^(before|after)$/ ) {
-            $code  = $match;
-            $match = qr//;
-        } else {
-            unless ( ref($match) ) {
-                $match =~ s/:\s*$//;
-                $match = quotemeta($match);
-                $match = qr/^$match:?/i;
-            }
+        unless ( ref($match) ) {
+            $match =~ s/:\s*$//;
+            $match = quotemeta($match);
+            $match = qr/^$match:?/i;
         }
 
         if ( $verb eq 'transform' or $verb eq 'after' ) {
 
             # Most recently defined Transform takes precedence
             # and After blocks need to be run in reverse order
-            unshift( @{ $self->{'steps'}->{$verb} }, [ $match, $code ] );
+            unshift( @{ $self->{'steps'}->{$verb} }, [ $match, $meta, $code ] );
         } else {
-            push( @{ $self->{'steps'}->{$verb} }, [ $match, $code ] );
+            push( @{ $self->{'steps'}->{$verb} }, [ $match, $meta, $code ] );
         }
 
     }
@@ -466,7 +491,7 @@ sub add_table_placeholders {
 
 Accepts a L<Test::BDD::Cucumber::StepContext> object, and searches through
 the steps that have been added to the executor object, executing against the
-first matching one.
+first matching one (unless C<$self->matching> indicates otherwise).
 
 You can also pass in a boolean 'short-circuit' flag if the Scenario's remaining
 steps should be skipped, and a boolean flag to denote if it's a redispatched
@@ -483,9 +508,39 @@ sub find_and_dispatch {
       if $short_circuit;
 
     # Try and find a matching step
-    my $step = first { $context->text =~ $_->[0] }
-    @{ $self->{'steps'}->{ $context->verb } || [] },
-      @{ $self->{'steps'}->{'step'} || [] };
+    my $step;
+    my $text = $context->text;
+    if ($self->matching eq 'first') {
+        $step = first { $text =~ $_->[0] }
+        @{ $self->{'steps'}->{ $context->verb } || [] },
+            @{ $self->{'steps'}->{'step'} || [] };
+    }
+    else {
+        my @steps = grep { $text =~ $_->[0] }
+        @{ $self->{'steps'}->{ $context->verb } || [] },
+            @{ $self->{'steps'}->{'step'} || [] };
+
+        if (@steps > 1) {
+            my $filename = $context->step->line->document->filename;
+            my $line = $context->step->line->number;
+            my $msg =
+                join("\n   ",
+                     qq(Step "$text" ($filename:$line) matches multiple step functions:),
+                     map {
+                       qq{matcher $_->[0] defined at } .
+                           (($_->[1]->{source} && $_->[1]->{line})
+                            ? "$_->[1]->{source}:$_->[1]->{line}"
+                            : '<unknown>') } @steps);
+
+            if ($self->matching eq 'relaxed') {
+                warn $msg;
+            }
+            else {
+                die $msg;
+            }
+        }
+        $step = shift @steps;
+    }
 
     # Deal with the simple case of no-match first of all
     unless ($step) {
@@ -523,7 +578,7 @@ sub dispatch {
       if $short_circuit;
 
     # Execute the step definition
-    my ( $regular_expression, $coderef ) = @$step;
+    my ( $regular_expression, $meta, $coderef ) = @$step;
 
     # Setup what we'll pass to step_done, with out localized Test::Builder
     # stuff

@@ -32,7 +32,7 @@ HEREDOC
 
 my $extension = Test::CucumberExtensionCount->new();
 $executor = Test::BDD::Cucumber::Executor->new();
-$executor->add_steps( [ Given => qr/a passing step called '(.+)'/, sub { 1; } ],
+$executor->add_steps( [ Given => qr/a passing step called '(.+)'/, {}, sub { 1; } ],
 );
 $executor->add_extensions($extension);
 
@@ -57,7 +57,7 @@ is_deeply(
 my $hash = {};
 
 $executor = Test::BDD::Cucumber::Executor->new();
-$executor->add_steps( [ Given => qr/a passing step called '(.+)'/, sub { 1; } ],
+$executor->add_steps( [ Given => qr/a passing step called '(.+)'/, {}, sub { 1; } ],
 );
 
 $executor->add_extensions(

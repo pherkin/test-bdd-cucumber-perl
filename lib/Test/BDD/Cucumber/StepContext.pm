@@ -259,7 +259,7 @@ sub transform {
 
         if (
             $value =~ s/$transformer->[0]/
-                my $value = $transformer->[1]->( $self );
+                my $value = $transformer->[2]->( $self );
                 defined $value ? $value : '__UNDEF__'
             /e
           )
@@ -416,7 +416,7 @@ sub _build_transformed_data {
             first { $table_text =~ $_->[0] } @{ $self->transformers } )
         {
             # call the Transform step
-            $transformer->[1]->( $self, $transformed_data );
+            $transformer->[2]->( $self, $transformed_data );
         }
     }
 
