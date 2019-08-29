@@ -35,6 +35,9 @@ Controlling @INC
 Controlling Execution
 
  -m, --match            Only match steps in from features with available ones
+     --matching [mode]  Step function multiple matches behaviour:
+                        `first` (default) selects first match, `relaxed` warns
+                        and runs first match or `strict` stops execution
 
 Output formatting
 
