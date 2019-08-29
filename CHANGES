@@ -6,6 +6,8 @@
       Emoji, Irish, Gujarati, Georgian, Macedonian (Cyrilic),
       Macedonian (Latin), Mongolian and Tamil
     - Documentation updates and (hopefully) clarification
+    - Fix dist.ini (and META.{yml,json}) 'author' section
+    - Add contributors in META.{yml,json}
 0.58: 22 Aug 2019
     - Test::BDD::Cucumber has a new home: https://github.com/pherkin
     - Rename links (issues, PRs) to point to the new home
