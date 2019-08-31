@@ -1,5 +1,5 @@
 -----
-0.60  [to be released]
+0.60  2019-08-31
     - Added flag to make `pherkin` check for duplicate matching step
       functions to help debugging
     - Added option to specify meta data to step functions and use it in
