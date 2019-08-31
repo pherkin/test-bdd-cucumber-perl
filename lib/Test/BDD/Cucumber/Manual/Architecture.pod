@@ -94,6 +94,22 @@ can provide additional step directories from which steps will be made
 available. The feature and scenario stashes are passed to the extension hooks
 allowing for a means of communication between the hooks and the steps.
 
+Additionally, as of I<0.60>, it's possible to define meta data for a step
+upon step definition like this example:
+
+  Given qr/a step with meta data/ => { meta => 'data' }, sub { };
+
+This allows step function authors to communicate with extensions, because
+extensions receive this meta data in their C<pre_step> callback:
+
+  sub pre_step {
+    my ($step_function, $step_context) = @_;
+    my $step_metadata = $step->[1];
+
+    die 'All steps should have meta -> data'
+      unless $step_metadata->{meta} eq 'data';
+  }
+
 Extensions - when loaded by the pherkin test executor - receive their
 configuration from the pherkin.yaml configuration file, which works
 similar to L<the configuration of extensions in

@@ -1,4 +1,7 @@
 -----
+0.61  [to be released]
+    - Added documentation of availability of meta data defined with step
+      functions for use by extensions to the Architecture manual
 0.60  2019-08-31
     - Added flag to make `pherkin` check for duplicate matching step
       functions to help debugging
