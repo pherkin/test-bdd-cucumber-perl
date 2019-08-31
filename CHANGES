@@ -1,4 +1,13 @@
 -----
+0.60: [to be released]
+    - Added flag to make `pherkin` check for duplicate matching step
+      functions to help debugging
+    - Added option to specify meta data to step functions and use it in
+      extensions; minimally available meta data identifies the file name
+      and line where the step function has been defined
+    - Added missing dependencies reported by CPANTS
+    - Cleaned up release procedure: 0.58 and 0.59 were sloppy, including
+      additional files from the working directory
 0.59: 29 Aug 2019
     - Increase minimum Perl version to 5.10
     - Updated languge support from Cucumber upstream repository, adding
