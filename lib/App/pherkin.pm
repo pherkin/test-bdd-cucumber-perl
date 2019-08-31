@@ -513,7 +513,7 @@ sub _make_executor_match_only {
 
     for my $verb ( keys %{$executor->steps} ) {
         for my $step_tuple ( @{ $executor->steps->{$verb} } ) {
-            $step_tuple->[1] = $match_sub;
+            $step_tuple->[2] = $match_sub;
         }
     }
 
