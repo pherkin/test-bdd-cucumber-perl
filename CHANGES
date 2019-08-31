@@ -6,6 +6,7 @@
       extensions; minimally available meta data identifies the file name
       and line where the step function has been defined
     - Added missing dependencies reported by CPANTS
+    - Don't include README anymore, as there always has been a README.pod
     - Cleaned up release procedure: 0.58 and 0.59 were sloppy, including
       additional files from the working directory
 0.59: 29 Aug 2019
