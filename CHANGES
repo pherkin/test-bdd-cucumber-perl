@@ -122,14 +122,14 @@
 0.31  2014-10-09
     - Specified a minimum version of File::Slurp in response to a
       private bug report
-0.30  2014-04-27
+0.30  2014-08-27
     - Use core module Digest::SHA instead of Digest::SHA1
         https://github.com/pherkin/test-bdd-cucumber-perl/issues/45
-0.29  2014-04-26
+0.29  2014-08-26
     - Tried to fix Win32 issue again
     - Remove FindBin::libs
     - Installs cleanly on 5.8 again
-0.28  2014-04-26
+0.28  2014-08-26
     - Fixed the JSON outputter test on Win32 to use Path::Class
 0.27  2014-08-25
     - Added JSON output support, courtesy of Tomas Zemres
