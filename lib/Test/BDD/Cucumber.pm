@@ -104,9 +104,23 @@ tracking this topic.
 
 =back
 
-=head1 SOURCE
+=head1 PROJECT RESOURCES
 
-On Github, of course: L<https://github.com/pherkin/test-bdd-cucumber-perl>.
+=over 4
+
+=item * Source code repository at L<https://github.com/pherkin/test-bdd-cucumber-perl>
+
+=item * Bug tracker at L<https://github.com/pherkin/test-bdd-cucumber-perl/issues>
+
+=item * Mailing list at L<mailto:perl-pherkin@googlegroups.com>
+
+=item * Chat (Gitter) at L<https://gitter.im/pjlsergeant/test-bdd-cucumber-perl>
+
+=item * Chat (IRC) at L<irc://irc.freenode.net/#perl>
+
+=item * Website at L<https://pherkin.pm>
+
+=back
 
 =head1 SEE ALSO
 
