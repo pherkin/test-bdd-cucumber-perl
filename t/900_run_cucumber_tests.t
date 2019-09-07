@@ -5,9 +5,9 @@ use warnings;
 
 use Test::More;
 use Test::BDD::Cucumber::Loader;
-use Test::BDD::Cucumber::Harness::TestBuilder;
+use Test::BDD::Cucumber::Harness::TAP;
 
-my $harness = Test::BDD::Cucumber::Harness::TestBuilder->new(
+my $harness = Test::BDD::Cucumber::Harness::TAP->new(
     {
         fail_skip => 1
     }
