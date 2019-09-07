@@ -78,11 +78,10 @@ Help
 =head1 OUTPUTS
 
 C<pherkin> can output using any of the C<Test::BDD::Cucumber::Harness> output
-modules. L<Test::BDD::Cucumber::TermColor> is the default, but
-L<Test::BDD::Cucumber::TAP> is also a reasonable option:
+modules. L<TermColor> is the default, but L<TAP> is also a reasonable option:
 
   pherkin -o TermColor some/path/feature   # The default
-  pherkin -o TAP some/path/feature         # TAP output for e.g. prove
+  pherkin -o TAP some/path/feature         # TAP text output (for e.g. prove)
 
 =head1 CONFIGURATION PROFILES
 

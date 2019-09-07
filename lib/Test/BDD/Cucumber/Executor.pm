@@ -15,49 +15,22 @@ use Moo;
 use MooX::HandlesVia;
 use Types::Standard qw( Bool Str ArrayRef HashRef );
 use Clone qw(clone);
-use List::Util qw/first/;
+use List::Util qw/first any/;
 use List::MoreUtils qw/pairwise/;
 use Module::Runtime qw/use_module/;
 use Number::Range;
 use Carp qw/croak/;
 our @CARP_NOT;
 
-use Test::Builder;
+use Test2::API qw/intercept context/;
 
-# Setup wrapping for Test::Builder
-use Test::BDD::Cucumber::TestBuilderDelegator;
-use Devel::Refcount qw/refcount/;
-if ( ( !$ENV{'TEST_BDD_CUCUMBER_NO_TB_WRAP_TEST'} )
-    && refcount($Test::Builder::Test) > 1 )
-{
+# Use-ing the formatter results in a
+# 'loaded too late to be used globally' warning
+# But we only need it locally anyway.
+require Test2::Formatter::TAP;
 
-    my $ref_trace = "[Install Devel::FindRef to see these diagnostics]";
-    if ( eval { use_module "Devel::FindRef" } ) {
-        $ref_trace = Devel::FindRef::track($Test::Builder::Test);
-    }
-
-    my $message = sprintf( <<'END', $ref_trace );
-!!! HEY YOU !!!
-Test::BDD::Cucumber needs to be able to wrap $Test::Builder::Test in order to
-properly capture testing output. However, something else has already taken a
-reference to that module. You need to `use` Test::BDD::Cucumber::Executor
-before the other testing modules are used. Modules that appear to already have a
-reference are:
------
-%s
------
-You can safetly ignore the global $Test::Builder::Test. In almost all cases, the
-simple fix is the move the line that says `use Test::BDD::Cucumber::Executor`
-above all other `use Test::*` lines. You can also suppress this check by setting:
-
-  TEST_BDD_CUCUMBER_NO_TB_WRAP_TEST=1
-END
-
-    croak $message;
-}
-
-$Test::Builder::Test =
-  Test::BDD::Cucumber::TestBuilderDelegator->new( Test::Builder->new() );
+# Needed for subtest() -- we don't want to import all its functions though
+require Test::More;
 
 use Test::BDD::Cucumber::StepContext;
 use Test::BDD::Cucumber::Util;
@@ -580,27 +553,6 @@ sub dispatch {
     # Execute the step definition
     my ( $regular_expression, $meta, $coderef ) = @$step;
 
-    # Setup what we'll pass to step_done, with out localized Test::Builder
-    # stuff
-    my $output    = '';
-    my $tb_return = {
-        output  => \$output,
-        builder => Test::Builder->create()
-    };
-
-    # Set its outputs to be self-referential
-    $tb_return->{'builder'}->output( \$output );
-    $tb_return->{'builder'}->failure_output( \$output );
-    $tb_return->{'builder'}->todo_output( \$output );
-
-    binmode($tb_return->{'builder'}->output(), ':utf8');
-    binmode($tb_return->{'builder'}->failure_output(), ':utf8');
-    binmode($tb_return->{'builder'}->todo_output(), ':utf8');
-
-    # Make a minimum pass
-    $tb_return->{'builder'}
-      ->ok( 1, "Starting to execute step: " . $context->text );
-
     my $step_name = $redispatch ? 'sub_step' : 'step';
     my $step_done_name = $step_name . '_done';
 
@@ -610,64 +562,69 @@ sub dispatch {
     # Store the string position of matches for highlighting
     my @match_locations;
 
-    # New scope for the localization
-    my $result;
     my $stash_keys = join ';', sort keys %{$context->stash};
-    {
-        # Localize test builder
-        local $Test::Builder::Test->{'_wraps'} = $tb_return->{'builder'};
+    # Using `intercept()`, run the step function in an isolated
+    # environment -- this should not affect the enclosing scope
+    # which might be a TAP::Harness scope.
+    #
+    # Instead, we want the tests inside this scope to map to
+    # status values
+    my $events = intercept {
+        # This is a hack to make Test::More's $TODO variable work
+        # inside the intercepted scope.
 
-        no warnings 'redefine';
-        local *Test::Builder::BAIL_OUT = sub {
-            my ( $tb, $message ) = @_;
-            $self->_bail_out(1);
-            local @CARP_NOT = qw(Test::More Test::BDD::Cucumber::Executor);
-            croak("BAIL_OUT() called: $message");
-        };
+        ###TODO: Both intercept() and Test::More::subtest() should
+        # be replaced by a specific Hub implementation for T::B::C
+        Test::More::subtest( 'execute step', sub {
+            my $ctx = context();
+            $ctx->pass( "Starting to execute step: " . $context->text );
 
-        # Execute!
+            # Execute!
+            no warnings 'redefine';
 
-        # Set S and C to be step-specific values before executing the step
-        local *Test::BDD::Cucumber::StepFile::S = sub {
-            return $context->stash->{'scenario'};
-        };
-        local *Test::BDD::Cucumber::StepFile::C = sub {
-            return $context;
-        };
+            local *Test::BDD::Cucumber::StepFile::S = sub {
+                return $context->stash->{'scenario'};
+            };
+            local *Test::BDD::Cucumber::StepFile::C = sub {
+                return $context;
+            };
 
-        # Take a copy of this. Turns out actually matching against it
-        # directly causes all sorts of weird-ass heisenbugs which mst has
-        # promised to investigate.
-        my $text = $context->text;
+            # Take a copy of this. Turns out actually matching against it
+            # directly causes all sorts of weird-ass heisenbugs which mst has
+            # promised to investigate.
+            my $text = $context->text;
 
-        # Save the matches
-        $context->matches( [ $text =~ $regular_expression ] );
+            # Save the matches
+            $context->matches( [ $text =~ $regular_expression ] );
 
-        # Save the location of matched subgroups for highlighting hijinks
-        my @starts = @-;
-        my @ends   = @+;
-        @match_locations = pairwise { [ $a, $b ] } @starts, @ends;
+            # Save the location of matched subgroups for highlighting hijinks
+            my @starts = @-;
+            my @ends   = @+;
+            @match_locations = pairwise { [ $a, $b ] } @starts, @ends;
 
-        # OK, actually execute
-        eval { $coderef->($context) };
-        if ($@) {
-            $Test::Builder::Test->ok( 0, "Test compiled" );
-            $Test::Builder::Test->diag($@);
-        }
-
-        # Close up the Test::Builder object
-        $tb_return->{'builder'}->done_testing();
-
-        my $status = $self->_test_status( $tb_return->{builder} );
-
-        # Create the result object
-        $result = Test::BDD::Cucumber::Model::Result->new(
-            {
-                result => $status,
-                output => $output
+            # OK, actually execute
+            eval { $coderef->($context) };
+            if ($@) {
+                $ctx->fail("Step ran successfully", $@);
             }
-        );
-    }
+
+            $ctx->done_testing;
+            $ctx->release;
+                             });
+    };
+
+    my $status = $self->_test_status( $events );
+
+    my $result = Test::BDD::Cucumber::Model::Result->new(
+        {
+            result => $status,
+            # due to the hack above with the subtest inside the
+            # interception scope, we need to grovel the subtest
+            # from out of the other results first.
+            output => $self->_test_output(
+                (first { $_->isa('Test2::Event::Subtest') }
+                 @$events)->{subevents})
+        });
     warn qq|Unsupported: Step modified C->stash instead of C->stash->{scenario} or C->stash->{feature}|
         if $stash_keys ne (join ';', sort keys %{$context->stash});
 
@@ -724,54 +681,64 @@ sub _extract_match_strings {
     return @parts;
 }
 
+sub _test_output {
+    my ($self, $events) = @_;
+    my $fmt = Test2::Formatter::TAP->new();
+    open my $stdout, '>', \my $out_text;
+    my $idx = 0;
+
+    $fmt->set_handles([ $stdout, $stdout ]);
+    $self->_test_output_from_subevents($events, $fmt, \$idx);
+    close $stdout;
+
+    return $out_text;
+}
+
+sub _test_output_from_subevents {
+    my ($self, $events, $fmt, $idx) = @_;
+
+    for my $event (@$events) {
+        if ($event->{subevents}) {
+            $self->_test_output_from_subevents(
+                $event->{subevents}, $fmt, $idx);
+        }
+        else {
+            $fmt->write($event, $$idx++);
+        }
+    }
+}
+
 sub _test_status {
     my $self    = shift;
-    my $builder = shift;
+    my $events  = shift;
 
-    my $results =
-        $builder->can("history")
-      ? $self->_test_status_from_history($builder)
-      : $self->_test_status_from_details($builder);
-
-    # Turn that in to a Result status
-    return
-        $results->{'fail'} ? 'failing'
-      : $results->{'todo'} ? 'pending'
-      :                      'passing';
+    if (any { defined $_->{effective_pass}
+              and ! $_->{effective_pass} } @$events) {
+        return 'failing';
+    }
+    else {
+        return $self->_test_status_from_subevents($events) ? 'pending' : 'passing';
+    }
 }
 
-sub _test_status_from_details {
+sub _test_status_from_subevents {
     my $self    = shift;
-    my $builder = shift;
+    my $events  = shift;
 
-    # Make a note of test status
-    my %results = map {
-        if ( $_->{'ok'} ) {
-            if ( $_->{'type'} eq 'todo' || $_->{'type'} eq 'todo_skip' ) {
-                ( todo => 1 );
-            } else {
-                ( pass => 1 );
-            }
-        } else {
-            ( fail => 1 );
+    for my $e (@$events) {
+        if (exists $e->{subevents}) {
+            $self->_test_status_from_subevents($e->{subevents})
+                and return 1;
         }
-    } $builder->details;
+        elsif (defined $e->{amnesty}
+               and $e->{effective_pass}
+               and (not $e->{pass})
+               and any { $_->{tag} eq 'TODO' } @{$e->{amnesty}}) {
+            return 1;
+        }
+    }
 
-    return \%results;
-}
-
-sub _test_status_from_history {
-    my $self    = shift;
-    my $builder = shift;
-
-    my $history = $builder->history;
-
-    my %results;
-    $results{todo} = $history->todo_count ? 1 : 0;
-    $results{fail} = !$history->test_was_successful;
-    $results{pass} = $history->pass_count ? 1 : 0;
-
-    return \%results;
+    return 0;
 }
 
 =head2 skip_step

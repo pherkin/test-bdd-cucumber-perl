@@ -2,12 +2,13 @@ package Test::BDD::Cucumber::Harness::TAP;
 
 =head1 NAME
 
-Test::BDD::Cucumber::Harness::TAP - Generates output as TAP
+Test::BDD::Cucumber::Harness::TAP - Generate results in TAP format
 
 =head1 DESCRIPTION
 
-A L<Test::BDD::Cucumber::Harness> subclass whose output is
-TAP for consumption by e.g C<prove> or C<yath>.
+A L<Test::BDD::Cucumber::Harness> subclass whose output
+is TAP (Test Anything Protocol), such as consumed by C<prove>
+and C<yath>.
 
 =head1 OPTIONS
 
@@ -20,36 +21,30 @@ Boolean - makes tests with no matcher fail
 use strict;
 use warnings;
 use Moo;
+
 use Types::Standard qw( Bool InstanceOf );
-use Test::More;
+use Test2::API qw/context/;
+
 
 extends 'Test::BDD::Cucumber::Harness';
 has 'fail_skip' => ( is => 'rw', isa => Bool, default => 0 );
-has '_tb_instance' => ( is => 'rw', isa => InstanceOf['Test::Builder'] );
 
-my $li = ' ' x 7;
-my $ni = ' ' x 4;
-my $si = ' ' x 9;
-my $di = ' ' x 17;
-
-sub _tb {
-    my $self = shift;
-    return $self->_tb_instance || Test::Builder->new();
-}
 
 sub feature {
     my ( $self, $feature ) = @_;
-    $self->_tb->note( "${li}Feature: " . $feature->name );
-    $self->_tb->note( "$li$ni" . $_->content )
-        for @{ $feature->satisfaction };
-    $self->_tb->note("");
+
+    my $ctx = context();
+    $ctx->note(join('', 'Feature ', $feature->name, "\n", map { $_->content } @{ $feature->satisfaction }));
+    $ctx->release;
 }
 
 sub scenario {
     my ( $self, $scenario, $dataset ) = @_;
-    $self->_tb->note( "$li${ni}Scenario: " . ( $scenario->name || '' ) );
+    my $ctx = context();
+    $ctx->note('Scenario ' . ($scenario->name || ''));
+    $ctx->release;
 }
-sub scenario_done { my $self = shift; $self->_tb->note(""); }
+sub scenario_done { }
 
 sub step { }
 
@@ -61,68 +56,64 @@ sub step_done {
     my $step = $context->step;
     my $step_name;
 
+    my $ctx = context();
     if ( $context->is_hook ) {
         $status ne 'undefined'
             and $status ne 'pending'
             and $status ne 'passing'
-            or return;
+            or do { $ctx->release; return; };
         $step_name = 'In ' . ucfirst( $context->verb ) . ' Hook';
     } else {
         $step_name
-            = $si . ucfirst( $step->verb_original ) . ' ' . $context->text;
+            = 'In ' . ucfirst( $step->verb_original ) . ' ' . $context->text;
     }
 
     if ( $status eq 'undefined' || $status eq 'pending' ) {
         if ( $self->fail_skip ) {
             if ( $status eq 'undefined' ) {
-                $self->_tb->ok( 0, "No matcher for: $step_name" );
+                $ctx->fail( "No matcher for: $step_name",
+                            $self->_note_step_data($step));
             } else {
-                $self->_tb->ok( 0,
-                    "Test skipped due to failure in previous step" );
+                $ctx->skip( "Test skipped due to failure in previous step",
+                            $self->_note_step_data($step));
             }
-            $self->_note_step_data($step);
         } else {
-        TODO: { $self->_tb->todo_skip( $step_name, 1 ) }
-            $self->_note_step_data($step);
+            $ctx->todo_skip($step_name, 'Step not implemented');
+            $ctx->note($self->_note_step_data($step));
         }
     } elsif ( $status eq 'passing' ) {
-        $self->_tb->ok( 1, $step_name );
-        $self->_note_step_data($step);
+        $ctx->pass( $step_name );
+        $ctx->note($self->_note_step_data($step));
     } else {
-        $self->_tb->ok( 0, $step_name );
-        $self->_note_step_data($step);
+        $ctx->fail( $step_name );
+        $ctx->note($self->_note_step_data($step));
         if ( !$context->is_hook ) {
             my $step_location
                 = '  in step at '
                 . $step->line->document->filename
                 . ' line '
                 . $step->line->number . '.';
-            $self->_tb->diag($step_location);
+            $ctx->diag($step_location);
         }
-        $self->_tb->diag( $result->output );
+        $ctx->diag( $result->output );
     }
+    $ctx->release;
 }
 
 sub _note_step_data {
     my ( $self, $step ) = @_;
     return unless $step;
     my @step_data = @{ $step->data_as_strings };
-    return unless @step_data;
+    return '' unless @step_data;
 
     if ( ref( $step->data ) eq 'ARRAY' ) {
-        for (@step_data) {
-            $self->_tb->note( $di . $_ );
-        }
+        return join("\n", @step_data);
     } else {
-        $self->_tb->note( $di . '"""' );
-        for (@step_data) {
-            $self->_tb->note( $di . '  ' . $_ );
-        }
-        $self->_tb->note( $di . '"""' );
+        return join('', '"""', join("\n", @step_data), '"""');
     }
 }
 
-sub shutdown { my $self = shift; $self->_tb->note( $self->_tb->done_testing() ); }
+sub shutdown { my $self = shift; my $ctx = context(); $ctx->done_testing; $ctx->release; }
 
 =head1 AUTHOR
 
