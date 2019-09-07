@@ -87,14 +87,9 @@ href="https://gitter.im/pjlsergeant/test-bdd-cucumber-perl"><img
 For current bugs, check the issue tracer at GitHub:
 L<https://github.com/pherkin/test-bdd-cucumber-perl/issues>
 
-Two things need specific mentioning:
+One thing need specific mentioning:
 
 =over 4
-
-=item * No support for Test2 in Step files at the moment
-
-While this support is planned, currently, there's only support for Test::Builder
-based test modules (e.g. Test::Exception, Test::Differences, Test::More, etc)
 
 =item * Due to the use of its own parser, differences probably exist
 in the intepretation of feature files when comparing to Cucumber.
