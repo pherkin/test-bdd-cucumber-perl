@@ -12,7 +12,7 @@ use TAP::Parser::Iterator::PherkinStream;
 use App::pherkin;
 
 use Test::BDD::Cucumber::Loader;
-use Test::BDD::Cucumber::Harness::TestBuilder;
+use Test::BDD::Cucumber::Harness::TAP;
 
 use Path::Class qw/file/;
 
@@ -90,7 +90,7 @@ sub make_iterator {
     }
 
     close $input_fh;
-    my $harness = Test::BDD::Cucumber::Harness::TestBuilder->new(
+    my $harness = Test::BDD::Cucumber::Harness::TAP->new(
         {   fail_skip    => 1,
             _tb_instance => $tb,
         }
