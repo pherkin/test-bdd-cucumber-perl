@@ -32,8 +32,6 @@ The third group holds - next to C<Test::BDD::Cucumber::Executor>:
 
 =item * C<Test::BDD::Cucumber::StepContext>
 
-=item * C<Test::BDD::Cucumber::TestBuilderDelegator>
-
 =item * C<Test::BDD::Cucumber::Errors>
 
 =item * C<Test::BDD::Cucumber::Extension>
