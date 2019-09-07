@@ -21,14 +21,15 @@ Most of your step files will want to start something like:
  use strict;
  use warnings;
 
- use Test::More;
+ use Test::More; # 'use Test2::V0;' is also supported
  use Test::BDD::Cucumber::StepFile;
 
 The fake shebang line gives some hints to syntax highlighters, and
 C<use strict;> and C<use warnings;> are hopefully fairly standard at this point.
 
 Most of I<my> Step Definition files make use of L<Test::More>, but you can use
-any L<Test::Builder> based testing module. E.g. C<Test::Exception>.
+any L<Test2> or L<Test::Builder> based testing module. E.g. C<Test2::V0> or
+C<Test::Exception>.
 
 L<Test::BDD::Cucumber::StepFile> gives us the functions C<Given()>, C<When()>,
 C<Then()> and C<Step()>.

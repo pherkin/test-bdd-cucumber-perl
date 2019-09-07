@@ -63,7 +63,7 @@ C<features/step_definitions/basic_steps.pl> file in it:
  use strict;
  use warnings;
 
- use Test::More;
+ use Test2::Bundle::More;
  use Test::BDD::Cucumber::StepFile;
 
  Given qr/a usable (\S+) class/, sub { use_ok( $1 ); };
@@ -86,6 +86,9 @@ C<features/step_definitions/basic_steps.pl> file in it:
         do { fail("Unknown output type $1"); return };
     is( S->{'object'}->$method, $2 );
  };
+
+ # Note: There's no C<done_testing;> at the end of the step file. This is
+ #       intentional.
 
 When you run L<pherkin|App::Pherkin> or the Test::Builder-based test which does
 the same thing (L<900_run_features.t|https://github.com/pherkin/test-bdd-cucumber-perl/blob/master/t/900_run_features.t>),

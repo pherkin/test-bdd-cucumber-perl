@@ -3,6 +3,7 @@
     - Renamed Test::BDD::Cucumber::Harness::TestBuilder to
       Test::BDD::Cucumber::Harness::TAP for consistency with the
       other harnesses (which have output-based names)
+    - Add support for step functions using Test2
     - Added documentation of availability of meta data defined with step
       functions for use by extensions to the Architecture manual
 0.60  2019-08-31
