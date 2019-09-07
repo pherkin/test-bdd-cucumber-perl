@@ -32,7 +32,7 @@ Test::BDD::Cucumber - Feature-complete Cucumber-style testing in Perl
 
 =head1 DESCRIPTION
 
-A complete Cucumber implementation in Perl
+Cucumber for Perl, integrated with L<Test2>, L<Test::More> and L<prove>.
 
 The implementation supports the following Gherkin keywords in feature files:
 C<Feature>, C<Scenario>, C<Scenario Outline>, C<Examples>, C<Given>, C<When>,
