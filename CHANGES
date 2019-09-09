@@ -1,4 +1,6 @@
 -----
+0.62  2019-09-09
+    - Fix regression in 0.61 with `prove` plugin printing TAP on STDOUT
 0.61  2019-09-07
     - Renamed Test::BDD::Cucumber::Harness::TestBuilder to
       Test::BDD::Cucumber::Harness::TAP for consistency with the
