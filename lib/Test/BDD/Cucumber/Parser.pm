@@ -232,12 +232,15 @@ m/^((?:$langdef->{background})|(?:$langdef->{scenario})|(?:$langdef->{scenarioOu
     return $feature, $self->_remove_next_blanks(@lines);
 }
 
+my $warned_mixed_comments = 0;
+
 sub _extract_steps {
     my ( $self, $feature, $scenario, @lines ) = @_;
 
     my $langdef   = $self->{langdef};
     my @givens    = split( /\|/, $langdef->{given} );
     my $last_verb = $givens[-1];
+    my $last_line_was_comment = 0;
 
     while ( @lines and
             ($lines[0]->is_comment
@@ -246,7 +249,17 @@ m/^((?:$langdef->{given})|(?:$langdef->{and})|(?:$langdef->{when})|(?:$langdef->
             )) {
         my ( $verb, $text ) = ( $1, $2 );
         my $line = shift @lines;
-        next if $line->is_comment;
+        if ($line->is_comment) {
+            $last_line_was_comment = 1;
+            next if $line->is_comment;
+        }
+
+        if ($last_line_was_comment) {
+            # don't issue this warning if the comment is after
+            warn 'Mixing comments and steps is deprecated: not allowed in Gherkin'
+                unless $warned_mixed_comments;
+            $warned_mixed_comments = 1;
+        }
 
         my $original_verb = $verb;
         $verb = 'Given' if $verb =~ m/^($langdef->{given})$/;
