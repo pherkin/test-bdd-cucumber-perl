@@ -294,7 +294,7 @@ sub _extract_scenario_description {
     my $langdef = $self->{langdef};
     while ( @lines &&
             $lines[0]->content !~
-m/^((?:$langdef->{given})|(?:$langdef->{and})|(?:$langdef->{when})|(?:$langdef->{then})|(?:$langdef->{but}))(.+)/
+m/^((?:$langdef->{given})|(?:$langdef->{when})|(?:$langdef->{then}))(.+)/
         ) {
         push @{$scenario->description}, shift(@lines);
     }
