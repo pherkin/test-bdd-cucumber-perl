@@ -196,7 +196,14 @@ m/^((?:$langdef->{background})|(?:$langdef->{scenario})|(?:$langdef->{scenarioOu
             @scenario_tags = ();
 
             # Attempt to populate it
+            @lines = $self->_extract_scenario_description($scenario, @lines);
             @lines = $self->_extract_steps( $feature, $scenario, @lines );
+            if (@lines && $lines[0]->content =~ m/^($langdef->{examples}):$/ ) {
+                # Outline data block...
+                shift @lines;
+                @lines = $self->_extract_table( 6, $scenario,
+                                                $self->_remove_next_blanks(@lines) );
+            }
 
             # Catch Scenario outlines without examples
             if ( $type =~ m/^($langdef->{scenarioOutline})/
@@ -232,56 +239,40 @@ sub _extract_steps {
     my @givens    = split( /\|/, $langdef->{given} );
     my $last_verb = $givens[-1];
 
-    @lines = $self->_extract_scenario_description($scenario, @lines);
-
-    while ( my $line = shift(@lines) ) {
-        next if $line->is_comment;
-        last if $line->is_blank;
-
-        # Conventional step?
-        if ( $line->content =~
+    while ( @lines and
+            ($lines[0]->is_comment
+             or $lines[0]->content =~
 m/^((?:$langdef->{given})|(?:$langdef->{and})|(?:$langdef->{when})|(?:$langdef->{then})|(?:$langdef->{but}))(.+)/
-          )
-        {
-            my ( $verb, $text ) = ( $1, $2 );
-            my $original_verb = $verb;
-            $verb = 'Given' if $verb =~ m/^($langdef->{given})$/;
-            $verb = 'When'  if $verb =~ m/^($langdef->{when})$/;
-            $verb = 'Then'  if $verb =~ m/^($langdef->{then})$/;
-            $verb = $last_verb
-              if $verb =~ m/^($langdef->{and})$/
-              or $verb =~ m/^($langdef->{but}$)/;
-            $last_verb = $verb;
+            )) {
+        my ( $verb, $text ) = ( $1, $2 );
+        my $line = shift @lines;
+        next if $line->is_comment;
 
-            # Remove the ending space for languages that
-            # have it, for backward compatibility
-            $original_verb =~ s/ $//;
-            my $step = Test::BDD::Cucumber::Model::Step->new(
-                {
-                    text          => $text,
-                    verb          => $verb,
-                    line          => $line,
-                    verb_original => $original_verb,
-                }
+        my $original_verb = $verb;
+        $verb = 'Given' if $verb =~ m/^($langdef->{given})$/;
+        $verb = 'When'  if $verb =~ m/^($langdef->{when})$/;
+        $verb = 'Then'  if $verb =~ m/^($langdef->{then})$/;
+        $verb = $last_verb
+            if $verb =~ m/^($langdef->{and})$/
+            or $verb =~ m/^($langdef->{but}$)/;
+        $last_verb = $verb;
+
+        # Remove the ending space for languages that
+        # have it, for backward compatibility
+        $original_verb =~ s/ $//;
+        my $step = Test::BDD::Cucumber::Model::Step->new(
+            {
+                text          => $text,
+                verb          => $verb,
+                line          => $line,
+                verb_original => $original_verb,
+            }
             );
 
-            @lines =
-              $self->_extract_step_data( $feature, $scenario, $step, @lines );
+        @lines =
+            $self->_extract_step_data( $feature, $scenario, $step, @lines );
 
-            push( @{ $scenario->steps }, $step );
-
-            # Outline data block...
-        } elsif ( $line->content =~ m/^($langdef->{examples}):$/ ) {
-            return $self->_extract_table( 6, $scenario,
-                $self->_remove_next_blanks(@lines) );
-        } elsif ( $line->content =~
-            m/^(?:(?:$langdef->{scenario})|(?:$langdef->{scenarioOutline})):/ )
-        {
-            # next scenario begins here
-            return ($line, @lines);
-        } else {
-            die parse_error_from_line( "Malformed step line", $line );
-        }
+        push( @{ $scenario->steps }, $step );
     }
 
     return $self->_remove_next_blanks(@lines);
