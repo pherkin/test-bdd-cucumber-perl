@@ -1,5 +1,10 @@
 -----
 0.63  [to be released]
+    [Deprecated]
+      - Mixing steps with comments is not allowed in Gherkin;
+        support for mixing steps and comments will be removed in v1.0
+    [Changed]
+      - Gherkin parser refactoring for readability
     [Added]
       - Support for scenario descriptions: a block of explanatory text
         between the `Scenario:` keyword and the step lines
