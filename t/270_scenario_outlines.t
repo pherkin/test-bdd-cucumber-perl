@@ -18,11 +18,11 @@ my $feature = eval {
         <<HEREDOC
 # language: th
 ความต้องการทางธุรกิจ: Test Feature
-	Conditions of satisfaction
+        Conditions of satisfaction
 
-	เหตุการณ์:
-		กำหนดให้ a passing step called 'foo'
-		กำหนดให้ a passing step called '<name>'
+        เหตุการณ์:
+                กำหนดให้ a passing step called 'foo'
+                กำหนดให้ a passing step called '<name>'
         ชุดของตัวอย่าง:
           | name |
           | 1    |
@@ -46,10 +46,10 @@ $feature =
     Test::BDD::Cucumber::Parser->parse_string(
         <<HEREDOC
 Feature: Test Feature
-	Conditions of satisfaction
+        Conditions of satisfaction
 
-	Scenario:
-		  Given I expect "<value>" to be equal to "an | escaped"
+        Scenario:
+                  Given I expect "<value>" to be equal to "an | escaped"
         Examples:
           | value           |
           | an \\| escaped   |
@@ -74,14 +74,46 @@ ok(defined $expectation, "expectation defined");
 is($tbl_value, $expectation, "escaped table value equals string value");
 
 
+$feature =
+    Test::BDD::Cucumber::Parser->parse_string(
+        <<HEREDOC
+Feature: Test Feature
+        Conditions of satisfaction
+
+        Scenario:
+           Scenario definition
+                  Given I expect "<value>" to be equal to "an | escaped"
+        Examples:
+          | value           |
+          | an \\| escaped   |
+HEREDOC
+    );
+
+$executor = Test::BDD::Cucumber::Executor->new();
+$harness = Test::BDD::Cucumber::Harness::Data->new();
+
+$executor->add_steps(
+    [ Given => (qr/I expect "(.*)" to be equal to "(.*)"/, {},
+                sub {
+                    $tbl_value = $1;
+                    $expectation = $2;
+                }) ], );
+
+$executor->execute($feature, $harness);
+ok(defined $tbl_value, "table value defined");
+ok(defined $expectation, "expectation defined");
+is($tbl_value, $expectation, "escaped table value equals string value");
+
+
+
 $feature = 
     Test::BDD::Cucumber::Parser->parse_string(
         <<HEREDOC
 Feature: Test Feature
-	Conditions of satisfaction
+        Conditions of satisfaction
 
-	Scenario:
-		  Given I expect
+        Scenario:
+                  Given I expect
             """
             Expected <value>
             """
@@ -112,10 +144,10 @@ $feature =
     Test::BDD::Cucumber::Parser->parse_string(
         <<HEREDOC
 Feature: Test Feature
-	Conditions of satisfaction
+        Conditions of satisfaction
 
-	Scenario:
-		  Given I expect
+        Scenario:
+                  Given I expect
         | data    |
         | <value> |
         Examples:

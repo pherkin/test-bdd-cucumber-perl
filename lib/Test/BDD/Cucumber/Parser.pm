@@ -232,6 +232,8 @@ sub _extract_steps {
     my @givens    = split( /\|/, $langdef->{given} );
     my $last_verb = $givens[-1];
 
+    @lines = $self->_extract_scenario_description($scenario, @lines);
+
     while ( my $line = shift(@lines) ) {
         next if $line->is_comment;
         last if $line->is_blank;
@@ -283,6 +285,21 @@ m/^((?:$langdef->{given})|(?:$langdef->{and})|(?:$langdef->{when})|(?:$langdef->
     }
 
     return $self->_remove_next_blanks(@lines);
+}
+
+
+sub _extract_scenario_description {
+    my ( $self, $scenario, @lines ) = @_;
+
+    my $langdef = $self->{langdef};
+    while ( @lines &&
+            $lines[0]->content !~
+m/^((?:$langdef->{given})|(?:$langdef->{and})|(?:$langdef->{when})|(?:$langdef->{then})|(?:$langdef->{but}))(.+)/
+        ) {
+        push @{$scenario->description}, shift(@lines);
+    }
+
+    return @lines;
 }
 
 sub _extract_step_data {

@@ -21,6 +21,18 @@ The text after the C<Scenario:> keyword
 
 has 'name' => ( is => 'rw', isa => Str );
 
+=head2 description
+
+The text between the Scenario line and the first step line
+
+=cut
+
+has 'description' => (
+    is      => 'rw',
+    isa     => ArrayRef[InstanceOf['Test::BDD::Cucumber::Model::Line']],
+    default => sub { [] },
+    );
+
 =head2 steps
 
 The associated L<Test:BDD::Cucumber::Model::Step> objects
