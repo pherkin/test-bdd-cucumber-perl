@@ -25,6 +25,7 @@ C<features/basic.feature> in it. The contents of it are, in their entirity:
     Given a usable Digest class
 
   Scenario: Check MD5
+     This scenario verifies the MD5 hash object of Digest.pm
     Given a Digest MD5 object
     When I've added "foo bar baz" to the object
     And I've added "bat ban shan" to the object
@@ -32,6 +33,7 @@ C<features/basic.feature> in it. The contents of it are, in their entirity:
     Then the base64 output is "1B2M2Y8AsgTpgAmY7PhCfg"
 
   Scenario: Check SHA-1
+     This scenario verifies the SHA-1 hash object of Digest.pm
     Given a Digest SHA-1 object
     When I've added "<data>" to the object
     Then the hex output is "<output>"
@@ -42,6 +44,7 @@ C<features/basic.feature> in it. The contents of it are, in their entirity:
       | baz  | bbe960a25ea311d21d40669e93df2003ba9b90a2 |
 
   Scenario: MD5 longer data
+      This scenario tests multi-line input in the MD5 hash object
     Given a Digest MD5 object
     When I've added the following to the object
       """
@@ -144,6 +147,7 @@ L<Test::BDD::Cucumber::Manual::Steps>.
 =head1 The First Scenario...
 
   Scenario: Check MD5
+     This scenario verifies the MD5 hash object of Digest.pm
     Given a Digest MD5 object
     When I've added "foo bar baz" to the object
     And I've added "bat ban shan" to the object
@@ -154,7 +158,12 @@ The first scenario is delimited from the previous steps by a blank line, and
 it's called I<Check MD5>. Scenarios are marked out using the C<Scenario:>
 keyword, and just like the Background section before, it's a series of steps.
 
-These steps rely on the step before, which means we can examine the
+Between the C<Scenario:> line and the step lines, there's a description. Any
+line starting with one of the step keywords (C<Given>, C<When> or C<Then>) is
+considered to terminate the description block (to start the group of step
+lines).
+
+The steps rely on the step before, which means we can examine the
 L<Test::BDD::Cucumber::StepContext|context> object C<$c> a little more closely.
 
  Given qr/a Digest (\S+) object/, sub {
@@ -207,6 +216,7 @@ the line before them.
 =head1 Scenario Outlines
 
   Scenario: Check SHA-1
+     This scenario verifies the SHA-1 hash object of Digest.pm
     Given a Digest SHA-1 object
     When I've added "<data>" to the object
     Then the hex output is "<output>"
@@ -225,6 +235,7 @@ Outlines|https://github.com/cucumber/cucumber/wiki/Scenario-outlines>.
 =head1 Multiline Step Arguments
 
   Scenario: MD5 longer data
+      This scenario tests multi-line input in the MD5 hash object
     Given a Digest MD5 object
     When I've added the following to the object
       """

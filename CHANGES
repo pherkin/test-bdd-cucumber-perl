@@ -1,4 +1,8 @@
 -----
+0.63  [to be released]
+    [Added]
+      - Support for scenario descriptions: a block of explanatory text
+        between the `Scenario:` keyword and the step lines
 0.62  2019-09-09
     - Fix regression in 0.61 with `prove` plugin printing TAP on STDOUT
 0.61  2019-09-07
