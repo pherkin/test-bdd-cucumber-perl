@@ -21,7 +21,7 @@ my $executor = Test::BDD::Cucumber::Executor->new();
 $executor->add_steps( [ Given => qr/(a) f(o)o b(a)r (baz)/, {}, sub { 1; } ], );
 
 my $expected = <<END;
-[0]  [97]Foo[0]
+[0]  [97]Feature: Foo[0]
 
 [0]    [97]Scenario: [94]Bar[0]
 [0]      [0][32]Given [0][0][32][0][0][96]a[0][0][32] f[0][0][96]o[0][0][32]o b[0][0][96]a[0][0][32]r [0][0][96]baz[0][0]

@@ -89,12 +89,6 @@ sub shutdown {
 ### Internal formating methods ###
 ##################################
 
-sub get_keyword {
-    my ( $self, $line_ref ) = @_;
-    my ($keyword) = $line_ref->content =~ /^(\w+)/;
-    return $keyword;
-}
-
 sub format_tags {
     my ( $self, $tags_ref ) = @_;
     return [ map { { name => '@' . $_ } } @$tags_ref ];
@@ -109,7 +103,7 @@ sub format_feature {
     my ( $self, $feature ) = @_;
     return {
         uri         => $feature->name_line->filename,
-        keyword     => $self->get_keyword( $feature->name_line ),
+        keyword     => $feature->keyword_original,
         id          => $self->_generate_stable_id( $feature->name_line ),
         name        => $feature->name,
         line        => $feature->name_line->number,
@@ -122,7 +116,7 @@ sub format_feature {
 sub format_scenario {
     my ( $self, $scenario, $dataset ) = @_;
     return {
-        keyword     => $self->get_keyword( $scenario->line ),
+        keyword     => $scenario->keyword_original,
         id          => $self->_generate_stable_id( $scenario->line ),
         name        => $scenario->name,
         line        => $scenario->line->number,

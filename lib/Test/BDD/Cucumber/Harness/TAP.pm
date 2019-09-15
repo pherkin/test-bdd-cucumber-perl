@@ -34,7 +34,8 @@ sub feature {
     my ( $self, $feature ) = @_;
 
     my $ctx = context();
-    $ctx->note(join('', 'Feature ', $feature->name, "\n",
+    $ctx->note(join('', $feature->keyword_original, ' ',
+                    $feature->name, "\n",
                     map { $_->content } @{ $feature->satisfaction }));
     $ctx->release;
 }
@@ -42,7 +43,8 @@ sub feature {
 sub scenario {
     my ( $self, $scenario, $dataset ) = @_;
     my $ctx = context();
-    $ctx->note(join('', 'Scenario ', ($scenario->name || ''), "\n",
+    $ctx->note(join('', $scenario->keyword_original, ' ',
+                    ($scenario->name || ''), "\n",
                     map { $_->content} @{ $scenario->description }));
     $ctx->release;
 }

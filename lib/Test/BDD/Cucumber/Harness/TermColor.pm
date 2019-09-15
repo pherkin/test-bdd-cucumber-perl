@@ -127,7 +127,7 @@ sub feature {
         {
             indent => 0,
             color  => $self->_colors->{'feature'},
-            text   => $feature->name,
+            text   => $feature->keyword_original . ': ' . $feature->name,
             follow_up =>
               [ map { $_->content } @{ $feature->satisfaction || [] } ],
             trailing => 1
@@ -144,7 +144,7 @@ sub feature_done {
 sub scenario {
     my ( $self, $scenario, $dataset, $longest ) = @_;
     my $text =
-        "Scenario: "
+      $scenario->keyword_original . ': '
       . color( $self->_colors->{'scenario_name'} )
       . ( $scenario->name || '' );
 

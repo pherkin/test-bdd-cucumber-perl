@@ -61,6 +61,20 @@ Boolean flag to mark whether this was the background section
 
 has 'background' => ( is => 'rw', isa => Bool, default => 0 );
 
+=head2 keyword
+
+=head2 keyword_original
+
+The keyword used in the input file (C<keyword_original>) and its specification
+equivalent (C<keyword>) used to start this scenario. (I.e. C<Background>,
+C<Scenario> and C<Scenario Outiline>.)
+
+=cut
+
+has 'keyword'          => ( is => 'rw', isa => Str );
+has 'keyword_original' => ( is => 'rw', isa => Str );
+
+
 =head2 line
 
 A L<Test::BDD::Cucumber::Model::Line> object corresponding to the line where

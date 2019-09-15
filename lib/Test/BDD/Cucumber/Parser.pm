@@ -104,7 +104,7 @@ sub _construct_matchers {
     return (
         _step_line_first => qr/^($step_line_kw_first)(.+)/,
         _step_line_cont  => qr/^($step_line_kw_cont)(.+)/,
-        _feature_line    => qr/^(?:$l->{feature}): (.+)/,
+        _feature_line    => qr/^($l->{feature}): (.+)/,
         _scenario_line   => qr/^($scenario_line_kw): ?(.*)?/,
         _examples_line   => qr/^($l->{examples}): ?(.+)?$/,
         _tags_line       => qr/\@([^\s]+)/,
@@ -175,8 +175,10 @@ sub _extract_feature_name {
         next if $line->is_comment;
         last if $line->is_blank;
 
-        if ( $line->content =~ m/^(?:$self->{langdef}->{feature}): (.+)/ ) {
-            $feature->name($1);
+        if ( my ($keyword, $name) =
+             $self->_is_feature_line( $line->content ) ) {
+            $feature->name($name);
+            $feature->keyword_original($keyword);
             $feature->name_line($line);
             $feature->tags( \@feature_tags );
 
@@ -239,9 +241,14 @@ sub _extract_scenarios {
             my $scenario = Test::BDD::Cucumber::Model::Scenario->new(
                 {
                     ( $name ? ( name => $name ) : () ),
-                    background => $type =~ m/^($langdef->{background})/ ? 1 : 0,
-                    line => $line,
-                    tags => [ @{ $feature->tags }, @scenario_tags ]
+                    background       => $type =~ m/^($langdef->{background})/ ? 1 : 0,
+                    keyword          =>
+                        ($type =~ m/^($langdef->{background})/ ? 'Background'
+                         : ($type =~ m/^($langdef->{scenarioOutline})/
+                            ? 'Scenario Outline' : 'Scenario')),
+                    keyword_original => $type,
+                    line             => $line,
+                    tags             => [ @{ $feature->tags }, @scenario_tags ]
                 }
             );
             @scenario_tags = ();

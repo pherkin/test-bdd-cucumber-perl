@@ -60,6 +60,16 @@ background section.
 has 'background' =>
   ( is => 'rw', isa => InstanceOf['Test::BDD::Cucumber::Model::Scenario'] );
 
+=head2 keyword_original
+
+The keyword used in the input file; equivalent to specification
+keyword C<Feature>.
+
+=cut
+
+has 'keyword_original' => ( is => 'rw', isa => Str );
+
+
 =head2 scenarios
 
 An arrayref of the L<Test::BDD::Cucumber::Model::Scenario> objects that
