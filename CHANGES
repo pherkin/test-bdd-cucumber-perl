@@ -1,4 +1,7 @@
 -----
+0.64  2019-09-15
+    [Fixed]
+      - Corrected List::Util dependency failing to declare 1.33 minimum
 0.63  2019-09-15
     [Deprecated]
       - Mixing steps with comments is not allowed in Gherkin;
