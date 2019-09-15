@@ -77,8 +77,11 @@ sub _construct {
 
     $feature->language( $class->_extract_language( \@lines ) );
 
-    my $self = { langdef => langdef( $feature->language ) };
-    bless $self, $class;
+    my $langdef = langdef( $feature->language );
+    my $self = bless {
+        langdef => $langdef,
+        _construct_matchers( $langdef )
+    }, $class;
 
     $self->_extract_scenarios(
         $self->_extract_conditions_of_satisfaction(
@@ -87,6 +90,60 @@ sub _construct {
     );
 
     return $feature;
+}
+
+sub _construct_matchers {
+    my ($l) = @_;
+    my $step_line_kw_cont =
+        join('|', map { $l->{$_} } qw/given and when then but/);
+    my $step_line_kw_first =
+        join('|', map { $l->{$_} } qw/given when then/);
+    my $scenario_line_kw =
+        join('|', map { $l->{$_} } qw/background scenario scenarioOutline/);
+
+    return (
+        _step_line_first => qr/^($step_line_kw_first)(.+)/,
+        _step_line_cont  => qr/^($step_line_kw_cont)(.+)/,
+        _feature_line    => qr/^(?:$l->{feature}): (.+)/,
+        _scenario_line   => qr/^($scenario_line_kw): ?(.*)?/,
+        _examples_line   => qr/^($l->{examples}): ?(.+)?$/,
+        _tags_line       => qr/\@([^\s]+)/,
+        );
+}
+
+sub _is_step_line {
+    my ($self, $continuation, $line) = @_;
+
+    if ($continuation) {
+        return $line =~ $self->{_step_line_cont};
+    }
+    else {
+        return $line =~ $self->{_step_line_first};
+    }
+}
+
+sub _is_feature_line {
+    my ($self, $line) = @_;
+
+    return $line =~ $self->{_feature_line};
+}
+
+sub _is_scenario_line {
+    my ($self, $line) = @_;
+
+    return $line =~ $self->{_scenario_line};
+}
+
+sub _is_tags_line {
+    my ($self, $line) = @_;
+
+    return $line =~ $self->{_tags_line};
+}
+
+sub _is_examples_line {
+    my ($self, $line) = @_;
+
+    return $line =~ $self->{_examples_line};
 }
 
 sub _extract_language {
@@ -149,10 +206,8 @@ sub _extract_conditions_of_satisfaction {
     while ( my $line = shift(@lines) ) {
         next if $line->is_comment || $line->is_blank;
 
-        my $langdef = $self->{langdef};
-        if ( $line->content =~
-            m/^((?:$langdef->{background}):|(?:$langdef->{scenario}):|@)/ )
-        {
+        if ( $self->_is_scenario_line( $line->content )
+             or $self->_is_tags_line( $line->content ) ) {
             unshift( @lines, $line );
             last;
         } else {
@@ -172,12 +227,8 @@ sub _extract_scenarios {
         next if $line->is_comment || $line->is_blank;
 
         my $langdef = $self->{langdef};
-        if ( $line->content =~
-m/^((?:$langdef->{background})|(?:$langdef->{scenario})|(?:$langdef->{scenarioOutline})): ?(.+)?/
-          )
-        {
-            my ( $type, $name ) = ( $1, $2 );
-
+        if ( my ( $type, $name ) =
+             $self->_is_scenario_line( $line->content ) ) {
             # Only one background section, and it must be the first
             if ( $scenarios++ && $type =~ m/^($langdef->{background})/ ) {
                 die parse_error_from_line(
@@ -242,16 +293,15 @@ sub _extract_steps {
     my $last_verb = $givens[-1];
     my $last_line_was_comment = 0;
 
+
+    my ( $verb, $text );
     while ( @lines and
             ($lines[0]->is_comment
-             or $lines[0]->content =~
-m/^((?:$langdef->{given})|(?:$langdef->{and})|(?:$langdef->{when})|(?:$langdef->{then})|(?:$langdef->{but}))(.+)/
-            )) {
-        my ( $verb, $text ) = ( $1, $2 );
+             or ($verb, $text) = $self->_is_step_line( 1, $lines[0]->content ) ) ) {
         my $line = shift @lines;
         if ($line->is_comment) {
             $last_line_was_comment = 1;
-            next if $line->is_comment;
+            next;
         }
 
         if ($last_line_was_comment) {
@@ -295,10 +345,12 @@ m/^((?:$langdef->{given})|(?:$langdef->{and})|(?:$langdef->{when})|(?:$langdef->
 sub _extract_scenario_description {
     my ( $self, $scenario, @lines ) = @_;
 
-    my $langdef = $self->{langdef};
-    while ( @lines &&
-            $lines[0]->content !~
-m/^((?:$langdef->{given})|(?:$langdef->{when})|(?:$langdef->{then}))(.+)/
+    while ( @lines
+            and ($lines[0]->is_comment
+                 or (not $self->_is_step_line(0, $lines[0]->content)
+                     and not $self->_is_examples_line($lines[0]->content)
+                     and not $self->_is_tags_line($lines[0]->content)
+                     and not $self->_is_scenario_line($lines[0]->content) ) )
         ) {
         push @{$scenario->description}, shift(@lines);
     }
