@@ -1,5 +1,5 @@
 -----
-0.63  [to be released]
+0.63  2019-09-15
     [Deprecated]
       - Mixing steps with comments is not allowed in Gherkin;
         support for mixing steps and comments will be removed in v1.0
