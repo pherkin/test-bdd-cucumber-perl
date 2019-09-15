@@ -1,4 +1,13 @@
 -----
+0.65  [to be released]
+    [Fixed]
+      - Harnass outputs 'Scenario' and 'Feature' instead of the actual
+        keywords from the feature file (e.g. 'Szenario')
+    [Added]
+      - Scenario descriptions are now included in output
+      - Support for multiple Examples per scenario
+      - Support for tags on Examples
+      - Support for description blocks in Examples
 0.64  2019-09-15
     [Fixed]
       - Corrected List::Util dependency failing to declare 1.33 minimum
