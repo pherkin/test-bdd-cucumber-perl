@@ -162,11 +162,6 @@ sub execute {
     # Get all scenarios
     my @scenarios = @{ $feature->scenarios() };
 
-    # Filter them by the tag spec, if we have one
-    if ( defined $tag_spec ) {
-        @scenarios = $tag_spec->filter(@scenarios);
-    }
-
     $_->pre_feature( $feature, $feature_stash ) for @{ $self->extensions };
     for my $outline (@scenarios) {
 
@@ -177,7 +172,8 @@ sub execute {
                 scenario      => $outline,
                 feature       => $feature,
                 feature_stash => $feature_stash,
-                harness       => $harness
+                harness       => $harness,
+                tagspec       => $tag_spec,
             }
         );
     }
@@ -211,29 +207,53 @@ representing the Background
 
 sub execute_outline {
     my ( $self, $options ) = @_;
-    my ( $feature, $feature_stash, $harness, $outline, $background )
-      = @$options{qw/ feature feature_stash harness scenario background /};
+    my ( $feature, $feature_stash, $harness, $outline, $background, $tagspec )
+      = @$options{qw/ feature feature_stash harness scenario background tagspec /};
 
     # Multiply out Scenario Outlines as appropriate
-    my @datasets = @{ $outline->data };
-    @datasets = ( {} ) unless @datasets;
+    my @datasets = @{ $outline->datasets };
+    if (not @datasets) {
+        if (not $tagspec or $tagspec->filter($outline) ) {
+            $self->execute_scenario(
+                {
+                    feature => $feature,
+                    feature_stash => $feature_stash,
+                    harness => $harness,
+                    scenario => $outline,
+                    background => $background,
+                    scenario_stash => {},
+                    outline_state => {},
+                    dataset => {},
+                });
+        }
 
-    my $outline_state = {};
+        return;
+    }
 
-    foreach my $dataset (@datasets) {
-        $self->execute_scenario(
-            {
-                feature => $feature,
-                feature_stash => $feature_stash,
-                harness => $harness,
-                scenario => $outline,
-                background => $background,
-                scenario_stash => {},
-                outline_state => $outline_state,
-                dataset => $dataset,
-            });
+    if ($tagspec) {
+        @datasets = $tagspec->filter(@datasets);
+        return unless @datasets;
+    }
 
-        $outline_state->{'short_circuit'} ||= $self->_bail_out;
+
+    foreach my $rows (@datasets) {
+        my $outline_state = {};
+
+        foreach my $row (@{$rows->data}) {
+            $self->execute_scenario(
+                {
+                    feature => $feature,
+                    feature_stash => $feature_stash,
+                    harness => $harness,
+                    scenario => $outline,
+                    background => $background,
+                    scenario_stash => {},
+                    outline_state => $outline_state,
+                    dataset => $row,
+                });
+
+            $outline_state->{'short_circuit'} ||= $self->_bail_out;
+        }
     }
 }
 

@@ -28,6 +28,7 @@ L<Test::BDD::Cucumber::Model::Feature> object on success.
 use strict;
 use warnings;
 
+use Test::BDD::Cucumber::Model::Dataset;
 use Test::BDD::Cucumber::Model::Document;
 use Test::BDD::Cucumber::Model::Feature;
 use Test::BDD::Cucumber::Model::Scenario;
@@ -107,6 +108,7 @@ sub _construct_matchers {
         _feature_line    => qr/^($l->{feature}): (.+)/,
         _scenario_line   => qr/^($scenario_line_kw): ?(.*)?/,
         _examples_line   => qr/^($l->{examples}): ?(.+)?$/,
+        _table_line      => qr/^\s*\|/,
         _tags_line       => qr/\@([^\s]+)/,
         );
 }
@@ -132,6 +134,12 @@ sub _is_scenario_line {
     my ($self, $line) = @_;
 
     return $line =~ $self->{_scenario_line};
+}
+
+sub _is_table_line {
+    my ($self, $line) = @_;
+
+    return $line =~ $self->{_table_line};
 }
 
 sub _is_tags_line {
@@ -220,17 +228,65 @@ sub _extract_conditions_of_satisfaction {
     return $feature, $self->_remove_next_blanks(@lines);
 }
 
+sub _finish_scenario {
+    my ($self, $feature, $line) = @_;
+    # Catch Scenario outlines without examples
+    if ( @{ $feature->scenarios } ) {
+        my $last_scenario = $feature->scenarios->[-1];
+        if ( $last_scenario->keyword_original =~ m/^($self->{langdef}->{scenarioOutline})/
+             && !@{ $last_scenario->data } )
+        {
+            die parse_error_from_line(
+                "Outline scenario expects 'Examples:' section",
+                $line || $last_scenario->line );
+        }
+    }
+ }
+
 sub _extract_scenarios {
     my ( $self, $feature, @lines ) = @_;
     my $scenarios = 0;
-    my @scenario_tags;
+    my $langdef   = $self->{langdef};
+    my @tags;
 
     while ( my $line = shift(@lines) ) {
         next if $line->is_comment || $line->is_blank;
 
-        my $langdef = $self->{langdef};
         if ( my ( $type, $name ) =
-             $self->_is_scenario_line( $line->content ) ) {
+             $self->_is_examples_line( $line->content ) ) {
+
+            die q{'Examples:' line before scenario definition}
+                unless @{$feature->scenarios};
+
+            my $dataset = Test::BDD::Cucumber::Model::Dataset->new(
+                ( $name ? ( name => $name ) : () ),
+                tags => ( @tags ?
+                          [ @{ $feature->scenarios->[-1]->tags }, @tags ]
+                          # Reuse the ref to the scenario tags to allow
+                          # detecting 'no dataset tags' in ::Scenario
+                          : $feature->scenarios->[-1]->tags ),
+                line => $line,
+                );
+            @tags = ();
+            if (@{$feature->scenarios->[-1]->datasets}) {
+                my $prev_ds = $feature->scenarios->[-1]->datasets->[0];
+                my $prev_ds_cols = join '|', keys %{$prev_ds->data->[0]};
+                my $cur_ds_cols = join '|', keys %{$dataset->data->[0]};
+                die parse_error_from_line(
+                    q{'Examples:' not in line with previous 'Examples:'}, $line )
+                    if $prev_ds_cols ne $cur_ds_cols;
+            }
+            push @{$feature->scenarios->[-1]->datasets}, $dataset;
+
+            @lines = $self->_extract_examples_description( $dataset, @lines );
+            @lines = $self->_extract_table( 6, $dataset,
+                                            $self->_remove_next_blanks(@lines) );
+        }
+        elsif ( ( $type, $name ) =
+                $self->_is_scenario_line( $line->content ) ) {
+
+            $self->_finish_scenario( $feature, $line );
+
             # Only one background section, and it must be the first
             if ( $scenarios++ && $type =~ m/^($langdef->{background})/ ) {
                 die parse_error_from_line(
@@ -248,28 +304,14 @@ sub _extract_scenarios {
                             ? 'Scenario Outline' : 'Scenario')),
                     keyword_original => $type,
                     line             => $line,
-                    tags             => [ @{ $feature->tags }, @scenario_tags ]
+                    tags             => [ @{ $feature->tags }, @tags ]
                 }
             );
-            @scenario_tags = ();
+            @tags = ();
 
             # Attempt to populate it
             @lines = $self->_extract_scenario_description($scenario, @lines);
             @lines = $self->_extract_steps( $feature, $scenario, @lines );
-            if (@lines && $lines[0]->content =~ m/^($langdef->{examples}):$/ ) {
-                # Outline data block...
-                shift @lines;
-                @lines = $self->_extract_table( 6, $scenario,
-                                                $self->_remove_next_blanks(@lines) );
-            }
-
-            # Catch Scenario outlines without examples
-            if ( $type =~ m/^($langdef->{scenarioOutline})/
-                && !@{ $scenario->data } )
-            {
-                die parse_error_from_line(
-                    "Outline scenario expects 'Examples:' section", $line );
-            }
 
             if ( $type =~ m/^($langdef->{background})/ ) {
                 $feature->background($scenario);
@@ -279,14 +321,14 @@ sub _extract_scenarios {
 
             # Scenario-level tags
         } elsif ( $line->content =~ m/^\s*\@\w/ ) {
-            my @tags = $line->content =~ m/\@([^\s]+)/g;
-            push( @scenario_tags, @tags );
+            push @tags, ( $line->content =~ m/\@([^\s]+)/g );
 
         } else {
             die parse_error_from_line( "Malformed scenario line", $line );
         }
     }
 
+    $self->_finish_scenario( $feature );
     return $feature, $self->_remove_next_blanks(@lines);
 }
 
@@ -348,6 +390,25 @@ sub _extract_steps {
     return $self->_remove_next_blanks(@lines);
 }
 
+
+sub _extract_examples_description {
+    my ( $self, $examples, @lines ) = @_;
+
+    while ( my $line = shift @lines ) {
+        next if $line->is_comment;
+
+        my $content = $line->content;
+        return ( $line, @lines )
+            if $self->_is_table_line( $content )
+               or $self->_is_examples_line( $content )
+               or $self->_is_tags_line( $content )
+               or $self->_is_scenario_line( $content );
+
+        push @{$examples->description}, $line;
+    }
+
+    return @lines;
+}
 
 sub _extract_scenario_description {
     my ( $self, $scenario, @lines ) = @_;
