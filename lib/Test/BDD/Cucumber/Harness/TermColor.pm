@@ -153,7 +153,8 @@ sub scenario {
             indent       => 2,
             color        => $self->_colors->{'scenario'},
             text         => $text,
-            follow_up    => [],
+            follow_up    =>
+              [ map { $_->content } @{ $scenario->description || [] } ],
             trailing     => 0,
             longest_line => ( $longest || 0 )
         }
@@ -293,7 +294,7 @@ sub _display {
     # Print follow-up lines...
     for my $line ( @{ $options->{'follow_up'} || [] } ) {
         print $fh color 'reset';
-        print $fh ' ' x ( $options->{'indent'} + 2 );
+        print $fh ' ' x ( $options->{'indent'} + 4 );
         print $fh color $options->{'color'};
         print $fh $line;
         print $fh color 'reset';

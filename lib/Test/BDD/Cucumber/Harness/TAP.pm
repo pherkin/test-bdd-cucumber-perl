@@ -34,14 +34,16 @@ sub feature {
     my ( $self, $feature ) = @_;
 
     my $ctx = context();
-    $ctx->note(join('', 'Feature ', $feature->name, "\n", map { $_->content } @{ $feature->satisfaction }));
+    $ctx->note(join('', 'Feature ', $feature->name, "\n",
+                    map { $_->content } @{ $feature->satisfaction }));
     $ctx->release;
 }
 
 sub scenario {
     my ( $self, $scenario, $dataset ) = @_;
     my $ctx = context();
-    $ctx->note('Scenario ' . ($scenario->name || ''));
+    $ctx->note(join('', 'Scenario ', ($scenario->name || ''), "\n",
+                    map { $_->content} @{ $scenario->description }));
     $ctx->release;
 }
 sub scenario_done { }

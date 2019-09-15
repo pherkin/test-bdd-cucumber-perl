@@ -109,7 +109,7 @@ is_deeply(
 my %json_scenario = %{ $json_feature{elements}[2] };
 is_deeply(
     join(", ", sort keys %json_scenario),
-    "id, keyword, line, name, steps, tags, type",
+    "description, id, keyword, line, name, steps, tags, type",
     "scenario contains only valid keys"
 );
 is( $json_scenario{keyword}, 'Scenario',    'scenario keyword' );
@@ -129,7 +129,7 @@ is(
     get_line_number( $json_feature{uri}, 'Scenario: Check SHA-1' ),
     'scenario line'
 );
-is( $json_scenario{description}, undef, "scenario description" );
+is( $json_scenario{description}, '', "scenario description" );
 is_deeply(
     $json_scenario{tags},
     [ { name => '@digest' }, { name => '@sha1' }, ],
