@@ -129,7 +129,7 @@ Note: B<executed> steps, so not called for skipped steps.
 Invoked by the Executor after each executed step in $scenario.
 Reports errors by calling croak().
 
-$failed indicates that the step has not been completed succesfully;
+$failed indicates that the step has not been completed successfully;
 this means the step can have failed, be marked as TODO or pending
 (not implemented).
 
