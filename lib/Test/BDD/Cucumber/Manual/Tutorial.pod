@@ -15,7 +15,6 @@ message digests.
 We'll create a C<features/> directory, and put our first test case in it,
 C<features/basic.feature> in it. The contents of it are, in their entirity:
 
- # Somehow I don't see this replacing the other tests this module has...
  Feature: Simple tests of Digest.pm
   As a developer planning to use Digest.pm
   I want to test the basic functionality of Digest.pm
@@ -232,6 +231,27 @@ one for each table row, and with the C< <placeholders> > being replaced by the
 appropriate row's column. These are called L<Scenario
 Outlines|https://github.com/cucumber/cucumber/wiki/Scenario-outlines>.
 
+One scenario outline can have multiple C<Examples>, e.g.
+
+  Scenario: Check SHA-1
+     This scenario verifies the SHA-1 hash object of Digest.pm
+    Given a Digest SHA-1 object
+    When I've added "<data>" to the object
+    Then the hex output is "<output>"
+    Examples: 'foo' example
+        This is the 'foo' examples
+        description block.
+      | data | output   |
+      | foo  | 0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33 |
+
+    Examples: other examples
+        This description block describes
+        the other examples.
+      | data | output   |
+      | bar  | 62cdb7020ff920e5aa642c3d4066950dd1f01f4d |
+      | baz  | bbe960a25ea311d21d40669e93df2003ba9b90a2 |
+
+
 =head1 Multiline Step Arguments
 
   Scenario: MD5 longer data
@@ -269,7 +289,60 @@ steps, which will also be available via C<data()>:
 You can find out more about these features in the Cucumber documentation here:
 L<https://github.com/cucumber/cucumber/wiki/Multiline-Step-Arguments>.
 
-=head1 Writing features and step files in languages other than English
+=head1 Conditional execution and tags
+
+There are times when only a subset of the scenarios in a feature should
+be run. To that end, C<pherkin> (like C<cucumber>) has a command line
+option to select the set of scenarios to be run, based on C<tags>.
+
+These tags can be inserted in a scenario before the C<Feature> line,
+before the C<Scenario> line and before the C<Examples> line. Tags are
+cumulative: tags on a feature are applied to all scenarios and examples.
+
+Here's the initial example from the tutorial with tags added.
+
+ @feature-tag1 @feature-tag2
+ Feature: Simple tests of Digest.pm
+  As a developer planning to use Digest.pm
+  I want to test the basic functionality of Digest.pm
+  In order to have confidence in it
+
+  Background:
+    Given a usable Digest class
+
+  @scenario-tag
+  Scenario: Check SHA-1
+     This scenario verifies the SHA-1 hash object of Digest.pm
+    Given a Digest SHA-1 object
+    When I've added "<data>" to the object
+    Then the hex output is "<output>"
+
+    @daily-tests-tag
+    Examples: 'foo' example
+        This is the 'foo' examples
+        description block.
+      | data | output   |
+      | foo  | 0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33 |
+
+    @weekly-tests-tag
+    Examples: other examples
+        This description block describes
+        the other examples.
+      | data | output   |
+      | bar  | 62cdb7020ff920e5aa642c3d4066950dd1f01f4d |
+      | baz  | bbe960a25ea311d21d40669e93df2003ba9b90a2 |
+
+In order to run all scenarios, except the weekly tests, run:
+
+  pherkin --tags=~@weekly-tests-tag
+
+In order to run all scenarios marked with C<@feature-tag1> except the
+weekly tests, run:
+
+  pherkin --tags=@feature-tag1,~@weekly-tests-tag
+
+
+=head1 Non-English features and step files
 
 By default, pherkin expects your features and step definitions to be written in English.
 Since feature files are mainly used for communication within your team, you might want
