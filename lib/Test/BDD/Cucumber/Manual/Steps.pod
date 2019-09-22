@@ -18,6 +18,8 @@ Most of your step files will want to start something like:
 
  #!perl
 
+ package my_step_functions_for_feature_X;
+
  use strict;
  use warnings;
 

@@ -32,6 +32,7 @@ require Test2::Formatter::TAP;
 # Needed for subtest() -- we don't want to import all its functions though
 require Test::More;
 
+use Test::BDD::Cucumber::StepFile ();
 use Test::BDD::Cucumber::StepContext;
 use Test::BDD::Cucumber::Util;
 use Test::BDD::Cucumber::Model::Result;
@@ -599,16 +600,6 @@ sub dispatch {
             my $ctx = context();
             $ctx->pass( "Starting to execute step: " . $context->text );
 
-            # Execute!
-            no warnings 'redefine';
-
-            local *Test::BDD::Cucumber::StepFile::S = sub {
-                return $context->stash->{'scenario'};
-            };
-            local *Test::BDD::Cucumber::StepFile::C = sub {
-                return $context;
-            };
-
             # Take a copy of this. Turns out actually matching against it
             # directly causes all sorts of weird-ass heisenbugs which mst has
             # promised to investigate.
@@ -623,7 +614,18 @@ sub dispatch {
             @match_locations = pairwise { [ $a, $b ] } @starts, @ends;
 
             # OK, actually execute
-            eval { $coderef->($context) };
+            eval {
+                no warnings 'redefine';
+
+                local *Test::BDD::Cucumber::StepFile::_S = sub {
+                    return $context->stash->{'scenario'};
+                };
+                local *Test::BDD::Cucumber::StepFile::_C = sub {
+                    return $context;
+                };
+
+                $coderef->($context)
+            };
             if ($@) {
                 $ctx->fail("Step ran successfully", $@);
             }
