@@ -5,6 +5,7 @@
         keywords from the feature file (e.g. 'Szenario')
     [Changed]
       - Dependency listing clean up
+      - Test2::API minimum dependency updated
       - META.json generation -- now includes 'provides' as CPANTS wants
     [Added]
       - Scenario descriptions are now included in output
