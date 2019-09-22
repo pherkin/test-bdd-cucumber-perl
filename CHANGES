@@ -1,5 +1,5 @@
 -----
-0.65  [to be released]
+0.65  2019-09-22
     [Fixed]
       - Harnass outputs 'Scenario' and 'Feature' instead of the actual
         keywords from the feature file (e.g. 'Szenario')
