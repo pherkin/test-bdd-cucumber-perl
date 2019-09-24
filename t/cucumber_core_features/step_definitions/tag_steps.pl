@@ -1,5 +1,7 @@
 #!perl
 
+package tag_feature_step_functions;
+
 use strict;
 use warnings;
 

@@ -1,5 +1,7 @@
 #!perl
 
+package core_features_steps_functions;
+
 use strict;
 use warnings;
 

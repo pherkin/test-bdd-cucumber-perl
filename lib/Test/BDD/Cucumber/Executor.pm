@@ -22,13 +22,14 @@ use Number::Range;
 use Carp qw/croak/;
 our @CARP_NOT;
 
-use Test2::API qw/intercept context/;
+use Test2::API qw/intercept/;
 
 # Use-ing the formatter results in a
 # 'loaded too late to be used globally' warning
 # But we only need it locally anyway.
 require Test2::Formatter::TAP;
 
+use Test2::Bundle::More ();
 # Needed for subtest() -- we don't want to import all its functions though
 require Test::More;
 
@@ -597,8 +598,9 @@ sub dispatch {
         ###TODO: Both intercept() and Test::More::subtest() should
         # be replaced by a specific Hub implementation for T::B::C
         Test::More::subtest( 'execute step', sub {
-            my $ctx = context();
-            $ctx->pass( "Starting to execute step: " . $context->text );
+            Test2::Bundle::More::pass(
+                "Starting to execute step: " . $context->text
+                );
 
             # Take a copy of this. Turns out actually matching against it
             # directly causes all sorts of weird-ass heisenbugs which mst has
@@ -627,11 +629,10 @@ sub dispatch {
                 $coderef->($context)
             };
             if ($@) {
-                $ctx->fail("Step ran successfully", $@);
+                Test2::Bundle::More::fail("Step ran successfully", $@);
             }
 
-            $ctx->done_testing;
-            $ctx->release;
+            Test2::Bundle::More::done_testing();
                              });
     };
 
