@@ -29,7 +29,7 @@ use Test2::API qw/intercept/;
 # But we only need it locally anyway.
 require Test2::Formatter::TAP;
 
-use Test2::Bundle::More ();
+use Test2::Tools::Basic qw/ pass fail done_testing /;
 # Needed for subtest() -- we don't want to import all its functions though
 require Test::More;
 
@@ -598,7 +598,7 @@ sub dispatch {
         ###TODO: Both intercept() and Test::More::subtest() should
         # be replaced by a specific Hub implementation for T::B::C
         Test::More::subtest( 'execute step', sub {
-            Test2::Bundle::More::pass(
+            pass(
                 "Starting to execute step: " . $context->text
                 );
 
@@ -629,10 +629,10 @@ sub dispatch {
                 $coderef->($context)
             };
             if ($@) {
-                Test2::Bundle::More::fail("Step ran successfully", $@);
+                fail("Step ran successfully", $@);
             }
 
-            Test2::Bundle::More::done_testing();
+            done_testing();
                              });
     };
 
