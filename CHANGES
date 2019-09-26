@@ -1,9 +1,10 @@
 -----
-0.67  [to be released]
+0.67  2019-09-26
     [Changed]
       - Add package statement to step files of core feature tests
       - Move Executor from Test2::API::context() to Test2::Bundle::More
         (for pass, fail and done_testing) to fix seemingly random failures.
+        Fixes #155.
     [Added]
       - Full support for package declarations in step files
 0.66  2019-09-22
