@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-use JSON::MaybeXS qw/from_json/;
+use JSON::MaybeXS qw/JSON/;
 
 =encoding utf8
 
@@ -50,13 +50,13 @@ L<The license on that file/project|https://github.com/cucumber/cucumber/blob/mas
 
 =head2 language_definitions
 
-Load and C<from_json> the language definitions.
+Load and C<decode_json> the language definitions.
 
 =cut
 
 sub language_definitions {
     my $raw = join '', (<DATA>);
-    my $langdefs = from_json($raw);
+    my $langdefs = JSON()->new->decode($raw);
     for my $lang (values %$langdefs) {
        for my $keyword (keys %{$lang}) {
           $lang->{$keyword} = join '|', @{$lang->{$keyword}}
