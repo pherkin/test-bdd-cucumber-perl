@@ -1,2 +1,0 @@
-requires 'Test::BDD::Cucumber', '0.67';
-
