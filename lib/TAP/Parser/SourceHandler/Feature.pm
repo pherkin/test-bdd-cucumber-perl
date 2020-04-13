@@ -1,5 +1,11 @@
 package TAP::Parser::SourceHandler::Feature;
 
+=head1 NAME
+
+TAP::Parser::SourceHandler::Feature - Test::BDD::Cucumber's prove integration
+
+=cut
+
 use strict;
 use warnings;
 
