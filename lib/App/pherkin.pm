@@ -255,17 +255,17 @@ sub _process_arguments {
         debug_profiles => ['debug-profiles'],
 
         # Standard
-        help       => ['h|help|?'],
+        help       => [ 'h|help|?' ],
         includes   => [ 'I=s@', [] ],
-        lib        => ['l|lib'],
-        blib       => ['b|blib'],
-        output     => ['o|output=s'],
+        lib        => [ 'l|lib' ],
+        blib       => [ 'b|blib' ],
+        output     => [ 'o|output=s' ],
         steps      => [ 's|steps=s@', [] ],
         tags       => [ 't|tags=s@', [] ],
-        i18n       => ['i18n=s'],
+        i18n       => [ 'i18n=s' ],
         extensions => [ 'e|extension=s@', [] ],
         matching   => [ 'matching=s' ],
-        match_only => ['m|match'],
+        match_only => [ 'm|match' ],
     );
 
     GetOptions(
