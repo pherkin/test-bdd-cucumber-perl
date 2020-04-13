@@ -54,19 +54,21 @@ sub parse_string {
 
 sub parse_file {
     my ( $class, $string ) = @_;
+    my $content;
     {
         local $/;
         open(my $in, '<', $string) or die $?;
         binmode $in, 'utf8';
-        return $class->_construct(
-            Test::BDD::Cucumber::Model::Document->new(
-                {
-                    content => <$in>,
-                    filename => '' . $string
-                }
-            )
-        );
+        $content = <$in>;
+        close $in or warn $?;
     }
+    return $class->_construct(
+        Test::BDD::Cucumber::Model::Document->new(
+            {
+                content => $content,
+                filename => '' . $string
+            })
+        );
 }
 
 sub _construct {
