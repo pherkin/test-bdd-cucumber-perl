@@ -54,19 +54,21 @@ sub parse_string {
 
 sub parse_file {
     my ( $class, $string ) = @_;
+    my $content;
     {
         local $/;
         open(my $in, '<', $string) or die $?;
         binmode $in, 'utf8';
-        return $class->_construct(
-            Test::BDD::Cucumber::Model::Document->new(
-                {
-                    content => <$in>,
-                    filename => '' . $string
-                }
-            )
-        );
+        $content = <$in>;
+        close $in or warn $?;
     }
+    return $class->_construct(
+        Test::BDD::Cucumber::Model::Document->new(
+            {
+                content => $content,
+                filename => '' . $string
+            })
+        );
 }
 
 sub _construct {
@@ -273,7 +275,9 @@ sub _extract_scenarios {
                 my $prev_ds_cols = join '|', keys %{$prev_ds->data->[0]};
                 my $cur_ds_cols = join '|', keys %{$dataset->data->[0]};
                 die parse_error_from_line(
-                    q{'Examples:' not in line with previous 'Examples:'}, $line )
+                    q{Columns of 'Examples:' not in line with }
+                    . q{previous 'Examples:' }
+                    . qq{('$prev_ds_cols' vs '$cur_ds_cols')}, $line )
                     if $prev_ds_cols ne $cur_ds_cols;
             }
             push @{$feature->scenarios->[-1]->datasets}, $dataset;
@@ -353,10 +357,11 @@ sub _extract_steps {
             next;
         }
 
-        if ($last_line_was_comment) {
+        if ($last_line_was_comment and not $warned_mixed_comments) {
             # don't issue this warning if the comment is after
-            warn 'Mixing comments and steps is deprecated: not allowed in Gherkin'
-                unless $warned_mixed_comments;
+            warn parse_error_from_line(
+                'Mixing comments and steps is not allowed in Gherkin',
+                $line);
             $warned_mixed_comments = 1;
         }
 
