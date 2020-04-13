@@ -26,6 +26,7 @@ has 'tags'       => ( is => 'rw', isa => ArrayRef, required => 0 );
 has 'tag_scheme' => ( is => 'rw', isa => ArrayRef, required => 0 );
 has 'match_only' => ( is => 'rw', isa => Bool,     default => 0 );
 has 'matching'   => ( is => 'rw', isa => Str,      default => 'first');
+has 'strict'     => ( is => 'rw', isa => Bool,     default => 0 );
 
 has 'harness' => ( is => 'rw' );
 
@@ -121,7 +122,20 @@ sub _run_tests {
     $executor->execute( $_, $harness, $tag_spec ) for @features;
 
     $harness->shutdown();
-    return $harness->result;
+
+    my $exit_code = 0;
+    my $result = $harness->result;
+    if ($result eq 'failing') {
+        $exit_code = 2;
+    }
+    elsif ($self->strict) {
+        if ($result eq 'pending'
+            or $result eq 'undefined') {
+            $exit_code = 1;
+        }
+    }
+
+    return $exit_code;
 }
 
 sub _initialize_harness {
@@ -260,6 +274,7 @@ sub _process_arguments {
         lib        => [ 'l|lib' ],
         blib       => [ 'b|blib' ],
         output     => [ 'o|output=s' ],
+        strict     => [ 'strict' ],
         steps      => [ 's|steps=s@', [] ],
         tags       => [ 't|tags=s@', [] ],
         i18n       => [ 'i18n=s' ],
@@ -414,6 +429,9 @@ sub _process_arguments {
 
     # Match only?
     $self->match_only( $deref->('match_only') );
+
+    $self->strict( $deref->('strict') )
+        if $deref->('strict');
 
     return ( pop @ARGV );
 }
