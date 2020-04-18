@@ -1,4 +1,9 @@
 -----
+0.69  2020-04-19
+    [Fixed]
+      - Multiple examples would always report incompatible column sets
+      - Multiple examples trigger parser error due to accessing a
+        deprecated scenario attribute
 0.68  2020-04-18
     [Added]
       - New --strict option for `pherkin` which causes an exit value of 1
