@@ -236,7 +236,7 @@ sub _finish_scenario {
     if ( @{ $feature->scenarios } ) {
         my $last_scenario = $feature->scenarios->[-1];
         if ( $last_scenario->keyword_original =~ m/^($self->{langdef}->{scenarioOutline})/
-             && !@{ $last_scenario->data } )
+             && !@{ $last_scenario->datasets } )
         {
             die parse_error_from_line(
                 "Outline scenario expects 'Examples:' section",
@@ -270,6 +270,10 @@ sub _extract_scenarios {
                 line => $line,
                 );
             @tags = ();
+            @lines = $self->_extract_examples_description( $dataset, @lines );
+            @lines = $self->_extract_table( 6, $dataset,
+                                            $self->_remove_next_blanks(@lines) );
+
             if (@{$feature->scenarios->[-1]->datasets}) {
                 my $prev_ds = $feature->scenarios->[-1]->datasets->[0];
                 my $prev_ds_cols = join '|', keys %{$prev_ds->data->[0]};
@@ -282,9 +286,6 @@ sub _extract_scenarios {
             }
             push @{$feature->scenarios->[-1]->datasets}, $dataset;
 
-            @lines = $self->_extract_examples_description( $dataset, @lines );
-            @lines = $self->_extract_table( 6, $dataset,
-                                            $self->_remove_next_blanks(@lines) );
         }
         elsif ( ( $type, $name ) =
                 $self->_is_scenario_line( $line->content ) ) {
