@@ -1,4 +1,15 @@
 -----
+0.68  2020-04-18
+    [Added]
+      - New --strict option for `pherkin` which causes an exit value of 1
+        when there are 'pending' or 'missing' steps
+    [Fixed]
+      - Too much code was running with $/ bound to `undef` when parsing
+        Gherkin from file
+      - NAME section missing in two modules causing Dist::Zilla to fail
+        insertion of VERSION section
+    [Changed]
+      - Some improved error messages
 0.67  2019-09-26
     [Changed]
       - Add package statement to step files of core feature tests
