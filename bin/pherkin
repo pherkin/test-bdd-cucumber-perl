@@ -38,6 +38,8 @@ Controlling Execution
      --matching [mode]  Step function multiple matches behaviour:
                         `first` (default) selects first match, `relaxed` warns
                         and runs first match or `strict` stops execution
+     --strict           Requires steps to be defined; fails on undefined
+                        and pending steps (steps forcing 'skip')
 
 Output formatting
 
@@ -172,6 +174,4 @@ BEGIN {
     }
 }
 
-my $result = App::pherkin->new()->run(@ARGV);
-
-exit( $result->result eq 'failing' );
+exit App::pherkin->new()->run(@ARGV);
