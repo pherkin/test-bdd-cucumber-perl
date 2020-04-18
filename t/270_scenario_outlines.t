@@ -40,6 +40,28 @@ ok( $error, "A parsing error was caught" );
 like( $error, qr/Outline scenario expects/, "Error is about outline scenario" );
 like( $error, qr/12\*/, "Error identifies correct start line" );
 
+$@ = undef;
+$feature = eval {
+    Test::BDD::Cucumber::Parser->parse_string(
+        <<HEREDOC
+Feature: Test scenario
+
+Scenario Outline:
+  Given a passing step called '<name>'
+
+  Examples:
+    | name   |
+    | a-name |
+
+  Examples:
+    | name   |
+    | b-name |
+HEREDOC
+        );
+};
+
+$error = $@;
+ok( ! $error, "Two examples correctly parsed");
 
 
 $feature = 
