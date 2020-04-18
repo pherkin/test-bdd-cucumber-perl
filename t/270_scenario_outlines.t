@@ -50,12 +50,12 @@ Scenario Outline:
   Given a passing step called '<name>'
 
   Examples:
-    | name   |
-    | a-name |
+    | name   | value   | more | columns |
+    | a-name | a-value | some | content |
 
   Examples:
-    | name   |
-    | b-name |
+    | name   | value   | more | columns |
+    | b-name | b-value | some | content |
 HEREDOC
         );
 };

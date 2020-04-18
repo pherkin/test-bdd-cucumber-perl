@@ -276,8 +276,8 @@ sub _extract_scenarios {
 
             if (@{$feature->scenarios->[-1]->datasets}) {
                 my $prev_ds = $feature->scenarios->[-1]->datasets->[0];
-                my $prev_ds_cols = join '|', keys %{$prev_ds->data->[0]};
-                my $cur_ds_cols = join '|', keys %{$dataset->data->[0]};
+                my $prev_ds_cols = join '|', sort keys %{$prev_ds->data->[0]};
+                my $cur_ds_cols = join '|', sort keys %{$dataset->data->[0]};
                 die parse_error_from_line(
                     q{Columns of 'Examples:' not in line with }
                     . q{previous 'Examples:' }
