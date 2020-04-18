@@ -1,4 +1,8 @@
 -----
+0.70  2020-04-19
+    [Fixed]
+      - Due to hash key randomization, incompatible column sets were reported
+        where in fact the sets are equal (with tests)
 0.69  2020-04-19
     [Fixed]
       - Multiple examples would always report incompatible column sets
