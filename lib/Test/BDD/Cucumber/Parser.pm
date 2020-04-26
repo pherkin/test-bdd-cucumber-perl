@@ -160,7 +160,9 @@ sub _extract_language {
     my ( $self, $lines ) = @_;
 
 # return default language if we don't see the language directive on the first line
-    return 'en' unless $lines->[0]->raw_content =~ m{^\s*#\s*language:\s+(.+)$};
+    return 'en'
+        unless ($lines and @$lines
+                and $lines->[0]->raw_content =~ m{^\s*#\s*language:\s+(.+)$});
 
     # remove the language directive if we saw it ...
     shift @$lines;
