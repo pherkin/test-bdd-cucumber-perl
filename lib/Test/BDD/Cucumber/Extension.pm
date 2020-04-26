@@ -47,7 +47,7 @@ allows generic extension setup. Reports errors by calling croak(). It is
 called once per C<App::pherkin> instance.
 
 Note that the C<TAP::Parser::SourceHandler::Feature> plugin for C<prove>
-might instantiate multipte C<App::pherkin> objects, meaning it will create
+might instantiate multiple C<App::pherkin> objects, meaning it will create
 multiple instances of the extensions too. As such, this callback may be
 called once per instance, but multiple times in a Perl image.
 
