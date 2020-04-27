@@ -110,6 +110,8 @@ sub make_iterator {
     $context->release;
 
     close $output_fh;
+    $pherkin->_post_run;
+
     exit;
 }
 
