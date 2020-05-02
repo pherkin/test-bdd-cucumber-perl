@@ -1,4 +1,8 @@
 -----
+0.71  2020-05-02
+    [Fixed]
+      - Feature file parser crashes on empty files
+      - 'prove' plugin doesn't run 'post_execute' hooks
 0.70  2020-04-19
     [Fixed]
       - Due to hash key randomization, incompatible column sets were reported
