@@ -1,4 +1,11 @@
 -----
+
+
+0.72  2020-08-21
+    [Fixed]
+      - Shebang of 'pherkin' script not replaced on 'make install' (gh #166)
+      - Step dispatch handles data attribute incorrectly (gh #167)
+      - Update copyright years
 0.71  2020-05-02
     [Fixed]
       - Feature file parser crashes on empty files
