@@ -686,7 +686,10 @@ __DATA__
       "Und "
     ],
     "background": [
-      "Grundlage"
+      "Grundlage",
+      "Hintergrund",
+      "Voraussetzungen",
+      "Vorbedingungen"
     ],
     "but": [
       "* ",
@@ -696,7 +699,8 @@ __DATA__
       "Beispiele"
     ],
     "feature": [
-      "Funktionalität"
+      "Funktionalität",
+      "Funktion"
     ],
     "given": [
       "* ",
@@ -707,14 +711,16 @@ __DATA__
     "name": "German",
     "native": "Deutsch",
     "rule": [
-      "Rule"
+      "Rule",
+      "Regel"
     ],
     "scenario": [
       "Beispiel",
       "Szenario"
     ],
     "scenarioOutline": [
-      "Szenariogrundriss"
+      "Szenariogrundriss",
+      "Szenarien"
     ],
     "then": [
       "* ",
@@ -1208,14 +1214,14 @@ __DATA__
     "name": "Estonian",
     "native": "eesti keel",
     "rule": [
-      "Rule"
+      "Reegel"
     ],
     "scenario": [
       "Juhtum",
       "Stsenaarium"
     ],
     "scenarioOutline": [
-      "Raamstjuhtum",
+      "Raamjuhtum",
       "Raamstsenaarium"
     ],
     "then": [
@@ -1546,7 +1552,7 @@ __DATA__
     "name": "Hebrew",
     "native": "עברית",
     "rule": [
-      "Rule"
+      "כלל"
     ],
     "scenario": [
       "דוגמא",
@@ -1773,36 +1779,46 @@ __DATA__
       "Dan "
     ],
     "background": [
-      "Dasar"
+      "Dasar",
+      "Latar Belakang"
     ],
     "but": [
       "* ",
-      "Tapi "
+      "Tapi ",
+      "Tetapi "
     ],
     "examples": [
-      "Contoh"
+      "Contoh",
+      "Misal"
     ],
     "feature": [
       "Fitur"
     ],
     "given": [
       "* ",
-      "Dengan "
+      "Dengan ",
+      "Diketahui ",
+      "Diasumsikan ",
+      "Bila ",
+      "Jika "
     ],
     "name": "Indonesian",
     "native": "Bahasa Indonesia",
     "rule": [
-      "Rule"
+      "Rule",
+      "Aturan"
     ],
     "scenario": [
       "Skenario"
     ],
     "scenarioOutline": [
-      "Skenario konsep"
+      "Skenario konsep",
+      "Garis-Besar Skenario"
     ],
     "then": [
       "* ",
-      "Maka "
+      "Maka ",
+      "Kemudian "
     ],
     "when": [
       "* ",
@@ -2411,6 +2427,54 @@ __DATA__
       "Хэрэв "
     ]
   },
+  "ne": {
+    "and": [
+      "* ",
+      "र ",
+      "अनी "
+    ],
+    "background": [
+      "पृष्ठभूमी"
+    ],
+    "but": [
+      "* ",
+      "तर "
+    ],
+    "examples": [
+      "उदाहरण",
+      "उदाहरणहरु"
+    ],
+    "feature": [
+      "सुविधा",
+      "विशेषता"
+    ],
+    "given": [
+      "* ",
+      "दिइएको ",
+      "दिएको ",
+      "यदि "
+    ],
+    "name": "Nepali",
+    "native": "नेपाली",
+    "rule": [
+      "नियम"
+    ],
+    "scenario": [
+      "परिदृश्य"
+    ],
+    "scenarioOutline": [
+      "परिदृश्य रूपरेखा"
+    ],
+    "then": [
+      "* ",
+      "त्यसपछि ",
+      "अनी "
+    ],
+    "when": [
+      "* ",
+      "जब "
+    ]
+  },
   "nl": {
     "and": [
       "* ",
@@ -2746,7 +2810,7 @@ __DATA__
     "name": "Russian",
     "native": "русский",
     "rule": [
-      "Rule"
+      "Правило"
     ],
     "scenario": [
       "Пример",
@@ -3590,6 +3654,53 @@ __DATA__
     "when": [
       "* ",
       "當"
+    ]
+  },
+  "mr": {
+    "and": [
+      "* ",
+      "आणि ",
+      "तसेच "
+    ],
+    "background": [
+      "पार्श्वभूमी"
+    ],
+    "but": [
+      "* ",
+      "पण ",
+      "परंतु "
+    ],
+    "examples": [
+      "उदाहरण"
+    ],
+    "feature": [
+      "वैशिष्ट्य",
+      "सुविधा"
+    ],
+    "given": [
+      "* ",
+      "जर",
+      "दिलेल्या प्रमाणे "
+    ],
+    "name": "Marathi",
+    "native": "मराठी",
+    "rule": [
+      "नियम"
+    ],
+    "scenario": [
+      "परिदृश्य"
+    ],
+    "scenarioOutline": [
+      "परिदृश्य रूपरेखा"
+    ],
+    "then": [
+      "* ",
+      "मग ",
+      "तेव्हा "
+    ],
+    "when": [
+      "* ",
+      "जेव्हा "
     ]
   }
 }
