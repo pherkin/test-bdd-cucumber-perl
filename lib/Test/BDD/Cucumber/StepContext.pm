@@ -336,7 +336,7 @@ sub dispatch {
     my $new_context = $self->new(
         {
             executor => $self->executor,
-            ( $data    ? ( _data   => $data )    : () ),
+            ( $data    ? ( data   => $data )    : () ),
             ( $columns ? ( columns => $columns ) : () ),
             stash => {
                 feature  => $self->stash->{'feature'},
