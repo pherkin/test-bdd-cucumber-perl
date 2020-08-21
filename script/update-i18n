@@ -1,0 +1,9 @@
+#!/bin/bash
+
+perl -pe 'last if /^__DATA__$/;' lib/Test/BDD/Cucumber/I18N/Data.pm > Data.pm.updated
+echo __DATA__ >> Data.pm.updated
+curl https://raw.githubusercontent.com/cucumber/cucumber/master/gherkin/gherkin-languages.json >> Data.pm.updated
+mv lib/Test/BDD/Cucumber/I18N/Data.pm{,-old}
+mv Data.pm.updated lib/Test/BDD/Cucumber/I18N/Data.pm
+
+
