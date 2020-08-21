@@ -41,7 +41,7 @@ for C<Scenario Outline> (with C<Examples>). This best maps to
 L<Gherkin version 6.0.13|https://github.com/cucumber/cucumber/blob/master/gherkin/CHANGELOG.md#6013---2018-09-25>,
 but without support for its new C<Rule> and C<Example> keywords.
 
-This implementation supports the same languages as Gherkin 7.0.3 - that is, it
+This implementation supports the same languages as Gherkin 15.0.0 - that is, it
 supports exactly the same translated keywords.
 
 Behaviour of this module is similar to that, but sometimes different from
