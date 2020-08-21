@@ -131,6 +131,7 @@ Ben Rodgers C<ben@bdr.org>
 
 =head1 LICENSE
 
-Copyright 2011-2019, Peter Sergeant; Licensed under the same terms as Perl
+  Copyright 2019-2020, Erik Huelsmann
+  Copyright 2011-2019, Peter Sergeant; Licensed under the same terms as Perl
 
 =cut
