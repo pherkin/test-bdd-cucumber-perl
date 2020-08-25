@@ -1,7 +1,7 @@
 -----
 
 0.73  2020-08-24
-    [Fixed]
+    [Added]
       - Allow Example variables to be used in Scenario Outline title
 0.72  2020-08-21
     [Fixed]
