@@ -239,13 +239,15 @@ sub execute_outline {
 
 
     foreach my $rows (@datasets) {
+
         my $outline_state = {};
-        my $name = $outline->{name} || "";
 
         foreach my $row (@{$rows->data}) {
 
-            $outline->{name} =~ s/<$_>/$row->{$_}/g
+            my $name = $outline->{name} || "";
+            $name =~ s/<$_>/$row->{$_}/g
                 for (keys %$row);
+            local $outline->{name} = $name;
 
             $self->execute_scenario(
                 {
@@ -260,7 +262,6 @@ sub execute_outline {
                 });
 
             $outline_state->{'short_circuit'} ||= $self->_bail_out;
-            $outline->{name} = $name;
         }
     }
 }
