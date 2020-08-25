@@ -1,6 +1,8 @@
 -----
 
-
+0.73  2020-08-24
+    [Added]
+      - Allow Example variables to be used in Scenario Outline title
 0.72  2020-08-21
     [Fixed]
       - Shebang of 'pherkin' script not replaced on 'make install' (gh #166)
@@ -318,4 +320,3 @@
     - Various bits of documentation enhancements
 0.02  2011-12-20
       - Added extra docs, and a few tiny bug fixes
-

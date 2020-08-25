@@ -239,9 +239,16 @@ sub execute_outline {
 
 
     foreach my $rows (@datasets) {
+
         my $outline_state = {};
 
         foreach my $row (@{$rows->data}) {
+
+            my $name = $outline->{name} || "";
+            $name =~ s/\Q<$_>\E/$row->{$_}/g
+                for (keys %$row);
+            local $outline->{name} = $name;
+
             $self->execute_scenario(
                 {
                     feature => $feature,
