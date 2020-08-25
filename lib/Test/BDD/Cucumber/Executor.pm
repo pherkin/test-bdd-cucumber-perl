@@ -245,7 +245,7 @@ sub execute_outline {
         foreach my $row (@{$rows->data}) {
 
             my $name = $outline->{name} || "";
-            $name =~ s/<$_>/$row->{$_}/g
+            $name =~ s/\Q<$_>\E/$row->{$_}/g
                 for (keys %$row);
             local $outline->{name} = $name;
 
