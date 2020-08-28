@@ -3,6 +3,9 @@
 0.73  2020-08-24
     [Added]
       - Allow Example variables to be used in Scenario Outline title
+    [Fixed]
+      - Failure to load Test::BDD::Cucumber::StepFile; throws error
+        'Modification of read-only value attempted'  (gh #165)
 0.72  2020-08-21
     [Fixed]
       - Shebang of 'pherkin' script not replaced on 'make install' (gh #166)
