@@ -123,6 +123,7 @@ sub _alias_function {
         next if $word eq '*';
 
         my $subname = keyword_to_subname($word);
+        next unless length $subname;
 
         {
             no strict 'refs';
