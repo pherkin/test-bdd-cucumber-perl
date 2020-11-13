@@ -124,7 +124,7 @@ sub _run_tests {
     $harness->shutdown();
 
     my $exit_code = 0;
-    my $result = $harness->result;
+    my $result = $harness->result->result;
     if ($result eq 'failing') {
         $exit_code = 2;
     }
