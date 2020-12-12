@@ -1,5 +1,11 @@
 -----
 
+
+0.74  2020-12-12
+    [Fixed]
+      - Failure exit code from 'pherkin' does not work
+    [Changed]
+      - Synchronized translations with upstream i18n data
 0.73  2020-08-24
     [Added]
       - Allow Example variables to be used in Scenario Outline title
