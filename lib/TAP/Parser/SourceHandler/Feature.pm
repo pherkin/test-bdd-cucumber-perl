@@ -44,11 +44,22 @@ sub can_handle {
             my %options = %{ $source->config_for($class) };
             while ( my ( $key, $value ) = each %options ) {
 
-                # Nasty hack
-                if ( length $key > 1 ) {
-                    push( @cmd_line, "--$key", $value );
-                } else {
-                    push( @cmd_line, "-$key", $value );
+                # --feature-option 'tags=@something'
+                # --feature-option 'tags=@somethingelse'
+                #
+                # is passed in %options as:
+                # { ..., tags => [ '@something', '@somethingelse' ], ... }
+                #
+                # Now unfold that back into an argument array as
+                #  --tags @something --tags @somethingelse
+                $value = [ $value ] unless ref $value;
+                for my $v (@$value) {
+                    # Nasty hack
+                    if ( length $key > 1 ) {
+                        push( @cmd_line, "--$key", $v );
+                    } else {
+                        push( @cmd_line, "-$key", $v );
+                    }
                 }
             }
 

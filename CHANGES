@@ -1,5 +1,11 @@
 -----
 
+0.75  to be released
+    [Fixed]
+       - Passing multiple tags arguments to prove correctly intersects
+         the sets;
+         e.g. '--feature-option tags=@wip --feature-option tags=@daily' now
+         correctly runs stricttly the scenarios matching both @wip and @daily
 
 0.74  2020-12-12
     [Fixed]
