@@ -54,8 +54,10 @@ Extra Steps
 Tag specifications
 
  -t, --tags @tag        Run scenarios tagged with '@tag'
- -t, --tags @tag1,@tag2 Run scenarios tagged with '@tag1' and '@tag2'
+ -t, --tags @tag1,@tag2 Run scenarios tagged with '@tag1' or '@tag2'
  -t, --tags ~@tag       Run scenarios tagged without '@tag'
+ -t @tag1 -t @tag2      Run only scenarios tagged with '@tag1' and '@tag2'
+ -t @tag1 -t ~@tag2     Run scenarios tagged with '@tag1' but not '@tag2'
 
 Configuration profiles (see CONFIGURATION PROFILES below/`man pherkin`)
 

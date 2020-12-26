@@ -339,8 +339,12 @@ In order to run all scenarios, except the weekly tests, run:
 In order to run all scenarios marked with C<@feature-tag1> except the
 weekly tests, run:
 
-  pherkin --tags=@feature-tag1,~@weekly-tests-tag
+  pherkin --tags=@feature-tag1 --tags=~@weekly-tests-tag
 
+In order to run all scenarios marked with C<@feature-tag1> as well as
+those marked with C<@feature-tag2>, run:
+
+  pherkin --tags=@feature-tag1,@feature-tag2
 
 =head1 Non-English features and step files
 
