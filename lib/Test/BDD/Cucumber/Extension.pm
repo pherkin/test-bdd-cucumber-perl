@@ -101,12 +101,12 @@ $failure indicates whether any of the steps in the scenario has failed.
 sub pre_scenario  { return; }
 sub post_scenario { return; }
 
-=head2 pre_step($step, $step_context)
+=head2 pre_step($stepdef, $step_context)
 
 Invoked by the Executor before executing each step in $scenario.
 Reports errors by calling croak().
 
-C<$step> contains a reference to an array with step data:
+C<$stepdef> contains a reference to an array with step data:
 
   [ qr//, { meta => $data }, $code ]
 
@@ -124,7 +124,7 @@ Feature, scenario and step (from the feature file) are available as
 
 Note: B<executed> steps, so not called for skipped steps.
 
-=head2 post_step($step, $step_context, $failed, $result)
+=head2 post_step($stepdef, $step_context, $failed, $result)
 
 Invoked by the Executor after each executed step in $scenario.
 Reports errors by calling croak().

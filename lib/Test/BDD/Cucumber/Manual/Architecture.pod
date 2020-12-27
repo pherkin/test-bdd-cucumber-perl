@@ -101,11 +101,11 @@ This allows step function authors to communicate with extensions, because
 extensions receive this meta data in their C<pre_step> callback:
 
   sub pre_step {
-    my ($step_function, $step_context) = @_;
-    my $step_metadata = $step->[1];
+    my ($stepdef, $step_context) = @_;
+    my ($verb, $metadata, $stepfn) = @$stepdef;
 
     die 'All steps should have meta -> data'
-      unless $step_metadata->{meta} eq 'data';
+      unless $metadata->{meta} eq 'data';
   }
 
 Extensions - when loaded by the pherkin test executor - receive their

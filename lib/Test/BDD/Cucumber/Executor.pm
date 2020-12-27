@@ -510,19 +510,19 @@ sub find_and_dispatch {
       if $short_circuit;
 
     # Try and find a matching step
-    my $step;
+    my $stepdef;
     my $text = $context->text;
     if ($self->matching eq 'first') {
-        $step = first { $text =~ $_->[0] }
+        $stepdef = first { $text =~ $_->[0] }
         @{ $self->{'steps'}->{ $context->verb } || [] },
             @{ $self->{'steps'}->{'step'} || [] };
     }
     else {
-        my @steps = grep { $text =~ $_->[0] }
+        my @stepdefs = grep { $text =~ $_->[0] }
         @{ $self->{'steps'}->{ $context->verb } || [] },
             @{ $self->{'steps'}->{'step'} || [] };
 
-        if (@steps > 1) {
+        if (@stepdefs > 1) {
             my $filename = $context->step->line->document->filename;
             my $line = $context->step->line->number;
             my $msg =
@@ -532,7 +532,7 @@ sub find_and_dispatch {
                        qq{matcher $_->[0] defined at } .
                            (($_->[1]->{source} && $_->[1]->{line})
                             ? "$_->[1]->{source}:$_->[1]->{line}"
-                            : '<unknown>') } @steps);
+                            : '<unknown>') } @stepdefs);
 
             if ($self->matching eq 'relaxed') {
                 warn $msg;
@@ -541,11 +541,11 @@ sub find_and_dispatch {
                 die $msg;
             }
         }
-        $step = shift @steps;
+        $stepdef = shift @stepdefs;
     }
 
     # Deal with the simple case of no-match first of all
-    unless ($step) {
+    unless ($stepdef) {
         my $message =
             "No matching step definition for: "
           . $context->verb . ' '
@@ -555,17 +555,19 @@ sub find_and_dispatch {
         return $result;
     }
 
-    $_->pre_step( $step, $context ) for @{ $self->extensions };
-    my $result = $self->dispatch( $context, $step, 0, $redispatch );
-    $_->post_step( $step, $context, ( $result->result ne 'passing' ), $result )
+    $_->pre_step( $stepdef, $context ) for @{ $self->extensions };
+    my $result = $self->dispatch( $context, $stepdef, 0, $redispatch );
+    $_->post_step( $stepdef, $context,
+                   ( $result->result ne 'passing' ), $result )
       for reverse @{ $self->extensions };
     return $result;
 }
 
-=head2 dispatch
+=head2 dispatch($context, $stepdef, $short_circuit, $redispatch)
 
-Accepts a L<Test::BDD::Cucumber::StepContext> object, and a L<Test::BDD::Cucumber::Step>
-object and executes it.
+Accepts a L<Test::BDD::Cucumber::StepContext> object, and a
+reference to a step definition triplet (verb, metadata hashref, coderef)
+and executes it the coderef.
 
 You can also pass in a boolean 'short-circuit' flag if the Scenario's remaining
 steps should be skipped.
@@ -573,14 +575,14 @@ steps should be skipped.
 =cut
 
 sub dispatch {
-    my ( $self, $context, $step, $short_circuit, $redispatch ) = @_;
+    my ( $self, $context, $stepdef, $short_circuit, $redispatch ) = @_;
 
     return $self->skip_step( $context, 'pending',
         "Short-circuited from previous tests", $redispatch )
       if $short_circuit;
 
     # Execute the step definition
-    my ( $regular_expression, $meta, $coderef ) = @$step;
+    my ( $regular_expression, $meta, $coderef ) = @$stepdef;
 
     my $step_name = $redispatch ? 'sub_step' : 'step';
     my $step_done_name = $step_name . '_done';

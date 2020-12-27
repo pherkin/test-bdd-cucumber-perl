@@ -9,10 +9,11 @@
        - Tutorial.pod incorrectly stated --tags=@tag1,~@tag2 runs scenarios
          tagged '@tag1' except those tagged '@tag2': it runs all tagged
          '@tag1' and all *not* tagged '@tag2'.
+       - Clarified difference between step definitions, step models and step
+         execution contexts
     [Added]
        - Explanation in 'pherkin' how to pass tag patterns
        - Expanded explanation in Tuturial.pod how to pass tag patterns
-
 0.74  2020-12-12
     [Fixed]
       - Failure exit code from 'pherkin' does not work
