@@ -1,6 +1,6 @@
 -----
 
-0.75  to be released
+0.75  2020-12-28
     [Fixed]
        - Passing multiple tags arguments to prove correctly intersects
          the sets;
