@@ -22,6 +22,9 @@ Test::BDD::Cucumber - Feature-complete Cucumber-style testing in Perl
    # Or all those /not/ tagged 'slow'
    $ pherkin -l -b --tags ~@slow
 
+   # Fail on missing steps (by default prints as orange output and succeeds tests)
+   $ pherkin -l -b --strict t/
+
 
    # Driving tests using 'prove' integration
    $ prove --source Feature --ext=.feature t/
