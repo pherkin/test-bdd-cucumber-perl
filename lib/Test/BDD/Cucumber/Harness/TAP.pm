@@ -35,7 +35,7 @@ sub feature {
 
     my $ctx = context();
     $ctx->note(join('', $feature->keyword_original, ' ',
-                    $feature->name, "\n",
+                    ($feature->name || ''), "\n",
                     map { $_->content } @{ $feature->satisfaction }));
     $ctx->release;
 }
