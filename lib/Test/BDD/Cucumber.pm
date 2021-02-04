@@ -27,10 +27,10 @@ Test::BDD::Cucumber - Feature-complete Cucumber-style testing in Perl
 
 
    # Driving tests using 'prove' integration
-   $ prove --source Feature --ext=.feature t/
+   $ prove --source Feature --ext=.feature examples/
 
    # Driving parallel tests using 'prove'
-   $ prove --source Feature -j 9 --ext=.feature t/
+   $ prove -r --source Feature -j 9 --ext=.feature t/
 
 
 =head1 DESCRIPTION
