@@ -3,6 +3,10 @@ Feature: Basic Calculator Functions
   As a developer I want to check some basic operations
   So that I can have confidence in my Calculator class.
 
+  Scenario: The default Display is 0
+    Given a new Calculator object
+    Then the display should show 0
+
   Scenario: First Key Press on the Display
     Given a new Calculator object
     And having pressed 1
@@ -19,10 +23,43 @@ Feature: Basic Calculator Functions
     And having pressed C
     Then the display should show 0
 
+  Scenario: Type expression but don't execute it
+    Given a new Calculator object
+    And having pressed 1 and 2 and 3 and +
+    Then the display should show 123
+
+  Scenario: Type expression but don't execute it
+    Given a new Calculator object
+    And having pressed 1 and 2 and 3 and + and 4 and 5 and 6
+    Then the display should show 456
+
   Scenario: Add as you go
     Given a new Calculator object
     And having pressed 1 and 2 and 3 and + and 4 and 5 and 6 and +
     Then the display should show 579
+
+  Scenario: Really basic calculation
+    Given a new Calculator object
+    And having keyed 1+1=
+    Then the display should show 2
+
+  Scenario: After calculation pressin new key will replace result
+    Given a new Calculator object
+    And having keyed 1+1=
+    And having pressed 3
+    Then the display should show 3
+
+  Scenario: Basic arithmetic in one long input line
+    Given a new Calculator object
+    And having keyed <input>
+    And having pressed =
+    Then the display should show <result>
+    Examples:
+      | input            | result |
+      | 5.0+5.0          | 10     |
+      | 6   /  3         | 2      |
+      | 1 0 * 7 . 5 5 0  | 75.5   |
+      | 3   -  10        | -7     |
 
   Scenario: Basic arithmetic
     Given a new Calculator object
