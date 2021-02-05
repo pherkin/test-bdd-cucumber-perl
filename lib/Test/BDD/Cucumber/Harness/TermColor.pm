@@ -127,7 +127,7 @@ sub feature {
         {
             indent => 0,
             color  => $self->_colors->{'feature'},
-            text   => $feature->keyword_original . ': ' . $feature->name,
+            text   => $feature->keyword_original . ': ' . ( $feature->name || '' ),
             follow_up =>
               [ map { $_->content } @{ $feature->satisfaction || [] } ],
             trailing => 1
