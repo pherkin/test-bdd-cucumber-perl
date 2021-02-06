@@ -1,5 +1,23 @@
 -----
 
+0.76  To be released
+    [Added]
+       - Mention the `--strict` option for `pherkin` in SYNOPSIS
+    [Fixed]
+       - Warnings when processing empty feature files or files without
+         a text after the `Feature:` keyword
+       - Feature and scenario descriptions missing space on concatenated lines
+       - Location of failed test in TAP output now points to the failed step,
+         instead of somewhere inside `TAP::Harness`
+    [Changed]
+       - Scenarios defined by a scenario outline (`Examples:`) are now
+         independent as in Cucumber; before, failure of a scenario in an
+         outline would cancel all subsequent steps *and* scenarios -- now
+         only steps are cancelled (skipped), but subsequent scenarios are
+         run (gh #123)
+       - Descriptions of tests no longer contain prefixed 'In '
+    [Removed]
+       - Dependencies on Clone, List::MoreUtils, Number::Range
 0.75  2020-12-28
     [Fixed]
        - Passing multiple tags arguments to prove correctly intersects
