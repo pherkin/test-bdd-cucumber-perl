@@ -28,8 +28,6 @@ TAP::Parser::IteratorFactory->register_handler(__PACKAGE__);
 sub can_handle {
     my ( $class, $source ) = @_;
 
-    #use Data::Printer; p $source;
-
     if (   $source->meta->{'is_file'}
         && $source->meta->{'file'}->{'basename'} =~ m/\.feature$/ )
     {
