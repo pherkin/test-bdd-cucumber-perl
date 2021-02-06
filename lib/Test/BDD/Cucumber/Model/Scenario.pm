@@ -58,9 +58,13 @@ This (since v0.65 read-only) accessor will be removed upon release of v1.0.
 
 =cut
 
+my $data_warn_count = 0;
+
 sub data {
     # "pseudo" accessor
     my $self = shift;
+    warn 'Scenario "data" accessor is deprecated since 0.65'
+        unless $data_warn_count++; # warn once
     croak 'Scenario "data" accessor is read-only since 0.65' if @_;
 
     return [] unless @{$self->datasets};

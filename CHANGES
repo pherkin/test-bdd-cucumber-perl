@@ -21,6 +21,8 @@
          on CPAN, increasing chances of prior availability
        - Language definitions now stored as Perl instead of JSON for
          compactness and load speed
+       - Added deprecation warning to 'data' accessor in
+         Test::BDD::Cucumber::Model::Scenario
     [Removed]
        - Dependencies on Clone, List::MoreUtils, Number::Range
 0.75  2020-12-28
