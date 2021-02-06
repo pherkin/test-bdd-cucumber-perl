@@ -61,6 +61,7 @@ sub step_done {
     my $step_name;
 
     my $ctx = context();
+    $ctx->trace->{frame} = [ undef, $step->line->document->filename, $step->line->number, undef ];
     if ( $context->is_hook ) {
         $status ne 'undefined'
             and $status ne 'pending'

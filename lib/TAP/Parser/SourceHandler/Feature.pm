@@ -110,6 +110,7 @@ sub make_iterator {
     my $context = context();
     # Without the step to set the handles TAP will end up on STDOUT/STDERR
     $context->hub->format->set_handles([$output_fh, $output_fh]);
+    $context->release;
     $pherkin->harness($harness);
     my $filename = file( $dir . $source->meta->{'file'}->{'basename'} ) . '';
 
@@ -118,7 +119,6 @@ sub make_iterator {
         . ( join '; ', keys %{ $runtime->{'features'} } );
 
     $pherkin->_run_tests( $executor, $feature );
-    $context->release;
 
     close $output_fh;
     $pherkin->_post_run;
