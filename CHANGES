@@ -16,6 +16,11 @@
          only steps are cancelled (skipped), but subsequent scenarios are
          run (gh #123)
        - Descriptions of tests no longer contain prefixed 'In '
+       - Dependency YAML::Syck switched to YAML (which wraps YAML::XS or
+         YAML::PP, whichever is available); YAML has 3x more dependencies
+         on CPAN, increasing chances of prior availability
+       - Language definitions now stored as Perl instead of JSON for
+         compactness and load speed
     [Removed]
        - Dependencies on Clone, List::MoreUtils, Number::Range
 0.75  2020-12-28
