@@ -607,9 +607,6 @@ sub dispatch {
         ###TODO: Both intercept() and Test::More::subtest() should
         # be replaced by a specific Hub implementation for T::B::C
         Test::More::subtest( 'execute step', sub {
-            pass(
-                "Starting to execute step: " . $context->text
-                );
 
             # Take a copy of this. Turns out actually matching against it
             # directly causes all sorts of weird-ass heisenbugs which mst has
@@ -625,6 +622,7 @@ sub dispatch {
             @match_locations = pairwise { [ $a, $b ] } @starts, @ends;
 
             # OK, actually execute
+            local $@;
             eval {
                 no warnings 'redefine';
 
@@ -638,7 +636,10 @@ sub dispatch {
                 $coderef->($context)
             };
             if ($@) {
-                fail("Step ran successfully", $@);
+                fail("Step ran to completion", "Exception: ", $@);
+            }
+            else {
+                pass("Step ran to completion");
             }
 
             done_testing();
