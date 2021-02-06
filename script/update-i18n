@@ -1,9 +1,60 @@
-#!/bin/bash
-
-perl -pe 'last if /^__DATA__$/;' lib/Test/BDD/Cucumber/I18N/Data.pm > Data.pm.updated
-echo __DATA__ >> Data.pm.updated
-curl https://raw.githubusercontent.com/cucumber/cucumber/master/gherkin/gherkin-languages.json >> Data.pm.updated
-mv lib/Test/BDD/Cucumber/I18N/Data.pm{,-old}
-mv Data.pm.updated lib/Test/BDD/Cucumber/I18N/Data.pm
+#!/usr/bin/env perl
 
 
+use strict;
+use warnings;
+use open ':std', ':encoding(UTF-8)';
+
+use JSON::MaybeXS qw/JSON/;
+
+
+open my $data_in, '<:encoding(UTF-8)', 'lib/Test/BDD/Cucumber/I18N/Data.pm';
+open my $data_out, '>:encoding(UTF-8)', 'Data.pm.updated';
+
+system 'curl https://raw.githubusercontent.com/cucumber/cucumber/master/gherkin/gherkin-languages.json >languages.json';
+
+open my $json_in, '<:encoding(UTF-8)', 'languages.json'
+    or die "Can't download the gherkin languages JSON: $!";;
+
+my $json;
+{
+    local $/ = undef;
+    $json = <$json_in>;
+}
+close $json_in;
+
+my $langdefs = JSON()->new->decode($json);
+for my $lang (values %$langdefs) {
+    for my $keyword (keys %{$lang}) {
+        $lang->{$keyword} = join '|', @{$lang->{$keyword}}
+        if ref $lang->{$keyword};
+    }
+}
+
+my $data_line =
+    'my $languages = {' .
+    join('', map {
+        my $l = $langdefs->{$_};
+        ("'$_'", ',{',
+         ( map { "'$_','$l->{$_}'," } sort keys %$l ),
+         '},')
+         } sort keys %$langdefs )
+    . "};\n";
+
+
+while (my $line = <$data_in>) {
+    if ($line =~ m/^my \$languages/) {
+        print $data_out $data_line;
+    }
+    else {
+        print $data_out $line;
+    }
+}
+
+close $data_in;
+close $data_out;
+
+system q{rm languages.json};
+system q{mv Data.pm.updated lib/Test/BDD/Cucumber/I18N/Data.pm};
+
+print "Successfully regenerated language data.\n";
