@@ -15,9 +15,7 @@ use Moo;
 use MooX::HandlesVia;
 use Types::Standard qw( Bool Str ArrayRef HashRef );
 use List::Util qw/first any/;
-use List::MoreUtils qw/pairwise/;
 use Module::Runtime qw/use_module/;
-use Number::Range;
 use Carp qw/croak/;
 our @CARP_NOT;
 
@@ -584,9 +582,7 @@ sub dispatch {
     # Say we're about to start it up
     $context->harness->$step_name($context);
 
-    # Store the string position of matches for highlighting
     my @match_locations;
-
     my $stash_keys = join ';', sort keys %{$context->stash};
     # Using `intercept()`, run the step function in an isolated
     # environment -- this should not affect the enclosing scope
@@ -613,7 +609,9 @@ sub dispatch {
             # Save the location of matched subgroups for highlighting hijinks
             my @starts = @-;
             my @ends   = @+;
-            @match_locations = pairwise { [ $a, $b ] } @starts, @ends;
+
+            # Store the string position of matches for highlighting
+            @match_locations = map { [ $_, shift @ends ] } @starts;
 
             # OK, actually execute
             local $@;
@@ -681,21 +679,13 @@ sub _extract_match_strings {
 
     return unless @match_locations;
 
-    # Consolidate overlaps
-    my $range = Number::Range->new();
-
-    {
-        # Don't want a complain about numbers already in range, as that's
-        # expected for nested matches
-        no warnings;
-        $range->addrange( $_->[0] . '..' . ( $_->[1] - 1 ) )
-          for @match_locations;
-    }
+    my %range =
+        map { $_ => 1 } map { $_->[0] .. ($_->[1] - 1) } @match_locations;
 
     # Walk the string, splitting
     my @parts = ( [ 0, '' ] );
     for ( 0 .. ( ( length $text ) - 1 ) ) {
-        my $to_highlight = $range->inrange($_);
+        my $to_highlight = $range{$_} || 0;
         my $character = substr( $text, $_, 1 );
 
         if ( $parts[-1]->[0] != $to_highlight ) {
