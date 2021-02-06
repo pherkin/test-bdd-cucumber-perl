@@ -34,8 +34,6 @@ use Test::BDD::Cucumber::Util;
 use Test::BDD::Cucumber::Model::Result;
 use Test::BDD::Cucumber::Errors qw/parse_error_from_line/;
 
-has '_bail_out' => ( is => 'rw', isa => Bool, default => 0 );
-
 =head1 ATTRIBUTES
 
 =head2 matching
