@@ -191,12 +191,7 @@ is( $skipped_scenario{name}, 'mock failing test' );
 
 is( $skipped_scenario{steps}[2]{name}, 'number of items is "3"' );
 my $skipped_result = $skipped_scenario{steps}[2]{result};
-is( $skipped_result->{status}, 'pending', 'skipped result status' );
-like(
-    $skipped_result->{error_message},
-    qr/SKIP Short-circuited from previous tests/,
-    'skipped error message'
-);
+is( $skipped_result->{status}, 'passed', 'passed after failed within outline' );
 
 # Test pending(TODO) step result
 my %todo_scenario = %{ $parsed_json->[1]->{elements}->[2] };

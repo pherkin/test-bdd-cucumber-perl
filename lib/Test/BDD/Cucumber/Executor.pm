@@ -224,7 +224,6 @@ sub execute_outline {
                     scenario => $outline,
                     background => $background,
                     scenario_stash => {},
-                    outline_state => {},
                     dataset => {},
                 });
         }
@@ -239,8 +238,6 @@ sub execute_outline {
 
 
     foreach my $rows (@datasets) {
-
-        my $outline_state = {};
 
         foreach my $row (@{$rows->data}) {
 
@@ -257,11 +254,8 @@ sub execute_outline {
                     scenario => $outline,
                     background => $background,
                     scenario_stash => {},
-                    outline_state => $outline_state,
                     dataset => $row,
                 });
-
-            $outline_state->{'short_circuit'} ||= $self->_bail_out;
         }
     }
 }
@@ -293,10 +287,10 @@ the Harness interface.
 sub _execute_steps {
     my ( $self, $options ) = @_;
     my ( $feature, $feature_stash, $harness, $outline,
-        $scenario_stash, $outline_state, $dataset, $context_defaults )
+        $scenario_stash, $scenario_state, $dataset, $context_defaults )
       = @$options{
         qw/ feature feature_stash harness scenario scenario_stash
-          outline_state dataset context_defaults
+          scenario_state dataset context_defaults
           /
       };
 
@@ -331,11 +325,11 @@ sub _execute_steps {
 
         my $result =
             $self->find_and_dispatch( $context,
-                                      $outline_state->{'short_circuit'}, 0 );
+                                      $scenario_state->{'short_circuit'}, 0 );
 
         # If it didn't pass, short-circuit the rest
         unless ( $result->result eq 'passing' ) {
-            $outline_state->{'short_circuit'}++;
+            $scenario_state->{'short_circuit'}++;
         }
 
     }
@@ -345,7 +339,7 @@ sub _execute_steps {
 
 
 sub _execute_hook_steps {
-    my ( $self, $phase, $context_defaults, $outline_state ) = @_;
+    my ( $self, $phase, $context_defaults, $scenario_state ) = @_;
     my $want_short = ($phase eq 'before');
 
     for my $step ( @{ $self->{'steps'}->{$phase} || [] } ) {
@@ -356,13 +350,13 @@ sub _execute_hook_steps {
         my $result =
             $self->dispatch(
                 $context, $step,
-                ($want_short ? $outline_state->{'short_circuit'} : 0),
+                ($want_short ? $scenario_state->{'short_circuit'} : 0),
                 0 );
 
         # If it didn't pass, short-circuit the rest
         unless ( $result->result eq 'passing' ) {
             if ($want_short) {
-                $outline_state->{'short_circuit'} = 1;
+                $scenario_state->{'short_circuit'} = 1;
             }
         }
     }
@@ -374,12 +368,13 @@ sub _execute_hook_steps {
 sub execute_scenario {
     my ( $self, $options ) = @_;
     my ( $feature, $feature_stash, $harness, $outline, $background_obj,
-        $scenario_stash, $outline_state, $dataset )
+        $scenario_stash, $dataset )
       = @$options{
         qw/ feature feature_stash harness scenario background scenario_stash
-          outline_state dataset
+          dataset
           /
-      };
+    };
+    my $scenario_state = {};
 
     my %context_defaults = (
         executor => $self,    # Held weakly by StepContext
@@ -408,7 +403,7 @@ sub execute_scenario {
     $_->pre_scenario( $outline, $feature_stash, $scenario_stash )
         for @{ $self->extensions };
 
-    $self->_execute_hook_steps( 'before', \%context_defaults, $outline_state );
+    $self->_execute_hook_steps( 'before', \%context_defaults, $scenario_state );
 
     if ($background_obj) {
         $harness->background( $outline, $dataset,
@@ -420,7 +415,7 @@ sub execute_scenario {
                 feature_stash  => $feature_stash,
                 harness        => $harness,
                 scenario_stash => $scenario_stash,
-                outline_state  => $outline_state,
+                scenario_state  => $scenario_state,
                 context_defaults => \%context_defaults,
             }
             );
@@ -434,15 +429,15 @@ sub execute_scenario {
             feature_stash  => $feature_stash,
             harness        => $harness,
             scenario_stash => $scenario_stash,
-            outline_state  => $outline_state,
+            scenario_state  => $scenario_state,
             dataset        => $dataset,
             context_defaults => \%context_defaults,
         });
 
-    $self->_execute_hook_steps( 'after', \%context_defaults, $outline_state );
+    $self->_execute_hook_steps( 'after', \%context_defaults, $scenario_state );
 
     $_->post_scenario( $outline, $feature_stash, $scenario_stash,
-                       $outline_state->{'short_circuit'} )
+                       $scenario_state->{'short_circuit'} )
         for reverse @{ $self->extensions };
 
     $harness->scenario_done( $outline, $dataset );

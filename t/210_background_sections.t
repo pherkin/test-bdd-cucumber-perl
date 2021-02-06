@@ -12,24 +12,24 @@ use Test::BDD::Cucumber::Harness::Data;
 my $feature = Test::BDD::Cucumber::Parser->parse_string(
     <<HEREDOC
 Feature: Test Feature
-	Conditions of satisfaction
+        Conditions of satisfaction
 
-	Background:
-		Given a passing step called 'background-foo'
-		Given a background step that sometimes passes
+        Background:
+                Given a passing step called 'background-foo'
+                Given a background step that sometimes passes
 
-	Scenario:
-		Given a passing step called 'bar'
-		Given a passing step called 'baz'
+        Scenario:
+                Given a passing step called 'bar'
+                Given a passing step called 'baz'
 
-	Scenario:
-		Given a passing step called 'bar'
-		Given a passing step called '<name>'
-		Examples:
-		  | name |
-		  | bat  |
-		  | ban  |
-		  | fan  |
+        Scenario:
+                Given a passing step called 'bar'
+                Given a passing step called '<name>'
+                Examples:
+                  | name |
+                  | bat  |
+                  | ban  |
+                  | fan  |
 HEREDOC
 );
 
@@ -41,7 +41,7 @@ $executor->add_steps(
     [
      Given => ('a background step that sometimes passes', {},
                sub {
-                   ok( ( $pass_until && $pass_until-- ), "Still passes" );
+                   ok( ( $pass_until-- ), "Still passes" );
                })
     ],
 );
@@ -56,13 +56,13 @@ my @scenarios = @{ $harness->features->[0]->{'scenarios'} };
 is( @scenarios, 4, "Five scenarios found" );
 
 # Of this, the first two should have passed, the third failed,
-# and the fourth skipped...
+# and the fourth passing again...
 my $scenario_status =
   sub { $harness->scenario_status( $scenarios[ shift() ] )->result };
 is( $scenario_status->(0), 'passing', "Scenario 1 passes" );
 is( $scenario_status->(1), 'passing', "Scenario 2 passes" );
 is( $scenario_status->(2), 'failing', "Scenario 3 fails" );
-is( $scenario_status->(3), 'pending', "Scenario 4 marked pending" );
+is( $scenario_status->(3), 'passing', "Scenario 4 passes" );
 
 # Third scenario should have four steps. Two from the background,
 # and two from definition
