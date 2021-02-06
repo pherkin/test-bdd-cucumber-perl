@@ -58,10 +58,16 @@ sub step_done {
     my $status = $result->result;
 
     my $step = $context->step;
+    my $scenario = $context->scenario;
     my $step_name;
-
     my $ctx = context();
-    $ctx->trace->{frame} = [ undef, $step->line->document->filename, $step->line->number, undef ];
+
+    # when called from a 'before' or 'after' hook, we have context, but no step
+    $ctx->trace->{frame} = [
+        undef,
+        $step ? $step->line->document->filename : $scenario->line->document->filename,
+        $step ? $step->line->number : $scenario->line->number,
+        undef ];
     if ( $context->is_hook ) {
         $status ne 'undefined'
             and $status ne 'pending'
