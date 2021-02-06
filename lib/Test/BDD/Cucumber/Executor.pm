@@ -16,8 +16,6 @@ use MooX::HandlesVia;
 use Types::Standard qw( Bool Str ArrayRef HashRef );
 use List::Util qw/first any/;
 use Module::Runtime qw/use_module/;
-use Carp qw/croak/;
-our @CARP_NOT;
 
 use Test2::API qw/intercept/;
 
