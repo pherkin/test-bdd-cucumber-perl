@@ -3,6 +3,8 @@
 0.76  To be released
     [Added]
        - Mention the `--strict` option for `pherkin` in SYNOPSIS
+       - Added deprecation warning to 'data' accessor in
+         Test::BDD::Cucumber::Model::Scenario
     [Fixed]
        - Warnings when processing empty feature files or files without
          a text after the `Feature:` keyword
@@ -21,8 +23,6 @@
          on CPAN, increasing chances of prior availability
        - Language definitions now stored as Perl instead of JSON for
          compactness and load speed
-       - Added deprecation warning to 'data' accessor in
-         Test::BDD::Cucumber::Model::Scenario
     [Removed]
        - Dependencies on Clone, List::MoreUtils, Number::Range
 0.75  2020-12-28
