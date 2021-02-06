@@ -28,6 +28,7 @@ for my $lang (values %$langdefs) {
     for my $keyword (keys %{$lang}) {
         $lang->{$keyword} = join '|', @{$lang->{$keyword}}
         if ref $lang->{$keyword};
+        $lang->{$keyword} =~ s/'/\\'/g;
     }
 }
 
