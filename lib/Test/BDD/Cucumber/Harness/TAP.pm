@@ -76,7 +76,7 @@ sub step_done {
     if ( $status eq 'undefined' || $status eq 'pending' ) {
         if ( $self->fail_skip ) {
             if ( $status eq 'undefined' ) {
-                $ctx->fail( "No matcher for: $step_name",
+                $ctx->fail( "Matcher for: $step_name",
                             $self->_note_step_data($step));
             } else {
                 $ctx->skip( "Test skipped due to failure in previous step",
