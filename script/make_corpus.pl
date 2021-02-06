@@ -7,7 +7,7 @@ use FindBin::libs;
 use Test::More;
 use Test::DumpFeature;
 use Test::BDD::Cucumber::Parser;
-use YAML::Syck;
+use YAML;
 use File::Slurp;
 
 my $file_data = read_file( $ARGV[0] );

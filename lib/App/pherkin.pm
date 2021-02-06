@@ -9,7 +9,7 @@ use Module::Runtime qw(use_module module_notional_filename);
 use List::Util qw(max);
 use Pod::Usage;
 use FindBin qw($RealBin $Script);
-use YAML::Syck;
+use YAML qw( LoadFile );
 use Data::Dumper;
 use File::Spec;
 use Path::Class qw/file dir/;

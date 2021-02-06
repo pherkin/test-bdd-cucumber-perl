@@ -9,7 +9,7 @@ use Test::More;
 use Test::Differences;
 use Test::DumpFeature;
 use Test::BDD::Cucumber::Parser;
-use YAML::Syck;
+use YAML;
 use File::Find::Rule;
 
 my @files = @ARGV;

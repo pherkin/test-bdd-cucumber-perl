@@ -33,12 +33,7 @@ for (
     [ 'readable.yaml', arrayref   => qr/\[ARRAY\] but needs to be a HASH/ ],
     [ 'readable.yaml', hashoption => qr/Option foo is a \[HASH\]/ ],
     [ 'readable.yaml', missing    => qr/Profile not found/ ],
-
-    # YAML::Syck segaults on this for older Perls ¯\_(ツ)_/¯
-    (     ( $] > 5.008008 )
-        ? ( [ 'not_yaml.yaml', default => qr/syntax error/ ] )
-        : ()
-    ),
+    [ 'not_yaml.yaml', default    => qr/YAML Error:/ ],
     )
 {
     my ( $filename, $profile_name, $expecting ) = @$_;
