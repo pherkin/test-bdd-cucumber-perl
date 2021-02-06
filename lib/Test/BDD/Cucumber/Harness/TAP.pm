@@ -67,10 +67,10 @@ sub step_done {
             and $status ne 'pending'
             and $status ne 'passing'
             or do { $ctx->release; return; };
-        $step_name = 'In ' . ucfirst( $context->verb ) . ' Hook';
+        $step_name = ucfirst( $context->verb ) . ' Hook';
     } else {
         $step_name
-            = 'In ' . ucfirst( $step->verb_original ) . ' ' . $context->text;
+            = ucfirst( $step->verb_original ) . ' ' . $context->text;
     }
 
     if ( $status eq 'undefined' || $status eq 'pending' ) {
