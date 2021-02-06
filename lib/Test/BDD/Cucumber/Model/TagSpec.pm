@@ -14,8 +14,8 @@ way.
 use strict;
 use warnings;
 use Moo;
+use List::Util qw( all any );
 use Types::Standard qw( ArrayRef );
-use Clone qw/clone/;
 
 =head1 OVERVIEW
 
@@ -69,57 +69,42 @@ If C<tags> is empty, no filtering is done.
 
 sub filter {
     my ( $self, @scenarios ) = @_;
-    my @tagset = @{ $self->tags };
-    return @scenarios unless @tagset;
-
-    my $mode = shift @tagset;
+    return @scenarios unless @{ $self->tags };
 
     return grep {
         my @tags = @{ $_->tags };
         my $scenario = { map { $_ => 1 } @tags };
 
-        _matches( $mode, $scenario, \@tagset );
+        _matches( $scenario, $self->tags );
     } @scenarios;
 }
 
-# SCHEME ON THE BRAINZ
 sub _matches {
-    my ( $mode, $scenario, $tags ) = @_;
-    $tags = clone $tags;
-
-    # If $tags is null, we have to do something...
-    if ( @$tags == 0 ) {
-
-        # True is the unit of conjunction
-        ( $mode eq 'and' ) and return 1;
-
-        # False is the unit of disjunction
-        ( $mode eq 'or' ) and return 0;
-
-        # We should never get here for anything else
-        ( $mode eq 'not' )
-          and die "Doesn't make sense to ask for 'not' of empty list";
-        die "Don't recognize mode '$mode'";
-    }
-
-    # Get the head and tail of $tags. We'll split off the head, and leave the
-    # tail in $tags.
-    my $head = shift @$tags;
-
-    # Get a result from the next tag. Recurse if it's complex
-    my $result =
-      ref($head)
-      ? _matches( shift(@$head), $scenario, $head )
-      : $scenario->{$head};
+    my ( $scenario, $tagspec ) = @_;
+    my ( $mode, @tags ) = @$tagspec;
 
     if ( $mode eq 'and' ) {
-        $result ? return _matches( 'and', $scenario, $tags ) : return 0;
-    } elsif ( $mode eq 'or' ) {
-        $result ? return 1 : return _matches( 'or', $scenario, $tags );
-    } elsif ( $mode eq 'not' ) {
-        return !$result;
-    } else {
-        die "Don't recognize mode '$mode'";
+        return all {
+            ref $_ ? _matches( $scenario, $_ ) : $scenario->{$_}
+        } @tags;
+    }
+    elsif ( $mode eq 'or' ) {
+        return any {
+            ref $_ ? _matches( $scenario, $_ ) : $scenario->{$_}
+        } @tags;
+    }
+    elsif ( $mode eq 'not' ) {
+        die "'not' expects exactly one tag argument; found @tags"
+            unless @tags == 1;
+
+        return
+            not (ref $tags[0]
+                 ? _matches( $scenario, $tags[0] )
+                 : $scenario->{$tags[0]}
+            );
+    }
+    else {
+        die "Unexpected tagspec operator '$mode'";
     }
 }
 

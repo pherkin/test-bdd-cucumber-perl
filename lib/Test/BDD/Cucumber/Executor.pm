@@ -14,7 +14,6 @@ Definitions, and reporting on progress through the passed-in harness.
 use Moo;
 use MooX::HandlesVia;
 use Types::Standard qw( Bool Str ArrayRef HashRef );
-use Clone qw(clone);
 use List::Util qw/first any/;
 use List::MoreUtils qw/pairwise/;
 use Module::Runtime qw/use_module/;
