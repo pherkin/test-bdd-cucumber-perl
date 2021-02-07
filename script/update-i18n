@@ -26,25 +26,26 @@ close $json_in;
 my $langdefs = JSON()->new->decode($json);
 for my $lang (values %$langdefs) {
     for my $keyword (keys %{$lang}) {
-        $lang->{$keyword} = join '|', @{$lang->{$keyword}}
+        $lang->{$keyword} =
+            join '|', grep { not m/^[*]\s*$/ } @{$lang->{$keyword}}
         if ref $lang->{$keyword};
         $lang->{$keyword} =~ s/'/\\'/g;
     }
 }
 
 my $data_line =
-    'my $languages = {' .
+    'our %languages = (' .
     join('', map {
         my $l = $langdefs->{$_};
         ("'$_'", ',{',
          ( map { "'$_','$l->{$_}'," } sort keys %$l ),
          '},')
          } sort keys %$langdefs )
-    . "};\n";
+    . ");\n";
 
 
 while (my $line = <$data_in>) {
-    if ($line =~ m/^my \$languages/) {
+    if ($line =~ m/^our %languages/) {
         print $data_out $data_line;
     }
     else {

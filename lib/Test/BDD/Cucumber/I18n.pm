@@ -40,24 +40,6 @@ our @EXPORT_OK =
 
 use Test::BDD::Cucumber::I18N::Data;
 
-my $langdefs = _initialize_language_definitions_from_shared_json_file();
-
-sub _initialize_language_definitions_from_shared_json_file {
-
-    # Parse keywords hash for all supported languages from the JSON file
-    my $langdefs = Test::BDD::Cucumber::I18N::Data::language_definitions();
-
-    # strip asterisks from the keyword definitions since they don't work yet
-    for my $language ( keys %$langdefs ) {
-        my $langdef = $langdefs->{$language};
-        for my $key ( keys %$langdef ) {
-            $langdef->{$key} =~ s{[*]\s*[|]}{};
-        }
-    }
-
-    return $langdefs;
-}
-
 =head1 METHODS
 
 =head2 languages
@@ -67,7 +49,7 @@ Get codes of supported languages.
 =cut
 
 sub languages {
-    return keys %$langdefs;
+    return sort keys %Test::BDD::Cucumber::I18N::Data::languages;
 }
 
 =head2 has_language($language)
@@ -79,7 +61,7 @@ abbreviation defined in C<share/i18n.json>.
 
 sub has_language {
     my ($language) = @_;
-    exists $langdefs->{$language};
+    return exists $Test::BDD::Cucumber::I18N::Data::languages{$language};
 }
 
 =head2 langdef($language)
@@ -93,7 +75,7 @@ sub langdef {
     my ($language) = @_;
 
     return unless has_language($language);
-    return $langdefs->{$language};
+    return $Test::BDD::Cucumber::I18N::Data::languages{$language};
 }
 
 =head2 readable_keywords($string, $transform)
@@ -129,9 +111,8 @@ sub keyword_to_subname {
 
 =head1 LANGUAGES
 
-Languages are defined in a JSON-based hash in the __DATA__ section of
-L<Test::BDD::Cucumber::I18N::Data>, and have been lifted from the
-Gherkin distribution.
+Languages are defined in L<Test::BDD::Cucumber::I18N::Data>, and have been
+lifted from the Gherkin distribution.
 
 =head1 AUTHOR
 
