@@ -82,12 +82,16 @@ sub can_handle {
 sub make_iterator {
     my ( $class, $source ) = @_;
 
-    my ( $input_fh, $output_fh );
-    pipe $input_fh, $output_fh;
+    my ( $input_out_fh, $output_out_fh );
+    pipe $input_out_fh, $output_out_fh;
+
+    my ( $input_err_fh, $output_err_fh );
+    pipe $input_err_fh, $output_err_fh;
 
     # Don't cache the output so prove sees it immediately
     #  (pipes are stdio buffered by default)
-    $output_fh->autoflush(1);
+    $output_out_fh->autoflush(1);
+    $output_err_fh->autoflush(1);
 
     my $dir     = $source->meta->{'file'}->{'dir'};
     my $runtime = $source->{'pherkins'}->{$dir}
@@ -98,30 +102,41 @@ sub make_iterator {
 
     my $pid = fork;
     if ($pid) {
-        close $output_fh;
-        return TAP::Parser::Iterator::PherkinStream->new($input_fh, $pherkin, $pid);
+        close $output_out_fh;
+        close $output_err_fh;
+        return TAP::Parser::Iterator::PherkinStream
+            ->new($input_out_fh, $input_err_fh, $pherkin, $pid);
     }
 
-    close $input_fh;
-    my $harness = Test::BDD::Cucumber::Harness::TAP->new({ fail_skip => 1 });
+    # prevent uncaught exceptions to return up the call stack
+    #  causing essentially two prove instances to run.
+    eval {
+        close $input_out_fh;
+        close $input_err_fh;
+        my $harness =
+            Test::BDD::Cucumber::Harness::TAP->new({ fail_skip => 1 });
 
-    my $context = context();
-    # Without the step to set the handles TAP will end up on STDOUT/STDERR
-    $context->hub->format->set_handles([$output_fh, $output_fh]);
-    $context->release;
-    $pherkin->harness($harness);
-    my $filename = file( $dir . $source->meta->{'file'}->{'basename'} ) . '';
+        my $context = context();
+        # Without the step to set the handles TAP will end up on STDOUT/STDERR
+        $context->hub->format->set_handles([$output_out_fh, $output_err_fh]);
+        $context->release;
+        $pherkin->harness($harness);
+        my $filename =
+            file( $dir . $source->meta->{'file'}->{'basename'} ) . '';
 
-    my $feature = $runtime->{'features'}->{$filename}
+        my $feature = $runtime->{'features'}->{$filename}
         || die "Feature not pre-loaded: [$filename]; have: "
-        . ( join '; ', keys %{ $runtime->{'features'} } );
+            . ( join '; ', keys %{ $runtime->{'features'} } );
 
-    $pherkin->_run_tests( $executor, $feature );
+        my $exit_code = $pherkin->_run_tests( $executor, $feature );
 
-    close $output_fh;
-    $pherkin->_post_run;
+        close $output_out_fh;
+        close $output_err_fh;
+        $pherkin->_post_run;
 
-    exit;
+        exit $exit_code;
+    };
+    exit 255;
 }
 
 1;
