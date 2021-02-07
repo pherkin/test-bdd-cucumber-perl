@@ -89,7 +89,8 @@ sub step_done {
                             $self->_note_step_data($step));
             }
         } else {
-            $ctx->todo_skip($step_name, 'Step not implemented');
+            $ctx->send_event( 'Skip', todo => 'pending', todo_diag => 1,
+                              reason => 'Step not implemented', pass => 0);
             $ctx->note($self->_note_step_data($step));
         }
     } elsif ( $status eq 'passing' ) {
