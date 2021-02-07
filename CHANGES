@@ -1,6 +1,6 @@
 -----
 
-0.76  To be released
+0.76  2021-02-07
     [Added]
        - Mention the `--strict` option for `pherkin` in SYNOPSIS
        - Added deprecation warning to 'data' accessor in
