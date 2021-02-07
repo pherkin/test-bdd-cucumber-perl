@@ -35,11 +35,11 @@ for my $lang (values %$langdefs) {
 
 my $data_line =
     'our %languages = (' .
-    join('', map {
+    join(',', map {
         my $l = $langdefs->{$_};
-        ("'$_'", ',{',
-         ( map { "'$_','$l->{$_}'," } sort keys %$l ),
-         '},')
+        ("'$_',{"
+         . join(',', map { "'$_','$l->{$_}'" } sort keys %$l )
+         . '}')
          } sort keys %$langdefs )
     . ");\n";
 
