@@ -186,7 +186,7 @@ Peter Sergeant C<pete@clueball.com>
 
 =head1 LICENSE
 
-  Copyright 2019-2020, Erik Huelsmann
+  Copyright 2019-2021, Erik Huelsmann
   Copyright 2011-2019, Peter Sergeant; Licensed under the same terms as Perl
 
 =cut
