@@ -1,5 +1,13 @@
 -----
 
+0.77  to be released
+    [Changed]
+       - Even more compact storage of language definitions
+    [Fixed]
+       - No failure location in `prove` run for failing scenarios
+         as is the case for regular Test::More tests (gh #176)
+       - Require YAML v1.15 to fix failures seen on cpantesters
+       - No exit status reported for tests run by the `prove` integration
 0.76  2021-02-07
     [Added]
        - Mention the `--strict` option for `pherkin` in SYNOPSIS
