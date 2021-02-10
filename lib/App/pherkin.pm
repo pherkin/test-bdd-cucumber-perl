@@ -270,6 +270,7 @@ sub _process_arguments {
 
         # Standard
         help       => [ 'h|help|?' ],
+        version    => [ 'version' ],
         includes   => [ 'I=s@', [] ],
         lib        => [ 'l|lib' ],
         blib       => [ 'b|blib' ],
@@ -296,6 +297,14 @@ sub _process_arguments {
         my $value = $options{$key}->[1];
         return ( ref $value eq 'ARRAY' ) ? $value : $$value;
     };
+
+    if ( $deref->('version') ) {
+        my ($vol, $dirs, $file) = File::Spec->splitpath( $0 );
+        my $version = $App::pherkin::VERSION || '(development)';
+        print "$file $version\n";
+
+        exit 0;
+    }
 
     pod2usage(
         -verbose => 1,

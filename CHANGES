@@ -1,6 +1,8 @@
 -----
 
 0.77  to be released
+    [Added]
+       - New option `--version` for `pherkin`
     [Changed]
        - Even more compact storage of language definitions
     [Fixed]

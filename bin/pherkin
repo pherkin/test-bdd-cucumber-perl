@@ -75,6 +75,7 @@ Extensions
 
 Help
 
+ --version              Print the version number.
  -h, -?, --help         Print usage information.
  --i18n LANG            List keywords for a particular language.
                         '--i18n help' lists all languages available.
