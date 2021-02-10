@@ -4,8 +4,9 @@
     [Changed]
        - Even more compact storage of language definitions
     [Fixed]
-       - No failure location in `prove` run for failing scenarios
-         as is the case for regular Test::More tests (gh #176)
+       - With `prove`, no location details are reported (as they are with
+         regular Test::More tests), unless run in verbose mode which includes
+         all non-failing output too (gh #176)
        - Require YAML v1.15 to fix failures seen on cpantesters
        - No exit status reported for tests run by the `prove` integration
 0.76  2021-02-07
