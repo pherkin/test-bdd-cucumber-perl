@@ -51,6 +51,8 @@ sub _next {
 
         while (my @ready = $self->{sel}->can_read) {
             for my $fh (@ready) {
+                my $stderr = '';
+
               READ:
                 {
                     my $got = sysread $fh, my ($chunk), 2048;
@@ -58,15 +60,31 @@ sub _next {
                         $self->{sel}->remove($fh);
                     }
                     elsif ($fh == $self->{err_fh}) {
-                        print STDERR $chunk;
+                        $stderr .= $chunk;
+                        my @lines = split(/\n/, $stderr, -1);
+                        $stderr = pop @lines;
+
+                        for my $line (@lines) {
+                            utf8::decode($line);
+                            print STDERR $line . "\n";
+                        }
                         goto READ if $got == 2048;
+
+                        utf8::decode($stderr)
+                            or die 'Subprocess provided non-utf8 data';
+                        print STDERR $stderr . "\n";
                     }
                     else {
                         $part .= $chunk;
                         push @buf, split(/\n/, $part, -1);
                         $part = pop @buf;
 
-                        return shift @buf if @buf;
+                        my $rv = shift @buf;
+                        if (defined $rv) {
+                            utf8::decode($rv)
+                                or die 'Subprocess provided non-utf8 data';
+                            return $rv;
+                        }
                     }
                 }
             }
