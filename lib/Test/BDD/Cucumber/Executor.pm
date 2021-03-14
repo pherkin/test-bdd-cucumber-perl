@@ -697,7 +697,7 @@ sub _extract_match_strings {
 sub _test_output {
     my ($self, $events) = @_;
     my $fmt = Test2::Formatter::TAP->new();
-    open my $stdout, '>', \my $out_text;
+    open my $stdout, '>:encoding(UTF-8)', \my $out_text;
     my $idx = 0;
 
     $fmt->set_handles([ $stdout, $stdout ]);
