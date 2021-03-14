@@ -78,9 +78,12 @@ sub _construct {
       Test::BDD::Cucumber::Model::Feature->new( { document => $document } );
     my @lines = $class->_remove_next_blanks( @{ $document->lines } );
 
-    $feature->language( $class->_extract_language( \@lines ) );
+    my $language = $class->_extract_language( \@lines );
+    $feature->language( $language );
 
-    my $langdef = langdef( $feature->language );
+    my $langdef = langdef( $feature->language )
+        or die "Declared language '$language' not available";
+
     my $self = bless {
         langdef => $langdef,
         _construct_matchers( $langdef )
@@ -162,7 +165,7 @@ sub _extract_language {
 # return default language if we don't see the language directive on the first line
     return 'en'
         unless ($lines and @$lines
-                and $lines->[0]->raw_content =~ m{^\s*#\s*language:\s+(.+)$});
+                and $lines->[0]->raw_content =~ m{^\s*#\s*language:\s+([^\s]+)});
 
     # remove the language directive if we saw it ...
     shift @$lines;
