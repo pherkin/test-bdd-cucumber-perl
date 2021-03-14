@@ -1,0 +1,17 @@
+name: CI Action
+on: push
+
+jobs:
+  build:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: shogo82148/actions-setup-perl@v1
+      with:
+        perl-version: '5.32'
+    - run: cpanm --notest Dist::Zilla
+    - run: dzil authordeps --missing | cpanm --notest
+    - run: dzil listdeps --missing | cpanm --notest
+    - run: dzil test --all
+
