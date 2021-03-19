@@ -1,5 +1,8 @@
 -----
 
+0.79  2021-03-19
+    [Fixed]
+       - Fix parallel testing support in the `prove` plugin (prove '-j' support)
 0.78  2021-03-19
     [Changed]
        - Files with DOS line endings (\r\n) no longer leave \r at the

@@ -110,7 +110,7 @@ sub get_select_handles {
     my $self = shift;
 
     # return our handle in case it's a socket or pipe (select()-able)
-    return ( $self->{fh}, $self->{err_fh});
+    return ( $self->{out_fh}, $self->{err_fh});
 }
 
 
