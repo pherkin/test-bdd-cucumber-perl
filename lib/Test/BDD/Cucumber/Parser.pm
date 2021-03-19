@@ -78,9 +78,12 @@ sub _construct {
       Test::BDD::Cucumber::Model::Feature->new( { document => $document } );
     my @lines = $class->_remove_next_blanks( @{ $document->lines } );
 
-    $feature->language( $class->_extract_language( \@lines ) );
+    my $language = $class->_extract_language( \@lines );
+    $feature->language( $language );
 
-    my $langdef = langdef( $feature->language );
+    my $langdef = langdef( $feature->language )
+        or die "Declared language '$language' not available";
+
     my $self = bless {
         langdef => $langdef,
         _construct_matchers( $langdef )
@@ -162,7 +165,7 @@ sub _extract_language {
 # return default language if we don't see the language directive on the first line
     return 'en'
         unless ($lines and @$lines
-                and $lines->[0]->raw_content =~ m{^\s*#\s*language:\s+(.+)$});
+                and $lines->[0]->raw_content =~ m{^\s*#\s*language:\s+([^\s]+)});
 
     # remove the language directive if we saw it ...
     shift @$lines;
@@ -339,15 +342,12 @@ sub _extract_scenarios {
     return $feature, $self->_remove_next_blanks(@lines);
 }
 
-my $warned_mixed_comments = 0;
-
 sub _extract_steps {
     my ( $self, $feature, $scenario, @lines ) = @_;
 
     my $langdef   = $self->{langdef};
     my @givens    = split( /\|/, $langdef->{given} );
     my $last_verb = $givens[-1];
-    my $last_line_was_comment = 0;
 
 
     my ( $verb, $text );
@@ -355,18 +355,7 @@ sub _extract_steps {
             ($lines[0]->is_comment
              or ($verb, $text) = $self->_is_step_line( 1, $lines[0]->content ) ) ) {
         my $line = shift @lines;
-        if ($line->is_comment) {
-            $last_line_was_comment = 1;
-            next;
-        }
-
-        if ($last_line_was_comment and not $warned_mixed_comments) {
-            # don't issue this warning if the comment is after
-            warn parse_error_from_line(
-                'Mixing comments and steps is not allowed in Gherkin',
-                $line);
-            $warned_mixed_comments = 1;
-        }
+        next if $line->is_comment;
 
         my $original_verb = $verb;
         $verb = 'Given' if $verb =~ m/^($langdef->{given})$/;

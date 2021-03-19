@@ -84,9 +84,11 @@ sub make_iterator {
 
     my ( $input_out_fh, $output_out_fh );
     pipe $input_out_fh, $output_out_fh;
+    binmode $output_out_fh, ':utf8';
 
     my ( $input_err_fh, $output_err_fh );
     pipe $input_err_fh, $output_err_fh;
+    binmode $output_err_fh, ':utf8';
 
     # Don't cache the output so prove sees it immediately
     #  (pipes are stdio buffered by default)
