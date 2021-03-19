@@ -1,5 +1,15 @@
 -----
 
+0.78  2021-03-19
+    [Changed]
+       - Files with DOS line endings (\r\n) no longer leave \r at the
+         end of the line on Unix (\n line-ending systems)
+       - Stop warning about mixed comments being disallowed after consulting
+         the Cucumber project through their Slack channel
+       - Moved CI to GitHub Actions, because TravisCI minutes ran out
+    [Fixed]
+       - Fix passing UTF-8 data from sub-process spawned by `prove` plugin
+       - Fix formatting UTF-8 TAP output collected during step execution
 0.77  2021-02-10
     [Added]
        - New option `--version` for `pherkin`
