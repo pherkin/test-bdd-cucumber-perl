@@ -8,14 +8,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        perl: ['5.14', '5.16', '5.18', '5.20', '5.22', '5.24', '5.26', '5.28', '5.30']
+        perl: ['5.10', '5.14', '5.16', '5.18', '5.20', '5.22', '5.24', '5.26', '5.28', '5.30']
     steps:
     - uses: actions/checkout@v2
     - uses: shogo82148/actions-setup-perl@v1
       with:
         perl-version: ${{ matrix.perl }}
-    - run: cpanm --notest App::Cmd@0.331 Dist::Zilla
-    - run: dzil authordeps --missing | cpanm --notest
-    - run: dzil listdeps --missing | cpanm --notest
-    - run: dzil test --all
+    - run: cpanm --notest --installdeps .
+    - run: prove -l
 
