@@ -13,8 +13,12 @@ use Encode qw(decode encode encode_utf8);
 use Cpanel::JSON::XS;
 
 my $json = '{ "cc":"Piteşti" }';
+my $json = '{ "cc":"Piteşti" }';
 my $coder = Cpanel::JSON::XS->new();
-my $text = Encode::decode('UTF-8', $json);
+my $h = $coder->decode($json);
+my $text = $coder->encode($h);
+
+$text = Encode::decode('UTF-8', $text);
 
 my $feature = Test::BDD::Cucumber::Parser->parse_string(
 <<HEREDOC
