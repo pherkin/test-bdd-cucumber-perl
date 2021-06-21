@@ -5,7 +5,7 @@ use Test::More tests => 1;
 
 use Test::BDD::Cucumber::Parser;
 use Test::BDD::Cucumber::Executor;
-use Test::BDD::Cucumber::Harness::Data;
+use Test::BDD::Cucumber::Harness::Html;
 
 use Data::Dumper;
 
@@ -16,8 +16,6 @@ my $json = '{ "cc":"Piteşti" }';
 my $coder = Cpanel::JSON::XS->new();
 my $h = $coder->decode($json);
 my $text = $coder->encode($h);
-
-$text = Encode::decode('UTF-8', $text);
 
 my $feature = Test::BDD::Cucumber::Parser->parse_string(
 <<HEREDOC
@@ -32,12 +30,10 @@ my $executor = Test::BDD::Cucumber::Executor->new();
 
 $executor->add_steps( [ Given => (qr/a passing step called '(.+)'/, {}, sub { is(1, 1, $text ); }) ] );
 
-my $harness = Test::BDD::Cucumber::Harness::Data->new();
+my $harness = Test::BDD::Cucumber::Harness::Html->new();
+
 $executor->execute( $feature, $harness );
 
-my @scenarios = @{ $harness->features->[0]->{'scenarios'} };
+my $result = $harness->results->[0]->output;
 
-
-my $r = sub { $harness->scenario_status( $scenarios[ shift() ] )->output };
-
-like($r->(0), qr/"Piteşti"/, "utf8 strings are ok in test name");
+like($result, qr/"Piteşti"/, "utf8 strings are ok in test name");
