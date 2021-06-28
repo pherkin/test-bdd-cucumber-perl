@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 1;
+use Test2::V0;
 
 use Test::BDD::Cucumber::Parser;
 use Test::BDD::Cucumber::Executor;
@@ -12,10 +12,7 @@ use Data::Dumper;
 use Encode qw(decode encode encode_utf8);
 use Cpanel::JSON::XS;
 
-my $json = '{ "cc":"Piteşti" }';
-my $coder = Cpanel::JSON::XS->new();
-my $h = $coder->decode($json);
-my $text = $coder->encode($h);
+
 
 my $feature = Test::BDD::Cucumber::Parser->parse_string(
 <<HEREDOC
@@ -28,7 +25,16 @@ HEREDOC
 
 my $executor = Test::BDD::Cucumber::Executor->new();
 
-$executor->add_steps( [ Given => (qr/a passing step called '(.+)'/, {}, sub { is(1, 1, $text ); }) ] );
+$executor->add_steps( [ Given => (qr/a passing step called '(.+)'/, {}, sub {
+	my $json = '{ "cc":"Piteşti" }';
+	my $coder = Cpanel::JSON::XS->new();
+	my $h = $coder->decode($json);
+	my $text = $coder->encode($h);
+	# with Test2::V0 the encode will faill
+	# unless is placed inside the Cucumber Executor
+	#$text = Encode::decode('utf8', $text); 
+	is(1, 1, $text ); 
+	}) ] );
 
 my $harness = Test::BDD::Cucumber::Harness::Html->new();
 
@@ -37,3 +43,5 @@ $executor->execute( $feature, $harness );
 my $result = $harness->results->[0]->output;
 
 like($result, qr/"Piteşti"/, "utf8 strings are ok in test name");
+
+done_testing;
