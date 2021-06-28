@@ -32,7 +32,7 @@ $executor->add_steps( [ Given => (qr/a passing step called '(.+)'/, {}, sub {
 	my $text = $coder->encode($h);
 	# with Test2::V0 the the string processed with
     # Encode::decode('utf8', $text) will be encoded again by Test2::V0
-    # unless is the -no_utf8 => 1; is set or the decode is placed in placed 
+    # unless is the -no_utf8 => 1; is set or the Encode::decode('utf8', $text) call is placed 
     # inside the Cucumber::Executor class. 
 	is(1, 1, $text ); 
 	}) ] );
