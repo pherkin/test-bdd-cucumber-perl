@@ -68,7 +68,7 @@ C<features/step_definitions/basic_steps.pl> file in it:
  use Test2::Bundle::More;
  use Test::BDD::Cucumber::StepFile;
 
- Given qr/a usable (\S+) class/, sub { use_ok( $1 ); };
+ Given qr/a usable (\S+) class/, sub { eval "use $1;" };
  Given qr/a Digest (\S+) object/, sub {
     my $object = Digest->new($1);
     ok( $object, "Object created" );
