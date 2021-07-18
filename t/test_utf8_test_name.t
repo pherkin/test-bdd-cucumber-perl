@@ -6,8 +6,7 @@ use Test2::V0;
 use Test::BDD::Cucumber::Parser;
 use Test::BDD::Cucumber::Executor;
 use Test::BDD::Cucumber::Harness::Html;
-
-use Data::Dumper;
+use utf8;
 
 use Encode qw(decode encode encode_utf8);
 use Cpanel::JSON::XS;
@@ -30,12 +29,6 @@ $executor->add_steps( [ Given => (qr/a passing step called '(.+)'/, {}, sub {
 	my $coder = Cpanel::JSON::XS->new();
 	my $h = $coder->decode($json);
 	my $text = $coder->encode($h);
-
-    # with Test2::V0 the the string processed with
-    # Encode::decode('utf8', $text) will be encoded again by Test2::V0
-    # unless is the -no_utf8 => 1; is set or the Encode::decode('utf8', $text) 
-    # call is placed 
-    # inside the Cucumber::Executor class. 
 	
 	is(1, 1, $text ); 
 	}) ] );
