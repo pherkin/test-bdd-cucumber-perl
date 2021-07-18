@@ -1,5 +1,11 @@
 -----
 
+0.80  2021-07-18
+    [Fixed]
+       - UTF-8 in test output double encoded
+       - Tutorial example references `use_ok`, which does not exist in
+         Test2::Bundle::More
+       - Step redispatching with step data now work (with documentation)
 0.79  2021-03-19
     [Fixed]
        - Fix parallel testing support in the `prove` plugin (prove '-j' support)
