@@ -8,7 +8,6 @@ use Test::BDD::Cucumber::Executor;
 use Test::BDD::Cucumber::Harness::Html;
 use utf8;
 
-use Encode qw(decode encode encode_utf8);
 use Cpanel::JSON::XS;
 
 
@@ -26,11 +25,7 @@ my $executor = Test::BDD::Cucumber::Executor->new();
 
 $executor->add_steps( [ Given => (qr/a passing step called '(.+)'/, {}, sub {
 	my $json = '{ "cc":"Piteşti" }';
-	my $coder = Cpanel::JSON::XS->new();
-	my $h = $coder->decode($json);
-	my $text = $coder->encode($h);
-	
-	is(1, 1, $text ); 
+	is(1, 1, $json ); 
 	}) ] );
 
 my $harness = Test::BDD::Cucumber::Harness::Html->new();
