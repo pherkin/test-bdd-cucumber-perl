@@ -17,7 +17,7 @@ use Types::Standard qw( Bool Str ArrayRef HashRef );
 use List::Util qw/first any/;
 use Module::Runtime qw/use_module/;
 use utf8;
-use Encode qw( decode );
+use Encode ();
 
 use Test2::API qw/intercept/;
 
@@ -637,9 +637,6 @@ sub dispatch {
     };
 
     my $status = $self->_test_status( $events );
-    my $utf8_test_result = $self->_test_output(
-        (first { $_->isa('Test2::Event::Subtest') }
-        @$events)->{subevents});
 
     my $result = Test::BDD::Cucumber::Model::Result->new(
         {
@@ -647,7 +644,9 @@ sub dispatch {
             # due to the hack above with the subtest inside the
             # interception scope, we need to grovel the subtest
             # from out of the other results first.
-            output => Encode::decode('utf8', $utf8_test_result),
+            output => $self->_test_output(
+                (first { $_->isa('Test2::Event::Subtest') }
+                 @$events)->{subevents}),
         });
     warn qq|Unsupported: Step modified C->stash instead of C->stash->{scenario} or C->stash->{feature}|
         if $stash_keys ne (join ';', sort keys %{$context->stash});
@@ -707,7 +706,7 @@ sub _test_output {
     $self->_test_output_from_subevents($events, $fmt, \$idx);
     close $stdout;
 
-    return $out_text;
+    return Encode::decode('utf8', $out_text);
 }
 
 sub _test_output_from_subevents {
