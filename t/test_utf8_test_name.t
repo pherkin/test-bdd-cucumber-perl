@@ -8,10 +8,6 @@ use Test::BDD::Cucumber::Executor;
 use Test::BDD::Cucumber::Harness::Html;
 use utf8;
 
-use Cpanel::JSON::XS;
-
-
-
 my $feature = Test::BDD::Cucumber::Parser->parse_string(
 <<HEREDOC
 Feature: Test Feature
