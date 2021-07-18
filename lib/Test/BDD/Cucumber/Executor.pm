@@ -16,6 +16,8 @@ use MooX::HandlesVia;
 use Types::Standard qw( Bool Str ArrayRef HashRef );
 use List::Util qw/first any/;
 use Module::Runtime qw/use_module/;
+use utf8;
+use Encode ();
 
 use Test2::API qw/intercept/;
 
@@ -644,7 +646,7 @@ sub dispatch {
             # from out of the other results first.
             output => $self->_test_output(
                 (first { $_->isa('Test2::Event::Subtest') }
-                 @$events)->{subevents})
+                 @$events)->{subevents}),
         });
     warn qq|Unsupported: Step modified C->stash instead of C->stash->{scenario} or C->stash->{feature}|
         if $stash_keys ne (join ';', sort keys %{$context->stash});
@@ -704,7 +706,7 @@ sub _test_output {
     $self->_test_output_from_subevents($events, $fmt, \$idx);
     close $stdout;
 
-    return $out_text;
+    return Encode::decode('utf8', $out_text);
 }
 
 sub _test_output_from_subevents {
