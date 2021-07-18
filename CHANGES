@@ -1,5 +1,8 @@
 -----
 
+0.81  2021-07-18
+    [Fixed]
+       - Remove cruft from released archive (by expanding .gitignore)
 0.80  2021-07-18
     [Fixed]
        - UTF-8 in test output double encoded
