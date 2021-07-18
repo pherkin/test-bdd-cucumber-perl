@@ -280,6 +280,7 @@ I<StepContext>, using the C<dispatch()> method. For example:
 
   Given qr/I have entered (\d+)/, sub {
         C->dispatch( 'Given', "I have pressed $1");
+        C_>dispatch( 'Given', "I have passed-in data", C->data );
         C->dispatch( 'Given', "I have pressed enter", { some => 'data' } );
   };
 
@@ -291,7 +292,39 @@ C<text>.
 If you want to pass data to your child step, you should IDEALLY do it via the
 text of the step itself, or failing that, through the scenario-level stash.
 Otherwise it'd make more sense just to be calling some subroutine... But you
-B<can> pass in a third argument - a hashref which will be used as C<data>.
+B<can> pass in a third argument - a hashref which will be used as C<data>. The
+data in that third argument can be one of:
+
+=over
+
+=item * a string
+
+This scenario corresponds with having a C<""" ... """> string argument
+to the step. It's passed to the child step verbatim.
+
+=item * a hash reference (deprecated)
+
+This scenario corresponds with the third example above and has been
+supported historically. There is no good reason to use this type of
+argument passing, because there is no way for a feature to pass data
+to the step. When you need to use this scenario, please consider
+implementing a separate subroutine instead.
+
+=item * a reference to an array of hashes
+
+This scenario corresponsds with a data table argument to the step. The
+names of the columns are taken from the first hash in the array (the
+first row in the data table).
+
+No transformations are applied to the table passed in to prevent
+duplicate transformations being applied.
+
+=back
+
+The value of the third argument will be used as the C<< C->data >> value
+for the C<StepContext> of the child step. All values passed in, will be
+passed to the child without applying C<Transform> declarations. That way,
+double transformation is prevented.
 
 If the step you dispatch to doesn't pass for any reason (can't be found, dies,
 fails, whatever), it'll throw an exception. This will get caught by the parent
@@ -331,13 +364,19 @@ sub dispatch {
         if ( ref $data eq 'HASH' ) {
             $columns = [ sort keys %$data ];
         }
+        elsif ( ref $data eq 'ARRAY'
+                and (scalar @{ $data } > 0)
+                and ref $data->[0] eq 'HASH' ) {
+            $columns = [ sort keys %{ $data->[0] } ];
+        }
     }
 
     my $new_context = $self->new(
         {
             executor => $self->executor,
-            ( $data    ? ( data   => $data )    : () ),
-            ( $columns ? ( columns => $columns ) : () ),
+            ( $data    ? ( data              => $data )    : () ),
+            ( $data    ? ( _transformed_data => $data )    : () ),
+            ( $columns ? ( columns           => $columns ) : () ),
             stash => {
                 feature  => $self->stash->{'feature'},
                 scenario => $self->stash->{'scenario'},
