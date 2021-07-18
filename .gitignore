@@ -1,2 +1,4 @@
 .build
 Test-BDD-Cucumber-*
+devel/
+.plx/
