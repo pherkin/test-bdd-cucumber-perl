@@ -1,5 +1,11 @@
 -----
 
+0.82  [to be released]
+    [Added]
+       - Environment variable expansion in configuration profiles; use
+         ${ENVVAR} anywhere in a 'pherkin.yaml' file to substitude the
+         value from the environment. Use $${ENVVAR} to include the
+         exact value '${ENVVAR}.
 0.81  2021-07-18
     [Fixed]
        - Remove cruft from released archive (by expanding .gitignore)
