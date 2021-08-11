@@ -180,6 +180,40 @@ sub _find_config_file {
     return undef;
 }
 
+sub _replace_helper {
+    my $inval = shift;
+
+    return $ENV{$inval} // "Environment variable $inval not defined";
+}
+
+sub _resolve_envvars {
+    my ( $config_data ) = shift;
+
+    if (ref $config_data) {
+        if (ref $config_data eq 'HASH') {
+            return {
+                map {
+                    $_ => _resolve_envvars( $config_data->{$_} )
+                } keys %$config_data
+            };
+        }
+        elsif (ref $config_data eq 'ARRAY') {
+            return [ map { _resolve_envvars( $_ ) } @$config_data ];
+        }
+        else {
+            die 'Unhandled reference type in configuration data';
+        }
+    }
+    else {
+        # replace (in-place) ${ENVVAR_NAME} sequences with the envvar value
+        $config_data =~ s/(?<!\$)\$\{([a-zA-Z0-9_]+)\}/_replace_helper($1)/ge;
+        # remove any escaping double dollar-signs
+        $config_data =~ s/\$(\$\{[a-zA-Z0-9_]+\})/$1/g;
+    }
+
+    return $config_data;
+}
+
 sub _load_config {
     my ( $self, $profile_name, $proposed_config_filename, $debug ) = @_;
 
@@ -191,6 +225,8 @@ sub _load_config {
     if ($config_filename) {
         print "Found [$config_filename], reading...\n" if $debug;
         $config_data_whole = LoadFile($config_filename);
+        $config_data_whole = _resolve_envvars( $config_data_whole )
+            if $config_data_whole;
     } else {
         if ($profile_name) {
             print "No configuration files found\n" if $debug;

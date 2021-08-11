@@ -1,0 +1,9 @@
+test:
+  extensions:
+    Test:
+      undefined: ${UNDEFINED}
+      foo: ${PHERKIN_TEST_REPLACE}
+      bar: $${PHERKIN_TEST_REPLACE}
+      baz:
+        - ${PHERKIN_TEST_REPLACE}
+        - $${PHERKIN_TEST_REPLACE}

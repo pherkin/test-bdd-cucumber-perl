@@ -54,6 +54,22 @@ is_deeply(
     "readable/[default] read OK"
 );
 
+$ENV{PHERKIN_TEST_REPLACE} = 'test';
+is_deeply(
+    [ $class->_load_config( test => $dir->file('env_replace.yaml') ) ],
+    [ extensions => {
+        Test => {
+            bar => '${PHERKIN_TEST_REPLACE}',
+            baz => [ 'test',
+                     '${PHERKIN_TEST_REPLACE}' ],
+            foo => 'test',
+            undefined => 'Environment variable UNDEFINED not defined',
+        },
+      }
+    ],
+    "Replacements performed OK"
+);
+
 # Empty pass-through
 is_deeply( [ $class->_load_config( undef, undef ) ],
     [], "Empty configuration passed through" );
