@@ -152,7 +152,9 @@ sub _initialize_harness {
         || die "Unable to load harness [$harness_module]: $@";
 
     if ( $harness_args_string ) {
-        my %harness_args = eval "($harness_args_string";
+        my %harness_args;
+        eval "%harness_args = ($harness_args_string; 1"
+           or die $@;
         $self->harness( $harness_module->new( %harness_args ) );
     } else {
         $self->harness( $harness_module->new() );
