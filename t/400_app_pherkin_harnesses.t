@@ -16,7 +16,6 @@ my @known_harnesses = (
     "Test::BDD::Cucumber::Harness::TAP",
     "Test::BDD::Cucumber::Harness::JSON",
     "Test::BDD::Cucumber::Harness::JSON( json_args => { utf8 => 1, pretty => 0 } )",
-    "Test::BDD::Cucumber::Harness::JSON({ json_args => { utf8 => 1, pretty => 0 } })",
 );
 
 use_ok("App::pherkin");
