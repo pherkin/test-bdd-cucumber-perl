@@ -142,7 +142,7 @@ sub _initialize_harness {
     my ( $self, $harness_module ) = @_;
 
     my $harness_args_string = undef;
-    ( $harness_module, $harness_args_string ) = split /\(.*\)$/, $harness_module, 2; 
+    ( $harness_module, $harness_args_string ) = split /\(/, $harness_module, 2; 
     
     unless ( $harness_module =~ m/::/ ) {
         $harness_module = "Test::BDD::Cucumber::Harness::" . $harness_module;
@@ -152,8 +152,10 @@ sub _initialize_harness {
         || die "Unable to load harness [$harness_module]: $@";
 
     if ( $harness_args_string ) {
-        my %harness_args = eval('($harness_args_string');
-        $self->harness( $harness_module->new( %harness_args) );
+    
+        my %harness_args = eval "($harness_args_string";
+       
+        $self->harness( $harness_module->new( %harness_args ) );
     } else {
         $self->harness( $harness_module->new() );
     }
