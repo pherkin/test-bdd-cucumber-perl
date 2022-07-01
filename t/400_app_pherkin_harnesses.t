@@ -3,14 +3,19 @@
 use strict;
 use warnings;
 
+use lib 'lib'; 
+
 use Test::BDD::Cucumber::Executor;
 use Test::More;
+
+my $json_args => { utf8 => 1, pretty => 1 };
 
 my @known_harnesses = (
     "Data",                                       # Short form
     "Test::BDD::Cucumber::Harness::TermColor",    # Long form
     "Test::BDD::Cucumber::Harness::TAP",
-    "Test::BDD::Cucumber::Harness::JSON"
+    "Test::BDD::Cucumber::Harness::JSON",
+    "Test::BDD::Cucumber::Harness::JSON( json_args => { utf8 => 1, pretty => 0 } )",
 );
 
 use_ok("App::pherkin");
