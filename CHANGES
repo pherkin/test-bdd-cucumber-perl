@@ -1,5 +1,8 @@
 -----
 
+0.83  2022-10-30
+    [Changed]
+       - Updated keyword translations from upstream Cucumber project
 0.82  2021-08-23
     [Added]
        - Environment variable expansion in configuration profiles; use
