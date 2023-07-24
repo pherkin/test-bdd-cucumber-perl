@@ -121,7 +121,7 @@ Gregor Goldbach C<glauschwuffel@nomaden.org>
 
 =head1 LICENSE
 
-  Copyright 2019-2021, Erik Huelsmann
+  Copyright 2019-2023, Erik Huelsmann
   Copyright 2014-2019, Gregor Goldbach; Licensed under the same terms as Perl
 
 =cut
