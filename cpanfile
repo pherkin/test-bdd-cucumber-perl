@@ -27,4 +27,5 @@ on 'test' => sub {
     requires 'Test::Differences';
     requires 'Test::Exception';
     requires 'Test::Pod';
+    requires 'Test2::V0';
 };
