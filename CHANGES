@@ -1,5 +1,15 @@
 -----
 
+0.86  2023-08-12
+    [Breaking]
+       - Parser returns tags prefixed with '@' now, because
+         that's what the Cucumber ecosystem does and what
+         Cucumber::TagExpressions wants as input for its
+         tag names
+    [Fixed]
+       - Filtering scenarios by tags regressed in 0.85
+    [Added]
+       - Tests for tag-filtered scenarios
 
 0.85  2023-08-11
     [Breaking]
