@@ -50,37 +50,6 @@ has 'steps' => (
     default => sub { [] }
 );
 
-=head2 data [deprecated]
-
-In case the scenario has associated datasets, returns the first one,
-unless it has tags associated (which wasn't supported until v0.63 of
-this module), in which case this method will die with an incompatibility
-error.
-
-This (since v0.65 read-only) accessor will be removed upon release of v1.0.
-
-=cut
-
-my $data_warn_count = 0;
-
-sub data {
-    # "pseudo" accessor
-    my $self = shift;
-    warn 'Scenario "data" accessor is deprecated since 0.65'
-        unless $data_warn_count++; # warn once
-    croak 'Scenario "data" accessor is read-only since 0.65' if @_;
-
-    return [] unless @{$self->datasets};
-
-    croak q{Scenario "data" accessor incompatible with multiple Examples}
-        if @{$self->datasets} > 1;
-    # Datasets without tags re-use the tags of the scenario
-    croak q{Scenario "data" accessor incompatible with Examples tags}
-        if $self->datasets->[0]->tags != $self->tags;
-
-    return $self->datasets->[0]->data;
-}
-
 =head2 datasets
 
 The dataset(s) associated with a scenario.

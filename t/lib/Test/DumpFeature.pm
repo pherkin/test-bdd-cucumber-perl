@@ -19,7 +19,6 @@ sub dump_scenario {
     return {
         name       => $scenario->name,
         line       => $scenario->line->number,
-        data       => $scenario->data,
         background => $scenario->background,
         steps      => [ map { dump_step($_) } @{ $scenario->steps } ]
     };
