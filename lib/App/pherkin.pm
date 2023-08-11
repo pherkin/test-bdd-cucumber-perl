@@ -14,6 +14,8 @@ use Data::Dumper;
 use File::Spec;
 use Path::Class qw/file dir/;
 
+use Cucumber::TagExpressions;
+
 use Test::BDD::Cucumber::I18n
     qw(languages langdef readable_keywords keyword_to_subname);
 use Test::BDD::Cucumber::Loader;
@@ -22,8 +24,7 @@ use Moo;
 use Types::Standard qw( ArrayRef Bool Str );
 has 'step_paths' => ( is => 'rw', isa => ArrayRef, default => sub { [] } );
 has 'extensions' => ( is => 'rw', isa => ArrayRef, default => sub { [] } );
-has 'tags'       => ( is => 'rw', isa => ArrayRef, required => 0 );
-has 'tag_scheme' => ( is => 'rw', isa => ArrayRef, required => 0 );
+has 'tags'       => ( is => 'rw', isa => Str,      required => 0 );
 has 'match_only' => ( is => 'rw', isa => Bool,     default => 0 );
 has 'matching'   => ( is => 'rw', isa => Str,      default => 'first');
 has 'strict'     => ( is => 'rw', isa => Bool,     default => 0 );
@@ -114,9 +115,8 @@ sub _run_tests {
     $harness->startup();
 
     my $tag_spec;
-    if ( $self->tag_scheme ) {
-        $tag_spec = Test::BDD::Cucumber::Model::TagSpec->new(
-            { tags => $self->tag_scheme } );
+    if ( $self->tags ) {
+        $tag_spec = Cucumber::TagExpressions->parse( $self->tags );
     }
 
     $executor->execute( $_, $harness, $tag_spec ) for @features;
@@ -324,7 +324,7 @@ sub _process_arguments {
         output     => [ 'o|output=s' ],
         strict     => [ 'strict' ],
         steps      => [ 's|steps=s@', [] ],
-        tags       => [ 't|tags=s@', [] ],
+        tags       => [ 't|tags=s' ],
         i18n       => [ 'i18n=s' ],
         extensions => [ 'e|extension=s@', [] ],
         matching   => [ 'matching=s' ],
@@ -477,9 +477,6 @@ sub _process_arguments {
     # Store any extra step paths
     $self->step_paths( $deref->('steps') );
 
-    # Store our TagSpecScheme
-    $self->tag_scheme( $self->_process_tags( @{ $deref->('tags') } ) );
-
     $self->matching( $deref->('matching') )
         if $deref->('matching');
 
@@ -490,42 +487,6 @@ sub _process_arguments {
         if $deref->('strict');
 
     return ( pop @ARGV );
-}
-
-sub _process_tags {
-    my ( $self, @tags ) = @_;
-
-    # This is a bit faffy and possibly suboptimal.
-    my $tag_scheme = [];
-    my @ands       = ();
-
-    # Iterate over our commandline tag strings.
-    foreach my $tag (@tags) {
-        my @parts = ();
-
-        foreach my $part ( split( ',', $tag ) ) {
-
-            # Trim any @ or ~@ from the front of the tag
-            $part =~ s/^(~?)@//;
-
-            # ~@tag => "NOT tag" => [ not => tag ]
-            if ( defined $1 and $1 eq '~' ) {
-                push @parts, [ not => $part ];
-            } else {
-                push @parts, $part;
-            }
-        }
-
-        # @tag,@cow => "@tag OR @cow" => [ or => tag, cow ]
-        # (It's simpler to always stick an 'or' on the front.)
-        push @ands, [ or => @parts ];
-    }
-
-    # -t @tag -t @cow => "@tag AND @cow" => [ and => tag, cow ]
-    # (It's simpler to always stick an 'and' on the front.)
-    $tag_scheme = [ and => @ands ];
-
-    return $tag_scheme;
 }
 
 sub _print_languages {

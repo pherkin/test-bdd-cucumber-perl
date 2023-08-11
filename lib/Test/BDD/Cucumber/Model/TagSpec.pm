@@ -4,6 +4,12 @@ package Test::BDD::Cucumber::Model::TagSpec;
 
 Test::BDD::Cucumber::Model::TagSpec - Encapsulates tag selectors
 
+=head1 STATUS
+
+DEPRECATED - This module's functionality has been superseeded by
+L<Cucumber::TagExpressions>. A module published by the Cucumber
+project, with cross-implementation tests to achieve overall consistency.
+
 =head1 DESCRIPTION
 
 Try and deal with the crazy-sauce tagging mechanism in a sane
