@@ -1,3 +1,6 @@
+use v5.14;
+use warnings;
+
 package Test::BDD::Cucumber::Model::TagSpec;
 
 =head1 NAME
@@ -17,8 +20,6 @@ way.
 
 =cut
 
-use strict;
-use warnings;
 use Moo;
 use List::Util qw( all any );
 use Types::Standard qw( ArrayRef );

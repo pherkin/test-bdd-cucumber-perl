@@ -1,3 +1,6 @@
+use v5.14;
+use warnings;
+
 package Test::BDD::Cucumber::Model::Result;
 
 =head1 NAME
@@ -10,8 +13,6 @@ Encapsulation of result state - whether that's for a step, scenario, or feature
 
 =cut
 
-use strict;
-use warnings;
 use Moo;
 use Types::Standard qw( Enum Str );
 

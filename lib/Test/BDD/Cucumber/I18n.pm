@@ -1,3 +1,6 @@
+use v5.14;
+use warnings;
+
 package Test::BDD::Cucumber::I18n;
 
 =encoding utf8
@@ -29,8 +32,6 @@ Internationalization of feature files and step definitions.
 
 =cut
 
-use strict;
-use warnings;
 use utf8;
 
 use base 'Exporter';

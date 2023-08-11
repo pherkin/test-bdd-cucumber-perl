@@ -1,7 +1,8 @@
+use v5.14;
+use warnings;
+
 package App::pherkin;
 
-use strict;
-use warnings;
 
 use lib;
 use Getopt::Long;

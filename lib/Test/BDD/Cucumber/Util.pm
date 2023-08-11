@@ -1,7 +1,8 @@
+use v5.14;
+use warnings;
+
 package Test::BDD::Cucumber::Util;
 
-use strict;
-use warnings;
 
 =head1 NAME
 

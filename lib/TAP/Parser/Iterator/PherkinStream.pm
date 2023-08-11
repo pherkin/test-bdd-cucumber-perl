@@ -1,3 +1,6 @@
+use v5.14;
+use warnings;
+
 package TAP::Parser::Iterator::PherkinStream;
 
 =head1 NAME
@@ -6,8 +9,6 @@ TAP::Parser::Iterator::PherkinStream - Stream with TAP from async BDD process
 
 =cut
 
-use strict;
-use warnings;
 
 use base 'TAP::Parser::Iterator';
 

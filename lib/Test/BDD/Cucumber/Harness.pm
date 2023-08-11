@@ -1,3 +1,6 @@
+use v5.14;
+use warnings;
+
 package Test::BDD::Cucumber::Harness;
 
 =head1 NAME
@@ -18,8 +21,6 @@ interacting with L<Test::BDD::Cucumber::Harness::Data>.
 
 =cut
 
-use strict;
-use warnings;
 use Moo;
 use Types::Standard qw( ArrayRef );
 
