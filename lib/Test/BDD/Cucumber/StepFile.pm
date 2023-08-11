@@ -1,3 +1,6 @@
+use v5.14;
+use warnings;
+
 package Test::BDD::Cucumber::StepFile;
 
 =head1 NAME
@@ -6,8 +9,6 @@ Test::BDD::Cucumber::StepFile - Functions for creating and loading Step Definiti
 
 =cut
 
-use strict;
-use warnings;
 use utf8;
 
 use Carp qw/croak/;

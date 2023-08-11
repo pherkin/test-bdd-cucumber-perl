@@ -1,3 +1,6 @@
+use v5.14;
+use warnings;
+
 package Test::BDD::Cucumber::Harness::JSON;
 
 =head1 NAME

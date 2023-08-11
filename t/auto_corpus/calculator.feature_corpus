@@ -71,7 +71,6 @@ satisfaction:
 scenarios:
   -
     background: 0
-    data: []
     line: 9
     name: First Key Press on the Display
     steps:
@@ -95,7 +94,6 @@ scenarios:
         verb_original: Then
   -
     background: 0
-    data: []
 
     line: 14
     name: Several Key Presses on the Display
@@ -120,7 +118,6 @@ scenarios:
         verb_original: Then
   -
     background: 0
-    data: []
 
     line: 19
     name: Pressing Clear Wipes the Display
@@ -151,7 +148,6 @@ scenarios:
         verb_original: Then
   -
     background: 0
-    data: []
 
     line: 25
     name: Add as you go
@@ -176,27 +172,6 @@ scenarios:
         verb_original: Then
   -
     background: 0
-    data:
-      -
-        first: '5.0'
-        operator: +
-        result: 10
-        second: '5.0'
-      -
-        first: 6
-        operator: /
-        result: 2
-        second: 3
-      -
-        first: 10
-        operator: "*"
-        result: '75.5'
-        second: '7.550'
-      -
-        first: 3
-        operator: "-"
-        result: -7
-        second: 10
     line: 30
     name: Basic arithmetic
     steps:
@@ -238,7 +213,6 @@ scenarios:
         verb_original: Then
   -
     background: 0
-    data: []
 
     line: 44
     name: Separation of calculations
@@ -284,7 +258,6 @@ scenarios:
         verb_original: Then
   -
     background: 0
-    data: []
 
     line: 54
     name: Ticker Tape

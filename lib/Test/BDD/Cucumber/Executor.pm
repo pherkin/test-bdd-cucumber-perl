@@ -1,3 +1,7 @@
+
+use v5.14;
+use warnings;
+
 package Test::BDD::Cucumber::Executor;
 
 =head1 NAME
@@ -17,6 +21,7 @@ use Types::Standard qw( Bool Str ArrayRef HashRef );
 use List::Util qw/first any/;
 use Module::Runtime qw/use_module/;
 use utf8;
+use Carp qw(carp croak);
 use Encode ();
 
 use Test2::API qw/intercept/;
@@ -142,7 +147,7 @@ sub add_steps {
 =head2 execute
 
 Execute accepts a feature object, a harness object, and an optional
-L<Test::BDD::Cucumber::TagSpec> object and for each scenario in the
+L<Cucumber::TagExpressions::ExpressionNode> object and for each scenario in the
 feature which meets the tag requirements (or all of them, if you
 haven't specified one), runs C<execute_scenario>.
 
@@ -202,6 +207,23 @@ representing the Background
 
 =cut
 
+sub _match_tags {
+    my ($spec, @tagged_components) = @_;
+    state $deprecation_warned = 0;
+
+    if ($spec->isa('Cucumber::TagExpressions::ExpressionNode')) {
+        return grep {
+            $spec->evaluate( @{ $_->tags } )
+        } @tagged_components;
+    }
+    else {
+        $deprecation_warned ||=
+            carp 'Test::BDD::Cucumber::Model::TagSpec is deprecated; replace with Cucumber::TagExpressions';
+
+        return $spec->filter( @tagged_components );
+    }
+}
+
 sub execute_outline {
     my ( $self, $options ) = @_;
     my ( $feature, $feature_stash, $harness, $outline, $background, $tagspec )
@@ -210,7 +232,7 @@ sub execute_outline {
     # Multiply out Scenario Outlines as appropriate
     my @datasets = @{ $outline->datasets };
     if (not @datasets) {
-        if (not $tagspec or $tagspec->filter($outline) ) {
+        if (not $tagspec or _match_tags( $tagspec, $outline )) {
             $self->execute_scenario(
                 {
                     feature => $feature,
@@ -227,7 +249,7 @@ sub execute_outline {
     }
 
     if ($tagspec) {
-        @datasets = $tagspec->filter(@datasets);
+        @datasets = _match_tags( $tagspec, @datasets );
         return unless @datasets;
     }
 

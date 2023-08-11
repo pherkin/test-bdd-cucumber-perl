@@ -1,7 +1,8 @@
+use v5.14;
+use warnings;
+
 package Test::BDD::Cucumber::Errors;
 
-use strict;
-use warnings;
 
 require Exporter;
 our @ISA       = qw(Exporter);

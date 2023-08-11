@@ -1,3 +1,6 @@
+use v5.14;
+use warnings;
+
 package TAP::Parser::SourceHandler::Feature;
 
 =head1 NAME
@@ -6,8 +9,6 @@ TAP::Parser::SourceHandler::Feature - Test::BDD::Cucumber's prove integration
 
 =cut
 
-use strict;
-use warnings;
 
 use Path::Class qw/file/;
 use Test2::API qw/context/;

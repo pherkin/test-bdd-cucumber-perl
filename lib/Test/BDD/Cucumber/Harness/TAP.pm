@@ -1,3 +1,6 @@
+use v5.14;
+use warnings;
+
 package Test::BDD::Cucumber::Harness::TAP;
 
 =head1 NAME
@@ -18,8 +21,6 @@ Boolean - makes tests with no matcher fail
 
 =cut
 
-use strict;
-use warnings;
 use Moo;
 
 use Types::Standard qw( Bool InstanceOf );

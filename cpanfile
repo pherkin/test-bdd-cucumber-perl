@@ -1,5 +1,6 @@
 
-requires 'perl', '5.010';
+requires 'perl', '5.014';
+requires 'Cucumber::TagExpressions', '5.0.5';
 requires 'File::Find::Rule';
 requires 'JSON::MaybeXS', '1.1.0';
 # List::Util 1.33 adds 'any'
@@ -27,4 +28,5 @@ on 'test' => sub {
     requires 'Test::Differences';
     requires 'Test::Exception';
     requires 'Test::Pod';
+    requires 'Test2::V0';
 };

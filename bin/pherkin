@@ -53,11 +53,8 @@ Extra Steps
 
 Tag specifications
 
- -t, --tags @tag        Run scenarios tagged with '@tag'
- -t, --tags @tag1,@tag2 Run scenarios tagged with '@tag1' or '@tag2'
- -t, --tags ~@tag       Run scenarios tagged without '@tag'
- -t @tag1 -t @tag2      Run only scenarios tagged with '@tag1' and '@tag2'
- -t @tag1 -t ~@tag2     Run scenarios tagged with '@tag1' but not '@tag2'
+ -t, --tags <expr>      Run scenarios for which the tags satisfy the
+                        cucumber tag expression <expr>
 
 Configuration profiles (see CONFIGURATION PROFILES below/`man pherkin`)
 
@@ -112,12 +109,11 @@ command line. C<default> is used if you didn't specify one. For example:
      - foo/steps
      - ~/steps
    output: TermColor
-   tags:
-     - tag1,tag2
+   tags: @tag1 or @tag2
 
 is equivalent to:
 
-  --steps foo/steps --steps ~/steps --output TermColor --tags tag1,tag2
+  --steps foo/steps --steps ~/steps --output TermColor --tags '@tag1 or @tag2'
 
 If you specify both command-line options, and options in a configuration file,
 then the command-line ones override single-value items, and are placed at the

@@ -3,12 +3,10 @@
 use strict;
 use warnings;
 
-use lib 'lib'; 
+use lib 'lib';
 
 use Test::BDD::Cucumber::Executor;
 use Test::More;
-
-my $json_args => { utf8 => 1, pretty => 1 };
 
 my @known_harnesses = (
     "Data",                                       # Short form

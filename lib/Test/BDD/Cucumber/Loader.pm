@@ -1,3 +1,6 @@
+use v5.14;
+use warnings;
+
 package Test::BDD::Cucumber::Loader;
 
 =head1 NAME
@@ -24,8 +27,6 @@ the feature directory for C<*_steps.pl> files.
 
 =cut
 
-use strict;
-use warnings;
 
 use Path::Class;
 use File::Find::Rule;

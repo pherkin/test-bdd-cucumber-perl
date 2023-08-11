@@ -1,3 +1,6 @@
+use v5.14;
+use warnings;
+
 package Test::BDD::Cucumber::Harness::Data;
 
 =head1 NAME
@@ -10,8 +13,6 @@ A L<Test::BDD::Cucumber::Harness> subclass which collates test data
 
 =cut
 
-use strict;
-use warnings;
 use Moo;
 use Types::Standard qw( HashRef ArrayRef );
 use Test::More;

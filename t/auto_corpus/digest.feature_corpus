@@ -44,7 +44,6 @@ satisfaction:
 scenarios:
   -
     background: 0
-    data: []
 
     line: 9
     name: Check MD5
@@ -81,16 +80,7 @@ scenarios:
         verb_original: Then
   -
     background: 0
-    data:
-      -
-        data: foo
-        output: 0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33
-      -
-        data: bar
-        output: 62cdb7020ff920e5aa642c3d4066950dd1f01f4d
-      -
-        data: baz
-        output: bbe960a25ea311d21d40669e93df2003ba9b90a2
+
     line: 16
     name: Check SHA-1
     steps:
@@ -114,7 +104,6 @@ scenarios:
         verb_original: Then
   -
     background: 0
-    data: []
 
     line: 26
     name: MD5 longer data

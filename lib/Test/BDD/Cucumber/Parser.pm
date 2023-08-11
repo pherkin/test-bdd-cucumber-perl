@@ -1,3 +1,6 @@
+use v5.14;
+use warnings;
+
 package Test::BDD::Cucumber::Parser;
 
 =head1 NAME
@@ -25,8 +28,6 @@ L<Test::BDD::Cucumber::Model::Feature> object on success.
 
 =cut
 
-use strict;
-use warnings;
 
 use Test::BDD::Cucumber::Model::Dataset;
 use Test::BDD::Cucumber::Model::Document;

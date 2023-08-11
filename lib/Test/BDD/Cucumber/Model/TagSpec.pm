@@ -1,8 +1,17 @@
+use v5.14;
+use warnings;
+
 package Test::BDD::Cucumber::Model::TagSpec;
 
 =head1 NAME
 
 Test::BDD::Cucumber::Model::TagSpec - Encapsulates tag selectors
+
+=head1 STATUS
+
+DEPRECATED - This module's functionality has been superseeded by
+L<Cucumber::TagExpressions>. A module published by the Cucumber
+project, with cross-implementation tests to achieve overall consistency.
 
 =head1 DESCRIPTION
 
@@ -11,8 +20,6 @@ way.
 
 =cut
 
-use strict;
-use warnings;
 use Moo;
 use List::Util qw( all any );
 use Types::Standard qw( ArrayRef );
