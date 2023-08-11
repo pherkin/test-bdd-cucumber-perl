@@ -1,5 +1,13 @@
 -----
 
+
+0.85  2023-08-11
+    [Breaking]
+       - Tag filters now use the Cucumber Tag Expressions format (see
+         https://cucumber.io/docs/cucumber/api/?lang=java#tag-expressions)
+       - Minimum Perl version is now 5.14
+       - Scenario's `data` attribute removed (deprecated since 4 years)
+
 0.84  2023-07-24
     [Fixed]
        - Test failures with Perl 5.39.1 due to trying to import
