@@ -25,7 +25,7 @@ use Moo;
 use Types::Standard qw( ArrayRef Bool Str );
 has 'step_paths' => ( is => 'rw', isa => ArrayRef, default => sub { [] } );
 has 'extensions' => ( is => 'rw', isa => ArrayRef, default => sub { [] } );
-has 'tags'       => ( is => 'rw', isa => Str,      required => 0 );
+has 'tags'       => ( is => 'rw', isa => Str,      default => '' );
 has 'match_only' => ( is => 'rw', isa => Bool,     default => 0 );
 has 'matching'   => ( is => 'rw', isa => Str,      default => 'first');
 has 'strict'     => ( is => 'rw', isa => Bool,     default => 0 );
@@ -477,6 +477,8 @@ sub _process_arguments {
 
     # Store any extra step paths
     $self->step_paths( $deref->('steps') );
+
+    $self->tags( $deref->('tags') // '' );
 
     $self->matching( $deref->('matching') )
         if $deref->('matching');

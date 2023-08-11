@@ -94,7 +94,7 @@ sub shutdown {
 
 sub format_tags {
     my ( $self, $tags_ref ) = @_;
-    return [ map { { name => '@' . $_ } } @$tags_ref ];
+    return [ map { { name => $_ } } @$tags_ref ];
 }
 
 sub format_description {

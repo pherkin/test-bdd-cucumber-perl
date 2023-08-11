@@ -115,7 +115,7 @@ sub _construct_matchers {
         _scenario_line   => qr/^($scenario_line_kw): ?(.*)?/,
         _examples_line   => qr/^($l->{examples}): ?(.+)?$/,
         _table_line      => qr/^\s*\|/,
-        _tags_line       => qr/\@([^\s]+)/,
+        _tags_line       => qr/\@([^\s\@]+)/,
         );
 }
 
@@ -202,7 +202,7 @@ sub _extract_feature_name {
 
             # Feature-level tags
         } elsif ( $line->content =~ m/^\s*\@\w/ ) {
-            my @tags = $line->content =~ m/\@([^\s]+)/g;
+            my @tags = $line->content =~ m/(\@[^\s\@]+)/g;
             push( @feature_tags, @tags );
 
         } else {
@@ -332,7 +332,7 @@ sub _extract_scenarios {
 
             # Scenario-level tags
         } elsif ( $line->content =~ m/^\s*\@\w/ ) {
-            push @tags, ( $line->content =~ m/\@([^\s]+)/g );
+            push @tags, ( $line->content =~ m/(\@[^\s\@]+)/g );
 
         } else {
             die parse_error_from_line( "Malformed scenario line", $line );

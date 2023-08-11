@@ -14,7 +14,7 @@ use Test::BDD::Cucumber::Model::TagSpec;
 my %ordinals = qw/0 first 1 second 2 third 3 fourth 4 fifth/;
 
 Given qr/a scenario tagged with (.+)/, sub {
-    my @tags = $1 =~ m/"\@(.+?)"/g;
+    my @tags = $1 =~ m/"(\@.+?)"/g;
 
     # How many scenarios have we created so far?
     my $count = S->{'count'}++;
@@ -48,7 +48,7 @@ sub from_tagspec {
 }
 
 When
-qr/^Cucumber executes scenarios (not |)tagged with (both |)"\@([^"]*)"( (and|or|nor) (without |)"\@([^"]*)")?$/,
+qr/^Cucumber executes scenarios (not |)tagged with (both |)"(\@[^"]*)"( (and|or|nor) (without |)"(\@[^"]*)")?$/,
   sub {
     my ( $not_flag, $both, $tag1, $two_part, $joiner, $negate_2, $tag2 ) =
       @{ C->matches };
@@ -77,7 +77,7 @@ qr/^Cucumber executes scenarios (not |)tagged with (both |)"\@([^"]*)"( (and|or|
 # Even I, great regex master, wasn't going to tackle this one in the parser
 # above
 When
-qr/^Cucumber executes scenarios tagged with "\@([a-z]+)" but not with both "\@([a-z]+)" and "\@([a-z]+)"/,
+qr/^Cucumber executes scenarios tagged with "(\@[a-z]+)" but not with both "(\@[a-z]+)" and "(\@[a-z]+)"/,
   sub {
     from_tagspec( shift(), [ and => $1, [ not => [ and => $2, $3 ] ] ] );
   };

@@ -58,9 +58,9 @@ for (
         );
     };
 
-    $tags_match->( $feature,      qw/inherited1 inherited2         / );
-    $tags_match->( $scenarios[0], qw/inherited1 inherited2 foo bar / );
-    $tags_match->( $scenarios[1], qw/inherited1 inherited2 baz     / );
+    $tags_match->( $feature,      qw/@inherited1 @inherited2         / );
+    $tags_match->( $scenarios[0], qw/@inherited1 @inherited2 @foo @bar / );
+    $tags_match->( $scenarios[1], qw/@inherited1 @inherited2 @baz     / );
 }
 
 done_testing();
