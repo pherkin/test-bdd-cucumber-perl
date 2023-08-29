@@ -9,7 +9,7 @@ Test::BDD::Cucumber::Model::TagSpec - Encapsulates tag selectors
 
 =head1 STATUS
 
-DEPRECATED - This module's functionality has been superseeded by
+DEPRECATED - This module's functionality has been superseded by
 L<Cucumber::TagExpressions>. A module published by the Cucumber
 project, with cross-implementation tests to achieve overall consistency.
 
