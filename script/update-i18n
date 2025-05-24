@@ -11,7 +11,7 @@ use JSON::MaybeXS qw/JSON/;
 open my $data_in, '<:encoding(UTF-8)', 'lib/Test/BDD/Cucumber/I18N/Data.pm';
 open my $data_out, '>:encoding(UTF-8)', 'Data.pm.updated';
 
-system 'curl https://raw.githubusercontent.com/cucumber/cucumber/master/gherkin/gherkin-languages.json >languages.json';
+system 'curl https://raw.githubusercontent.com/cucumber/gherkin/refs/heads/main/gherkin-languages.json >languages.json';
 
 open my $json_in, '<:encoding(UTF-8)', 'languages.json'
     or die "Can't download the gherkin languages JSON: $!";;
