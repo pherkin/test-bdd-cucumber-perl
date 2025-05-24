@@ -1,5 +1,15 @@
 -----
 
+0.87  2025-05-24
+    [Added]
+       - Report scenarios skipped due to tag filters as skipped,
+         which prevents feature files with *all* scenarios filtered
+         from being reported as failed in the TAP output (while those
+         with only some scenarios skipped will not)
+       - 'scenario_skip()' event added to the Test::BDD::Cucumber::Harness
+    [Fixed]
+       - Typo in Test::BDD::Cucumber::Model::TagSpec
+
 0.86  2023-08-12
     [Breaking]
        - Parser returns tags prefixed with '@' now, because
