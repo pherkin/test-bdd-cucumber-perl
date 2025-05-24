@@ -52,7 +52,7 @@ sub scenario {
 sub scenario_skip {
     my ( $self, $scenario, $dataset ) = @_;
     my $ctx = context();
-    my $name = $scenario->name;
+    my $name = $scenario->name || '';
 
     $ctx->skip("Scenario '$name' skipped due to tag filter");
     $ctx->release;
