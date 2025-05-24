@@ -49,6 +49,14 @@ sub scenario {
                     map { $_->content} @{ $scenario->description }));
     $ctx->release;
 }
+sub scenario_skip {
+    my ( $self, $scenario, $dataset ) = @_;
+    my $ctx = context();
+    my $name = $scenario->name;
+
+    $ctx->skip("Scenario '$name' skipped due to tag filter");
+    $ctx->release;
+}
 sub scenario_done { }
 
 sub step { }
@@ -126,7 +134,12 @@ sub _note_step_data {
     }
 }
 
-sub shutdown { my $self = shift; my $ctx = context(); $ctx->done_testing; $ctx->release; }
+sub shutdown {
+    my $self = shift;
+    my $ctx = context();
+    $ctx->done_testing;
+    $ctx->release;
+}
 
 =head1 AUTHOR
 

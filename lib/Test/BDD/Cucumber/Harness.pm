@@ -64,6 +64,16 @@ accept a L<Test::BDD::Cucumber::Model::Scenario> module and a dataset hash.
 sub scenario      { my ( $self, $scenario, $dataset ) = @_; }
 sub scenario_done { my ( $self, $scenario, $dataset ) = @_; }
 
+=head2 scenario_skip
+
+Called instead of C<scenario> and C<scenario_done> when a scenario is skipped.
+Although the only reason for skipping scenarios currently is being excluded
+due to tag expressions, this may change in the future.
+
+=cut
+
+sub scenario_skip { my ( $self, $scenario, $dataset ) = @_; }
+
 =head2 step
 
 =head2 step_done

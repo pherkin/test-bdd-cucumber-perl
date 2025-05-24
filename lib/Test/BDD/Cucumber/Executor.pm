@@ -244,13 +244,18 @@ sub execute_outline {
                     dataset => {},
                 });
         }
+        $harness->scenario_skip( $outline, {} );
 
         return;
     }
 
     if ($tagspec) {
         @datasets = _match_tags( $tagspec, @datasets );
-        return unless @datasets;
+
+        unless (@datasets) {
+            $harness->scenario_skip( $outline, {} );
+            return;
+        }
     }
 
 
