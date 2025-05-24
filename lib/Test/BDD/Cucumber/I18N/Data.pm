@@ -1,9 +1,10 @@
 use v5.14;
-use warnings;
 
 package Test::BDD::Cucumber::I18N::Data;
 
 use utf8;
+use warnings;
+
 
 =encoding utf8
 
